@@ -52,6 +52,20 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    // CONFIG FOR DEBUG WITH CERTIFICATE.
+    signingConfigs {
+        debug {
+            storeFile file('key.jks')
+            storePassword 'oscantant'
+            keyAlias 'androiddebugkey'
+            keyPassword 'oscantant'
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
 }
 
 flutter {
