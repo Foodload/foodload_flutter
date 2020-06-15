@@ -61,6 +61,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   GoogleSignInAccount _currentUser;
+  var _id_token;
 
   @override
   void initState() {
@@ -75,17 +76,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      GoogleSignInAccount user = await _googleSignIn.signIn();
+
+      GoogleSignInAuthentication googleSignInAuthentication =
+          await user.authentication;
+      setState(() {
+        _id_token = googleSignInAuthentication.accessToken;
+      });
     } catch (error) {
       print(error);
     }
+  }
+
+  void vertifyClient() {
+    print(_id_token);
+    // POST request iwth _id_token to backend.
+    // backend cheks if Id belongs to user. https://developers.google.com/identity/sign-in/web/backend-auth
   }
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   Widget _buildBody() {
     if (_currentUser != null) {
-      print(_currentUser);
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -101,6 +113,10 @@ class _MyHomePageState extends State<MyHomePage> {
           RaisedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
+          ),
+          RaisedButton(
+            child: const Text('vertify token'),
+            onPressed: vertifyClient,
           ),
         ],
       );
