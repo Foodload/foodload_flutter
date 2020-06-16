@@ -1,41 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:foodload_flutter/sign_in.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+import 'package:foodload_flutter/services/auth.dart';
+import 'dummy_screen.dart';
 
-class _LoginPageState extends State<LoginPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FlutterLogo(size: 150),
-              SizedBox(height: 50),
-              _signInButton(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class LoginScreen extends StatelessWidget {
+  final AuthService _auth = AuthService();
 
-  Widget _signInButton() {
+  Widget _signInButton(BuildContext context, String imagePath, String text) {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
-        signInWithGoogle().whenComplete(() {
+        _auth.signInWithGoogle().whenComplete(() {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return FirstScreen();
+                return Dummy();
               },
             ),
           );
@@ -50,11 +29,11 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image(image: AssetImage('assets/google_logo.png'), height: 35.0),
+            Image(image: AssetImage(imagePath), height: 35.0),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
-                'Sign in with Google',
+                text,
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.grey,
@@ -66,13 +45,25 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
 
-class FirstScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(color: Colors.blue[100]),
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FlutterLogo(size: 150),
+              SizedBox(height: 50),
+              _signInButton(
+                  context, 'assets/google_logo.png', 'Sign in with Google'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
