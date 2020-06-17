@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:foodload_flutter/services/auth.dart';
-import 'dummy_screen.dart';
+import 'landing_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthService _auth = AuthService();
@@ -9,16 +9,17 @@ class LoginScreen extends StatelessWidget {
   Widget _signInButton(BuildContext context, String imagePath, String text) {
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: () {
-        _auth.signInWithGoogle().whenComplete(() {
+      onPressed: () async {
+        dynamic res = await _auth.signInWithGoogle();
+        if (res != null) {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return Dummy();
+                return Landing();
               },
             ),
           );
-        });
+        }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,

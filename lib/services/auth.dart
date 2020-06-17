@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,5 +39,31 @@ class AuthService {
     await googleSignIn.signOut();
 
     print("User Sign Out");
+
+    //FirebaseAuth.instance.signOut();??? Why not?
+  }
+
+  /*Extract token*/
+  Future<String> extractToken() async {
+    FirebaseUser user = await _auth.currentUser();
+    IdTokenResult token = await user.getIdToken();
+    return token.token;
+  }
+
+  /*Send X Req to REST API, prob refactor this soon*/
+  Future<String> sendTokenToRest() async {
+    final url = "REST-URL"; //fill this
+    var token = await extractToken();
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    //print(headers['Authorization']);
+    Response resp = await get(url, headers: headers);
+    int statusCode = resp.statusCode;
+    if (statusCode != 200) {
+      return "Did not receive 200";
+    }
+    return resp.body.toString();
   }
 }
