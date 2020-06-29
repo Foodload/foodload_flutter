@@ -12,9 +12,11 @@ class Landing extends StatelessWidget {
       ),
       body: Center(
           child: RaisedButton(
-        child: Text('Send Token'),
-        onPressed: () => _auth.sendTokenToRest(),
-      )),
+              child: Text('Send Token'),
+              onPressed: () async {
+                final resp = await _auth.sendTokenToRest();
+                print(resp);
+              })),
     );
   }
 }

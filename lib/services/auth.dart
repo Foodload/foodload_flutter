@@ -58,13 +58,11 @@ class AuthService {
       'Content-type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-
-    //print(headers['Authorization']);
     Response resp = await get(url, headers: headers);
     int statusCode = resp.statusCode;
     print(statusCode);
     if (statusCode != 200) {
-      return "Did not receive 200";
+      return resp.body.toString();
     }
     print(resp.body);
     return resp.body;
