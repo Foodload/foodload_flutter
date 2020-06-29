@@ -11,15 +11,15 @@ class LoginScreen extends StatelessWidget {
       splashColor: Colors.grey,
       onPressed: () async {
         dynamic res = await _auth.signInWithGoogle();
-        if (res != null) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return Landing();
-              },
-            ),
-          );
-        }
+//        if (res != null) {
+//          Navigator.of(context).push(
+//            MaterialPageRoute(
+//              builder: (context) {
+//                return LandingScreen();
+//              },
+//            ),
+//          );
+//        }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
