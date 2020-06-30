@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:foodload_flutter/providers/auth.dart';
 
 import 'package:foodload_flutter/services/auth.dart';
-import 'landing_screen.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthService _auth = AuthService();
 
   Widget _signInButton(BuildContext context, String imagePath, String text) {
-    return OutlineButton(
-      splashColor: Colors.grey,
+    return RaisedButton(
       onPressed: () async {
-        dynamic res = await _auth.signInWithGoogle();
-//        if (res != null) {
-//          Navigator.of(context).push(
-//            MaterialPageRoute(
-//              builder: (context) {
-//                return LandingScreen();
-//              },
-//            ),
-//          );
-//        }
+        try {
+          await Provider.of<Auth>(context, listen: false).signInWithGoogle();
+        } catch (error) {
+          print(error);
+        }
       },
+      color: Theme.of(context).colorScheme.surface,
+      textColor: Theme.of(context).colorScheme.onSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-      highlightElevation: 0,
-      borderSide: BorderSide(color: Colors.grey),
+      //borderSide: BorderSide(color: Colors.grey),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Row(
@@ -37,7 +33,6 @@ class LoginScreen extends StatelessWidget {
                 text,
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.grey,
                 ),
               ),
             )
@@ -51,7 +46,6 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.white,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.max,

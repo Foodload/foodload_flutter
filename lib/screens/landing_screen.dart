@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodload_flutter/providers/auth.dart';
 import 'package:foodload_flutter/services/auth.dart';
+import 'package:provider/provider.dart';
 
 class LandingScreen extends StatelessWidget {
   final AuthService _auth = AuthService();
@@ -30,7 +31,7 @@ class LandingScreen extends StatelessWidget {
             onChanged: (itemId) {
               switch (itemId) {
                 case 'logout':
-                  FirebaseAuth.instance.signOut();
+                  Provider.of<Auth>(context, listen: false).signOutGoogle();
                   break;
                 default:
                   print(itemId);
@@ -41,7 +42,11 @@ class LandingScreen extends StatelessWidget {
       ),
       body: Center(
         child: RaisedButton(
-          child: Text('Send Token'),
+          color: Theme.of(context).buttonColor,
+          child: Text(
+            'Send Token',
+            //style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
           onPressed: () async {
             final resp = await _auth.sendTokenToRest();
             print(resp);
