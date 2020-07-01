@@ -48,8 +48,10 @@ class LandingScreen extends StatelessWidget {
             //style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
           onPressed: () async {
-            final resp = await _auth.sendTokenToRest();
-            print(resp);
+            final token = await Provider.of<Auth>(context, listen: false).token;
+            print(token);
+//            final resp = await _auth.sendTokenToRest();
+//            print(resp);
           },
         ),
       ),

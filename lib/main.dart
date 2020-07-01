@@ -24,11 +24,14 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder(
           stream: FirebaseAuth.instance.onAuthStateChanged,
           builder: (ctx, userSnapshot) {
-            return userSnapshot.hasData
-                ? LandingScreen()
-                : userSnapshot.connectionState == ConnectionState.waiting
-                    ? LoadingScreen()
-                    : LoginScreen();
+            if (userSnapshot.hasData) {
+              Provider.of<Auth>(ctx, listen: false).init();
+              return LandingScreen();
+            }
+
+            return userSnapshot.connectionState == ConnectionState.waiting
+                ? LoadingScreen()
+                : LoginScreen();
           },
           //maybe add connectionState active as well
         ),
