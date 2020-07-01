@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
+import 'package:foodload_flutter/blocs/item/bloc.dart';
 
 class LandingScreen extends StatelessWidget {
   @override
@@ -41,16 +42,15 @@ class LandingScreen extends StatelessWidget {
       ),
       body: Center(
         child: RaisedButton(
-          color: Theme.of(context).buttonColor,
+          color: Theme.of(context).colorScheme.primary,
           child: Text(
             'Send Token',
-            //style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
           onPressed: () async {
-            //final token = await Provider.of<Auth>(context, listen: false).token;
-            //print(token);
-//            final resp = await _auth.sendTokenToRest();
-//            print(resp);
+            BlocProvider.of<ItemBloc>(context).add(
+              SendToken(),
+            );
           },
         ),
       ),
