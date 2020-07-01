@@ -1,47 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
 
+//Will be removed
 class AuthService {
-//  final FirebaseAuth _auth = FirebaseAuth.instance;
-//  final GoogleSignIn googleSignIn = GoogleSignIn();
-//
-//  Future<String> signInWithGoogle() async {
-//    try {
-//      final GoogleSignInAccount googleSignInAccount =
-//          await googleSignIn.signIn();
-//      final GoogleSignInAuthentication googleSignInAuthentication =
-//          await googleSignInAccount.authentication;
-//
-//      final AuthCredential credential = GoogleAuthProvider.getCredential(
-//        accessToken: googleSignInAuthentication.accessToken,
-//        idToken: googleSignInAuthentication.idToken,
-//      );
-//
-//      final AuthResult authResult =
-//          await _auth.signInWithCredential(credential);
-//      final FirebaseUser user = authResult.user;
-//
-//      assert(!user.isAnonymous);
-//      assert(await user.getIdToken() != null);
-//
-//      final FirebaseUser currentUser = await _auth.currentUser();
-//      assert(user.uid == currentUser.uid);
-//
-//      return 'signInWithGoogle succeeded: $user';
-//    } catch (e) {
-//      print(e.toString());
-//      return null;
-//    }
-//  }
-//
-//  void signOutGoogle() async {
-//    await googleSignIn.signOut();
-//
-//    print("User Sign Out");
-//
-//    //FirebaseAuth.instance.signOut();??? Why not?
-//  }
-
   /*Extract token*/
   Future<String> extractToken() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();

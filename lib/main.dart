@@ -1,40 +1,49 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foodload_flutter/models/app_theme.dart';
-import 'package:foodload_flutter/providers/auth.dart';
-import 'package:foodload_flutter/screens/landing_screen.dart';
-import 'package:foodload_flutter/screens/loading_screen.dart';
-import 'package:foodload_flutter/screens/login_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/app_theme.dart';
+import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
+import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/simple_bloc_delegate.dart';
+import 'package:foodload_flutter/ui/screens/landing_screen.dart';
+import 'package:foodload_flutter/ui/screens/loading_screen.dart';
+import 'package:foodload_flutter/ui/screens/login_screen.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = SimpleBlocDelegate();
+  final UserRepository userRepository = UserRepository();
+  runApp(BlocProvider(
+    create: (context) =>
+        AuthBloc(userRepository: userRepository)..add(AuthStarted()),
+    child: App(userRepository: userRepository),
+  ));
+}
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
+  final UserRepository _userRepository;
+
+  App({Key key, @required UserRepository userRepository})
+      : assert(userRepository != null),
+        _userRepository = userRepository,
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => Auth(),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Login',
-        theme: AppTheme.darkTheme,
-        home: StreamBuilder(
-          stream: FirebaseAuth.instance.onAuthStateChanged,
-          builder: (ctx, userSnapshot) {
-            if (userSnapshot.hasData) {
-              Provider.of<Auth>(ctx, listen: false).init();
-              return LandingScreen();
-            }
-
-            return userSnapshot.connectionState == ConnectionState.waiting
-                ? LoadingScreen()
-                : LoginScreen();
-          },
-          //maybe add connectionState active as well
-        ),
+    return MaterialApp(
+      title: 'Foodload',
+      theme: AppTheme.darkTheme,
+      home: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthInitial) {
+            return LoadingScreen();
+          } else if (state is AuthFailure) {
+            return LoginScreen(
+              userRepository: _userRepository,
+            );
+          } else {
+            return LandingScreen();
+          }
+        },
       ),
     );
   }

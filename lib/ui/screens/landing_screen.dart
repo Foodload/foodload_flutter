@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:foodload_flutter/providers/auth.dart';
-import 'package:foodload_flutter/services/auth.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 
 class LandingScreen extends StatelessWidget {
-  final AuthService _auth = AuthService();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +28,9 @@ class LandingScreen extends StatelessWidget {
             onChanged: (itemId) {
               switch (itemId) {
                 case 'logout':
-                  Provider.of<Auth>(context, listen: false).signOutGoogle();
+                  BlocProvider.of<AuthBloc>(context).add(
+                    AuthLoggedOut(),
+                  );
                   break;
                 default:
                   print(itemId);
@@ -48,8 +47,8 @@ class LandingScreen extends StatelessWidget {
             //style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           ),
           onPressed: () async {
-            final token = await Provider.of<Auth>(context, listen: false).token;
-            print(token);
+            //final token = await Provider.of<Auth>(context, listen: false).token;
+            //print(token);
 //            final resp = await _auth.sendTokenToRest();
 //            print(resp);
           },
