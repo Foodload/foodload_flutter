@@ -71,6 +71,7 @@ class LandingScreen extends StatelessWidget {
             onChanged: (itemId) {
               switch (itemId) {
                 case 'logout':
+                  //Navigator.of(context).pushReplacementNamed('/'); //if logout should be possible from wherever
                   BlocProvider.of<AuthBloc>(context).add(
                     AuthLoggedOut(),
                   );
