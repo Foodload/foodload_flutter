@@ -5,7 +5,20 @@ import 'package:foodload_flutter/blocs/login/bloc.dart';
 
 import 'package:foodload_flutter/ui/widgets/google_login_button.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  var _isLoading = false;
+
+  void _toggleLoading() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +43,7 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
+            _toggleLoading();
           }
           if (state.isSubmitting) {
             Scaffold.of(context)
@@ -63,7 +77,8 @@ class LoginScreen extends StatelessWidget {
               children: <Widget>[
                 FlutterLogo(size: 150),
                 SizedBox(height: 50),
-                GoogleLoginButton(),
+                if (!_isLoading) GoogleLoginButton(_toggleLoading),
+                if (_isLoading) CircularProgressIndicator(),
               ],
             ),
           ),

@@ -3,10 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/login/bloc.dart';
 
 class GoogleLoginButton extends StatelessWidget {
+  final Function notifyLoadingHandler;
+
+  GoogleLoginButton(this.notifyLoadingHandler);
+
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
       onPressed: () {
+        notifyLoadingHandler();
         BlocProvider.of<LoginBloc>(context).add(
           LoginWithGooglePressed(),
         );
