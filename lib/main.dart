@@ -10,6 +10,7 @@ import 'package:foodload_flutter/simple_bloc_delegate.dart';
 import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
+import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodload_flutter/blocs/login/login_bloc.dart';
 
@@ -59,6 +60,9 @@ class App extends StatelessWidget {
             }
           },
         ),
+        routes: {
+          StorageOverviewScreen.routeName: (ctx) => StorageOverviewScreen(),
+        },
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 
 class Storage extends StatelessWidget {
   final title;
@@ -25,7 +26,10 @@ class Storage extends StatelessWidget {
           children: <Widget>[
             InkWell(
               onTap: () {
-                print('$namedRoute from $title');
+                Navigator.of(context).pushNamed(
+                  StorageOverviewScreen.routeName,
+                  arguments: title,
+                );
               },
             ),
             Positioned(
