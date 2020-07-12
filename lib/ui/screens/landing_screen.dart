@@ -53,6 +53,7 @@ class LandingScreen extends StatelessWidget {
         title: const Text('Welcome'),
         actions: <Widget>[
           DropdownButton(
+            underline: Container(),
             icon: const Icon(Icons.more_vert),
             items: [
               DropdownMenuItem(
