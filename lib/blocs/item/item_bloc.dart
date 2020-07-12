@@ -28,6 +28,10 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       } catch (_) {
         yield ItemSendFailure();
       }
+    } else if (event is ItemFetched) {
+      final itemReps = await itemRepository.getItems();
+      yield ItemSuccess(itemRepresentations: itemReps);
+      return;
     }
   }
 }

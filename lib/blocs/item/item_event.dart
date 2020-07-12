@@ -3,11 +3,12 @@ import 'package:equatable/equatable.dart';
 
 abstract class ItemEvent extends Equatable {
   const ItemEvent();
-}
-
-class SendToken extends ItemEvent {
-  const SendToken();
 
   @override
   List<Object> get props => [];
 }
+
+//For testing
+class SendToken extends ItemEvent {}
+
+class ItemFetched extends ItemEvent {}

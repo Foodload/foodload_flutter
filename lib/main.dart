@@ -39,7 +39,8 @@ class App extends StatelessWidget {
                   foodloadApiClient:
                       FoodloadApiClient(httpClient: http.Client()),
                 ),
-                userRepository: _userRepository);
+                userRepository: _userRepository)
+              ..add(ItemFetched());
           },
         ),
       ],
