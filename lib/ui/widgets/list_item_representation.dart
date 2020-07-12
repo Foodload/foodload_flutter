@@ -2,12 +2,10 @@ import 'package:foodload_flutter/models/item_representation.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 
-class ListItem extends StatelessWidget {
+class ListItemRepresentation extends StatelessWidget {
   final ItemRepresentation itemRepresentation;
 
-  final _show = true;
-
-  const ListItem({
+  const ListItemRepresentation({
     Key key,
     @required this.itemRepresentation,
   }) : super(key: key);
@@ -30,10 +28,10 @@ class ListItem extends StatelessWidget {
                 children: <Widget>[
                   AspectRatio(
                     aspectRatio: 1.0,
-                    child: _show
+                    child: itemRepresentation.imageUrl != null
                         ? CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                'https://static.mathem.se/shared/images/products/medium/07310865001825_g1l1.jpeg.jpg'),
+                            backgroundImage:
+                                NetworkImage(itemRepresentation.imageUrl),
                           )
                         : Icon(
                             Icons.image,
@@ -42,7 +40,7 @@ class ListItem extends StatelessWidget {
                   ListItemDescription(
                     title: itemRepresentation.title,
                     description: itemRepresentation.description,
-                    amount: itemRepresentation.items.length,
+                    amount: itemRepresentation.amount,
                   ),
                 ],
               ),
@@ -123,18 +121,6 @@ class ListItemDescription extends StatelessWidget {
                           ),
                         ),
                         TextSpan(text: '$amount'),
-                        WidgetSpan(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                          ),
-                        ),
-                        WidgetSpan(
-                          child: Icon(
-                            Icons.date_range,
-                            size: 15,
-                          ),
-                        ),
-                        TextSpan(text: '2020-07-05'),
                       ],
                     ),
                   ),

@@ -1,18 +1,29 @@
 import 'package:equatable/equatable.dart';
-import 'package:foodload_flutter/models/item.dart';
 
 class ItemRepresentation extends Equatable {
   final String id;
   final String title;
   final String description;
-  final List<Item> items;
+  final int amount;
+  final String imageUrl;
 
-  const ItemRepresentation({this.id, this.title, this.description, this.items});
+  const ItemRepresentation({
+    this.id,
+    this.title,
+    this.description,
+    this.amount,
+    this.imageUrl,
+  });
 
   @override
-  List<Object> get props => [id, title, description];
+  List<Object> get props => [
+        id,
+        title,
+        description,
+        amount,
+      ];
 
   @override
   String toString() =>
-      'ItemRepresentation { id: $id, title: $title, description: $description, items: $items }';
+      'ItemRepresentation { id: $id, title: $title, description: $description, amount: $amount}';
 }

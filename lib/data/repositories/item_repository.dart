@@ -1,5 +1,4 @@
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
-import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_representation.dart';
 import 'package:meta/meta.dart';
 
@@ -16,20 +15,29 @@ class ItemRepository {
 
   Future<List<ItemRepresentation>> getItems() async {
     //api stuff
-    final item1 = Item(id: '1', expiryDate: DateTime.now());
-    final item2 = Item(id: '2', expiryDate: DateTime.now());
-    final item3 = Item(id: '3', expiryDate: DateTime.now());
-    final item4 = Item(id: '4', expiryDate: DateTime.now());
-    final item5 = Item(id: '5', expiryDate: DateTime.now());
-    final item6 = Item(id: '6', expiryDate: DateTime.now());
-    final item7 = Item(id: '7', expiryDate: DateTime.now());
-    final item8 = Item(id: '8', expiryDate: DateTime.now());
     return [
       ItemRepresentation(
-          id: '1',
-          title: 'Milk',
-          description: 'Arla Milk',
-          items: [item1, item2, item3, item4, item5, item6, item7, item8]),
+        id: '1',
+        title: 'Milk',
+        description: 'Arla Milk',
+        amount: 5,
+        imageUrl:
+            'https://static.mathem.se/shared/images/products/medium/07310865001825_g1l1.jpeg.jpg',
+      ),
+      ItemRepresentation(
+        id: '2',
+        title: 'Bread',
+        description: 'Pagen',
+        amount: 2,
+        imageUrl:
+            'https://assets.icanet.se/t_product_large_v1,f_auto/7311070008470.jpg',
+      ),
+      ItemRepresentation(
+        id: '3',
+        title: 'Yoghurt',
+        description: 'Strawberry yoghurt',
+        amount: 3,
+      ),
     ];
   }
 }
