@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-class ItemRepresentation extends Equatable {
+class Item extends Equatable {
   final String id;
   final String title;
   final String description;
   final int amount;
   final String imageUrl;
 
-  const ItemRepresentation({
+  const Item({
     this.id,
     this.title,
     this.description,

@@ -12,10 +12,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
-        _userRepository = userRepository;
-
-  @override
-  AuthState get initialState => AuthInitial();
+        _userRepository = userRepository,
+        super(AuthInitial());
 
   @override
   Stream<AuthState> mapEventToState(

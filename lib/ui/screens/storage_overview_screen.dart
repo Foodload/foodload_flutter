@@ -1,7 +1,8 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodload_flutter/blocs/item/bloc.dart';
+import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
+import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/ui/widgets/list_item_representation.dart';
 
 class StorageOverviewScreen extends StatelessWidget {
@@ -40,18 +41,19 @@ class StorageOverviewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<ItemBloc, ItemState>(
+      body: BlocBuilder<FilteredItemsBloc, FilteredItemsState>(
         builder: (context, state) {
-          if (state is ItemInitial) {
+          if (state is FilteredItemsLoadInProgress) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
-          if (state is ItemSuccess) {
+          if (state is FilteredItemsLoadSuccess) {
+            final filteredItems = state.filteredItems;
             return ListView.builder(
-              itemCount: state.itemRepresentations.length,
+              itemCount: filteredItems.length,
               itemBuilder: (ctx, index) => ListItemRepresentation(
-                itemRepresentation: state.itemRepresentations[index],
+                itemRepresentation: filteredItems[index],
               ),
             );
           }

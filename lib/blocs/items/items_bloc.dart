@@ -1,23 +1,22 @@
-import 'package:foodload_flutter/blocs/item/bloc.dart';
+import 'package:foodload_flutter/blocs/items/items.dart';
+import 'package:foodload_flutter/blocs/items/items_state.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 
-class ItemBloc extends Bloc<ItemEvent, ItemState> {
+class ItemsBloc extends Bloc<ItemEvent, ItemsState> {
   final ItemRepository itemRepository;
   final UserRepository userRepository;
 
-  ItemBloc({
+  ItemsBloc({
     @required this.itemRepository,
     @required this.userRepository,
-  }) : assert(itemRepository != null && userRepository != null);
+  })  : assert(itemRepository != null && userRepository != null),
+        super(ItemsLoadInProgress());
 
   @override
-  ItemState get initialState => ItemInitial();
-
-  @override
-  Stream<ItemState> mapEventToState(ItemEvent event) async* {
+  Stream<ItemsState> mapEventToState(ItemEvent event) async* {
     if (event is SendToken) {
       yield ItemSendInProgress();
       try {
@@ -28,10 +27,17 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       } catch (_) {
         yield ItemSendFailure();
       }
-    } else if (event is ItemFetched) {
+    } else if (event is ItemsLoad) {
+      yield* _mapItemsLoadedToState();
+    }
+  }
+
+  Stream<ItemsState> _mapItemsLoadedToState() async* {
+    try {
       final itemReps = await itemRepository.getItems();
-      yield ItemSuccess(itemRepresentations: itemReps);
-      return;
+      yield ItemsLoadSuccess(items: itemReps);
+    } catch (_) {
+      yield ItemsLoadFailure();
     }
   }
 }

@@ -1,9 +1,9 @@
-import 'package:foodload_flutter/models/item_representation.dart';
+import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 
 class ListItemRepresentation extends StatelessWidget {
-  final ItemRepresentation itemRepresentation;
+  final Item itemRepresentation;
 
   const ListItemRepresentation({
     Key key,

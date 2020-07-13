@@ -1,5 +1,5 @@
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
-import 'package:foodload_flutter/models/item_representation.dart';
+import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
 class ItemRepository {
@@ -13,10 +13,10 @@ class ItemRepository {
     await foodloadApiClient.sendToken(token);
   }
 
-  Future<List<ItemRepresentation>> getItems() async {
+  Future<List<Item>> getItems() async {
     //api stuff
     return [
-      ItemRepresentation(
+      Item(
         id: '1',
         title: 'Milk',
         description: 'Arla Milk',
@@ -24,7 +24,7 @@ class ItemRepository {
         imageUrl:
             'https://static.mathem.se/shared/images/products/medium/07310865001825_g1l1.jpeg.jpg',
       ),
-      ItemRepresentation(
+      Item(
         id: '2',
         title: 'Bread',
         description: 'Pagen',
@@ -32,7 +32,7 @@ class ItemRepository {
         imageUrl:
             'https://assets.icanet.se/t_product_large_v1,f_auto/7311070008470.jpg',
       ),
-      ItemRepresentation(
+      Item(
         id: '3',
         title: 'Yoghurt',
         description: 'Strawberry yoghurt',

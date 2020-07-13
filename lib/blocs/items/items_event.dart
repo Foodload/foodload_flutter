@@ -11,4 +11,4 @@ abstract class ItemEvent extends Equatable {
 //For testing
 class SendToken extends ItemEvent {}
 
-class ItemFetched extends ItemEvent {}
+class ItemsLoad extends ItemEvent {}
