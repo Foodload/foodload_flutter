@@ -25,5 +25,5 @@ class Item extends Equatable {
 
   @override
   String toString() =>
-      'ItemRepresentation { id: $id, title: $title, description: $description, amount: $amount}';
+      'Item { id: $id, title: $title, description: $description, amount: $amount}';
 }

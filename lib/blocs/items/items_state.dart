@@ -25,10 +25,10 @@ class ItemsLoadSuccess extends ItemsState {
   });
 
   ItemsLoadSuccess copyWith({
-    List<Item> itemRepresentations,
+    List<Item> items,
   }) {
     return ItemsLoadSuccess(
-      items: itemRepresentations ?? this.items,
+      items: items ?? this.items,
     );
   }
 
@@ -36,8 +36,7 @@ class ItemsLoadSuccess extends ItemsState {
   List<Object> get props => [items];
 
   @override
-  String toString() =>
-      'ItemsLoadSuccess { itemRepresentations: ${items.length} }';
+  String toString() => 'ItemsLoadSuccess { items: ${items} }';
 }
 
 class ItemsLoadFailure extends ItemsState {}
