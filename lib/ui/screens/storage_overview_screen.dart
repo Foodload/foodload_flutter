@@ -2,13 +2,20 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
-import 'package:foodload_flutter/blocs/items/items.dart';
+import 'package:foodload_flutter/helpers/debouncer.dart';
 import 'package:foodload_flutter/ui/widgets/list_item_representation.dart';
 
-class StorageOverviewScreen extends StatelessWidget {
+class StorageOverviewScreen extends StatefulWidget {
   static const routeName = '/storage-overview';
 
-  //Scanner
+  @override
+  _StorageOverviewScreenState createState() => _StorageOverviewScreenState();
+}
+
+class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
+  var isSearching = false;
+  final _debouncer = Debouncer(milliseconds: 500);
+
   Future scan() async {
     var options = ScanOptions(
       strings: {
@@ -28,13 +35,40 @@ class StorageOverviewScreen extends StatelessWidget {
     final title = ModalRoute.of(context).settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
-        title: Text('$title Overview'),
+        title: !isSearching
+            ? Text('$title Overview')
+            : TextField(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.search),
+                  hintText: 'Search for item',
+                ),
+                onChanged: (searchText) {
+                  _debouncer.run(() {
+                    BlocProvider.of<FilteredItemsBloc>(context)
+                        .add(FilterUpdated(searchText));
+                  });
+                },
+              ),
         actions: <Widget>[
-          DropdownButton(
-            icon: Icon(Icons.search),
-            underline: Container(),
-            onTap: () {},
-          ),
+          isSearching
+              ? IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                    });
+                    BlocProvider.of<FilteredItemsBloc>(context)
+                        .add(FilterUpdated(""));
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  },
+                ),
           IconButton(
             icon: Icon(Icons.camera),
             onPressed: scan,
