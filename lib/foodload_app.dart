@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/app_theme.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
 import 'package:foodload_flutter/blocs/items/items.dart';
+import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
@@ -43,6 +44,7 @@ class FoodLoadApp extends StatelessWidget {
               ),
               child: StorageOverviewScreen(),
             ),
+        AddItemScreen.routeName: (ctx) => AddItemScreen(),
       },
     );
   }
