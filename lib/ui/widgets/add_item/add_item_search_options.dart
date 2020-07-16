@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 class AddItemSearchOptions extends StatelessWidget {
   final Function searchHandler;
@@ -6,6 +7,20 @@ class AddItemSearchOptions extends StatelessWidget {
   final _searchTextFieldController = TextEditingController();
 
   AddItemSearchOptions(this.searchHandler);
+
+  Future scan() async {
+    var options = ScanOptions(
+      strings: {
+        'cancel': 'Cancel',
+        'flash_on': 'Flash on',
+        'flash_off': 'Flash off',
+      },
+    );
+    ScanResult result = await BarcodeScanner.scan(
+      options: options,
+    );
+    print(result.rawContent);
+  }
 
   void validateThenSearch() {
     final isValid = _form.currentState.validate();
@@ -31,7 +46,8 @@ class AddItemSearchOptions extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(Icons.camera),
-              onPressed: () {},
+              onPressed: searchHandler,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ],
         ),
