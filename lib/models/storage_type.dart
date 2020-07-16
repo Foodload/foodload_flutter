@@ -1,6 +1,6 @@
 enum StorageType {
-  fridge,
-  freezer,
-  pantry,
-  other,
+  Fridge,
+  Freezer,
+  Pantry,
+  Other,
 }

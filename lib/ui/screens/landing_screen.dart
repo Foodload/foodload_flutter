@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
+import 'package:foodload_flutter/helpers/keys.dart';
+import 'package:foodload_flutter/models/storage_type.dart';
 import 'package:foodload_flutter/ui/widgets/storage.dart';
 
 class LandingScreen extends StatelessWidget {
   final fridge = const Storage(
-    title: 'Fridge',
-    imagePath: 'assets/fridge.jpg',
-    namedRoute: '/fridge-screen',
+    title: fridge_title,
+    imagePath: fridge_image_path,
+    storageType: StorageType.Fridge,
   );
 
   final freezer = const Storage(
-    title: 'Freezer',
-    imagePath: 'assets/freezer.jpg',
-    namedRoute: '/freezer-screen',
+    title: freezer_title,
+    imagePath: freezer_image_path,
+    storageType: StorageType.Freezer,
   );
 
   final pantry = const Storage(
-    title: 'Pantry',
-    imagePath: 'assets/pantry.jpg',
-    namedRoute: '/pantry-screen',
+    title: pantry_title,
+    imagePath: pantry_image_path,
+    storageType: StorageType.Pantry,
   );
 
   Widget _buildLandscapeContent() {
@@ -50,7 +52,7 @@ class LandingScreen extends StatelessWidget {
     final _isLandscape = _mediaQuery.orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome'),
+        title: const Text(storages_title),
         actions: <Widget>[
           DropdownButton(
             underline: Container(),

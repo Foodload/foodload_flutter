@@ -1,9 +1,10 @@
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
 import 'package:foodload_flutter/helpers/debouncer.dart';
-import 'package:foodload_flutter/ui/widgets/list_item_representation.dart';
+import 'package:foodload_flutter/models/storage_overview_argument.dart';
+import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
+import 'package:foodload_flutter/ui/widgets/list_item.dart';
 
 class StorageOverviewScreen extends StatefulWidget {
   static const routeName = '/storage-overview';
@@ -16,27 +17,15 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
   var isSearching = false;
   final _debouncer = Debouncer(milliseconds: 500);
 
-  Future scan() async {
-    var options = ScanOptions(
-      strings: {
-        "cancel": "Cancel",
-        "flash_on": "Flash on",
-        "flash_off": "Flash off",
-      },
-    );
-    ScanResult result = await BarcodeScanner.scan(
-      options: options,
-    );
-    print(result.rawContent);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final title = ModalRoute.of(context).settings.arguments as String;
+    final argument =
+        ModalRoute.of(context).settings.arguments as StorageOverviewArgument;
+
     return Scaffold(
       appBar: AppBar(
         title: !isSearching
-            ? Text('$title Overview')
+            ? Text('${argument.title} Overview')
             : TextField(
                 decoration: InputDecoration(
                   icon: Icon(Icons.search),
@@ -69,10 +58,13 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
                     });
                   },
                 ),
-          IconButton(
-            icon: Icon(Icons.camera),
-            onPressed: scan,
-          ),
+          if (!isSearching)
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AddItemScreen.routeName);
+              },
+            ),
         ],
       ),
       body: BlocBuilder<FilteredItemsBloc, FilteredItemsState>(
@@ -86,7 +78,7 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
             final filteredItems = state.filteredItems;
             return ListView.builder(
               itemCount: filteredItems.length,
-              itemBuilder: (ctx, index) => ListItemRepresentation(
+              itemBuilder: (ctx, index) => ListItem(
                 itemRepresentation: filteredItems[index],
               ),
             );
