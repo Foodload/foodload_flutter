@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:foodload_flutter/models/storage_overview_argument.dart';
+import 'package:foodload_flutter/models/storage_type.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 
 class Storage extends StatelessWidget {
   final title;
   final imagePath;
-  final namedRoute;
+  final StorageType storageType;
 
-  const Storage({this.title, this.imagePath, this.namedRoute});
+  const Storage({
+    this.title,
+    this.imagePath,
+    this.storageType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +34,10 @@ class Storage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pushNamed(
                   StorageOverviewScreen.routeName,
-                  arguments: title,
+                  arguments: StorageOverviewArgument(
+                    title: title,
+                    storageType: storageType,
+                  ),
                 );
               },
             ),

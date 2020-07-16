@@ -36,7 +36,7 @@ class ItemsLoadSuccess extends ItemsState {
   List<Object> get props => [items];
 
   @override
-  String toString() => 'ItemsLoadSuccess { items: ${items} }';
+  String toString() => 'ItemsLoadSuccess { items: $items }';
 }
 
 class ItemsLoadFailure extends ItemsState {}

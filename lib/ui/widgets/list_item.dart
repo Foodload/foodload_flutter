@@ -2,10 +2,10 @@ import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 
-class ListItemRepresentation extends StatelessWidget {
+class ListItem extends StatelessWidget {
   final Item itemRepresentation;
 
-  const ListItemRepresentation({
+  const ListItem({
     Key key,
     @required this.itemRepresentation,
   }) : super(key: key);
