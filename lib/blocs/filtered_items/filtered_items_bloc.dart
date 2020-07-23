@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
 import 'package:foodload_flutter/blocs/items/items_bloc.dart';
 import 'package:foodload_flutter/blocs/items/items_state.dart';
@@ -9,7 +10,7 @@ import 'package:meta/meta.dart';
 
 class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
   final ItemsBloc itemsBloc;
-  StreamSubscription itemsSubsciption;
+  StreamSubscription itemsSubscription;
 
   FilteredItemsBloc({@required this.itemsBloc})
       : super(
@@ -18,11 +19,28 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
                   (itemsBloc.state as ItemsLoadSuccess).items, SearchFilter.all)
               : FilteredItemsLoadInProgress(),
         ) {
-    itemsSubsciption = itemsBloc.listen((state) {
+    itemsSubscription = itemsBloc.listen((state) {
       if (state is ItemsLoadSuccess) {
         add(ItemsUpdated((itemsBloc.state as ItemsLoadSuccess).items));
       }
     });
+  }
+
+  @override
+  Stream<Transition<FilteredItemsEvent, FilteredItemsState>> transformEvents(
+    Stream<FilteredItemsEvent> events,
+    TransitionFunction<FilteredItemsEvent, FilteredItemsState> transFn,
+  ) {
+    final nonDebounceStream = events.where((event) {
+      return (event is! FilterUpdated);
+    });
+    final debounceStream = events.where((event) {
+      return (event is FilterUpdated);
+    }).debounceTime(Duration(milliseconds: 500));
+    return super.transformEvents(
+      nonDebounceStream.mergeWith([debounceStream]),
+      transFn,
+    );
   }
 
   @override
@@ -75,7 +93,7 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
 
   @override
   Future<void> close() {
-    itemsSubsciption.cancel();
+    itemsSubscription.cancel();
     return super.close();
   }
 }

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:foodload_flutter/blocs/login/bloc.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';

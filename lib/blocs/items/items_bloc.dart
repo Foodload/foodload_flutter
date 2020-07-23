@@ -1,11 +1,11 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/blocs/items/items_state.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:meta/meta.dart';
-import 'package:bloc/bloc.dart';
 
-class ItemsBloc extends Bloc<ItemEvent, ItemsState> {
+class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   final ItemRepository itemRepository;
   final UserRepository userRepository;
 
@@ -16,7 +16,7 @@ class ItemsBloc extends Bloc<ItemEvent, ItemsState> {
         super(ItemsLoadInProgress());
 
   @override
-  Stream<ItemsState> mapEventToState(ItemEvent event) async* {
+  Stream<ItemsState> mapEventToState(ItemsEvent event) async* {
     if (event is SendToken) {
       yield ItemSendInProgress();
       try {
