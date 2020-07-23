@@ -51,6 +51,7 @@ class LandingScreen extends StatelessWidget {
     final _mediaQuery = MediaQuery.of(context);
     final _isLandscape = _mediaQuery.orientation == Orientation.landscape;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(storages_title),
         actions: <Widget>[
