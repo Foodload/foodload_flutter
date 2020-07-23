@@ -19,6 +19,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _userRepository = UserRepository();
+    final _itemRepository = ItemRepository(
+      foodloadApiClient: FoodloadApiClient(
+        httpClient: http.Client(),
+      ),
+    );
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
@@ -30,16 +35,21 @@ class App extends StatelessWidget {
         BlocProvider<ItemsBloc>(
           create: (context) {
             return ItemsBloc(
-                itemRepository: ItemRepository(
-                  foodloadApiClient:
-                      FoodloadApiClient(httpClient: http.Client()),
-                ),
-                userRepository: _userRepository)
-              ..add(ItemsLoad());
+              itemRepository: _itemRepository,
+              userRepository: _userRepository,
+            )..add(
+                ItemsLoad(),
+              );
           },
         ),
       ],
-      child: FoodLoadApp(_userRepository),
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<UserRepository>.value(value: _userRepository),
+          RepositoryProvider<ItemRepository>.value(value: _itemRepository),
+        ],
+        child: FoodLoadApp(),
+      ),
     );
   }
 }

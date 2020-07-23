@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/app_theme.dart';
+import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
 import 'package:foodload_flutter/blocs/items/items.dart';
+import 'package:foodload_flutter/blocs/login/bloc.dart';
+import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 
-import 'blocs/auth/auth_bloc.dart';
-import 'blocs/login/login_bloc.dart';
-
 class FoodLoadApp extends StatelessWidget {
-  final _userRepository;
-
-  const FoodLoadApp(this._userRepository);
+  const FoodLoadApp();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,9 @@ class FoodLoadApp extends StatelessWidget {
             return LoadingScreen();
           } else if (state is AuthFailure) {
             return BlocProvider(
-              create: (context) => LoginBloc(userRepository: _userRepository),
+              create: (context) => LoginBloc(
+                  userRepository:
+                      RepositoryProvider.of<UserRepository>(context)),
               child: LoginScreen(),
             );
           } else {
