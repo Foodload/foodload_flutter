@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 class Item extends Equatable {
   final String id;
@@ -8,11 +9,11 @@ class Item extends Equatable {
   final String imageUrl;
 
   const Item({
-    this.id,
-    this.title,
-    this.description,
-    this.amount,
-    this.imageUrl,
+    @required this.id,
+    @required this.title,
+    @required this.description,
+    @required this.amount,
+    @required this.imageUrl,
   });
 
   @override
