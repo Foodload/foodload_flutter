@@ -52,6 +52,7 @@ class UserRepository {
   }
 
   Future<String> getToken() async {
+    //TODO: Refresh token?
     final user = await getUser();
     final tokenRes = await user.getIdToken();
     return tokenRes.token;
