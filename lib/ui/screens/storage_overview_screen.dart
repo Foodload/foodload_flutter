@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
-import 'package:foodload_flutter/helpers/debouncer.dart';
 import 'package:foodload_flutter/models/storage_overview_argument.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/widgets/list_item.dart';
@@ -15,7 +14,6 @@ class StorageOverviewScreen extends StatefulWidget {
 
 class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
   var isSearching = false;
-  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +25,14 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
         title: !isSearching
             ? Text('${argument.title} Overview')
             : TextField(
+                autofocus: true,
                 decoration: InputDecoration(
                   icon: Icon(Icons.search),
                   hintText: 'Search for item',
                 ),
                 onChanged: (searchText) {
-                  _debouncer.run(() {
-                    BlocProvider.of<FilteredItemsBloc>(context)
-                        .add(FilterUpdated(searchText));
-                  });
+                  BlocProvider.of<FilteredItemsBloc>(context)
+                      .add(FilterUpdated(searchText));
                 },
               ),
         actions: <Widget>[
@@ -74,17 +71,15 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
               child: CircularProgressIndicator(),
             );
           }
-          if (state is FilteredItemsLoadSuccess) {
-            final filteredItems = state.filteredItems;
-            return ListView.builder(
-              itemCount: filteredItems.length,
-              itemBuilder: (ctx, index) => ListItem(
-                itemRepresentation: filteredItems[index],
-              ),
-            );
-          }
 
-          return Text('Nope');
+          final filteredItems =
+              (state as FilteredItemsLoadSuccess).filteredItems;
+          return ListView.builder(
+            itemCount: filteredItems.length,
+            itemBuilder: (ctx, index) => ListItem(
+              itemRepresentation: filteredItems[index],
+            ),
+          );
         },
       ),
     );
