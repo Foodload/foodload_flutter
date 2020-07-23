@@ -1,67 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
 
 class AddItemAmount extends StatefulWidget {
-  final Function amountHandler;
+  final TextEditingController _itemAmountTextController;
 
-  const AddItemAmount(this.amountHandler);
+  const AddItemAmount(this._itemAmountTextController);
 
   @override
   _AddItemAmountState createState() => _AddItemAmountState();
 }
 
 class _AddItemAmountState extends State<AddItemAmount> {
-  final initValue = 1;
-  var _textController;
-  var _isNegativeOrZero = false;
-  var _isInteger = true;
-  var _invalidAmountText;
+  var _itemAmountTextController;
+  AddItemFormBloc _addItemFormBloc;
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
-    _textController.addListener(_checkValidAmount);
-    _textController.text = initValue.toString();
+    _addItemFormBloc = BlocProvider.of<AddItemFormBloc>(context);
+    _itemAmountTextController = widget._itemAmountTextController;
+    _itemAmountTextController.addListener(_onItemAmountChanged);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _textController.dispose();
-  }
-
-  bool _checkIsInteger() {
-    var amount = int.tryParse(_textController.text);
-    return amount != null;
-  }
-
-  void _checkValidAmount() {
-    if (!_checkIsInteger()) {
-      setState(() {
-        _invalidAmountText = 'Must be a number';
-        _isInteger = false;
-      });
-      widget.amountHandler(null);
-      return;
-    }
-
-    int amount = int.parse(_textController.text);
-    if (amount < 1) {
-      setState(() {
-        _invalidAmountText = 'Must be at least 1';
-        _isInteger = true;
-        _isNegativeOrZero = true;
-      });
-      widget.amountHandler(null);
-      return;
-    }
-
-    setState(() {
-      _invalidAmountText = null;
-      _isNegativeOrZero = false;
-      _isInteger = true;
-    });
-    widget.amountHandler(amount);
+  void _onItemAmountChanged() {
+    _addItemFormBloc
+        .add(ItemAmountChanged(amount: _itemAmountTextController.text));
   }
 
   TextEditingValue _getNewAmountValue(String newValue) {
@@ -74,51 +38,65 @@ class _AddItemAmountState extends State<AddItemAmount> {
   }
 
   void incrementAmount() {
-    if (_checkIsInteger()) {
-      var amount = int.parse(_textController.text);
-      var newValue = (++amount).toString();
-      _textController.value = _getNewAmountValue(newValue);
-    }
+    var amount = int.parse(_itemAmountTextController.text);
+    var newValue = (++amount).toString();
+    _itemAmountTextController.value = _getNewAmountValue(newValue);
   }
 
   void decrementAmount() {
-    if (_checkIsInteger()) {
-      int amount = int.parse(_textController.text);
-      if (amount == 1) {
-        return;
-      }
-      var newValue = (--amount).toString();
-      _textController.value = _getNewAmountValue(newValue);
-    }
+    int amount = int.parse(_itemAmountTextController.text);
+    var newValue = (--amount).toString();
+    _itemAmountTextController.value = _getNewAmountValue(newValue);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            width: 100,
-            child: TextField(
-              controller: _textController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                  errorText:
-                      _invalidAmountText == null ? null : _invalidAmountText),
+      child: BlocBuilder<AddItemFormBloc, AddItemFormState>(
+        builder: (context, state) => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 100,
+              child: Form(
+                child: TextFormField(
+                  controller: _itemAmountTextController,
+                  keyboardType: TextInputType.number,
+                  autovalidate: true,
+                  autocorrect: false,
+                  validator: (_) {
+                    if (!state.isItemAmountEntered) {
+                      return "Enter a number";
+                    } else if (!state.isItemAmountNumber) {
+                      return "Must be a number";
+                    } else if (state.isItemAmountLimitReached) {
+                      return "Max is 999";
+                    } else if (!state.isItemAmountAtLeastOne) {
+                      return "Must be at least 1";
+                    } else {
+                      return null;
+                    }
+                  },
+                ),
+              ),
             ),
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: _isInteger ? incrementAmount : null,
-          ),
-          IconButton(
-            icon: Icon(Icons.remove),
-            onPressed:
-                _isInteger ? _isNegativeOrZero ? null : decrementAmount : null,
-          ),
-        ],
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed:
+                  (state.isItemAmountNumber && !state.isItemAmountLimitReached)
+                      ? incrementAmount
+                      : null,
+            ),
+            IconButton(
+              icon: Icon(Icons.remove),
+              onPressed:
+                  (state.isItemAmountNumber && state.isItemAmountAtLeastOne)
+                      ? decrementAmount
+                      : null,
+            ),
+          ],
+        ),
       ),
     );
   }
