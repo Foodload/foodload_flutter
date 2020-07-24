@@ -55,6 +55,8 @@ class ItemRepository {
       ),
       ItemInfo(id: '3', title: 'Yoghurt'),
     ];
-    return itemsDummy.firstWhere((itemInfo) => itemInfo.id == id, orElse: null);
+
+    return itemsDummy.firstWhere((itemInfo) => itemInfo.id == id,
+        orElse: () => null);
   }
 }
