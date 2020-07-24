@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 class AddItemFormState {
   //Item to be added
   final ItemInfo item;
+  final bool isItemValid;
 
   //Search
   final bool isSearching;
@@ -19,13 +20,14 @@ class AddItemFormState {
   final bool isItemAmountLimitReached;
 
   bool get isFormValid =>
-      (item != null) &&
+      (item != null && isItemValid) &&
       isItemAmountNumber &&
       isItemAmountAtLeastOne &&
       !isItemAmountLimitReached;
 
   AddItemFormState({
     @required this.item,
+    @required this.isItemValid,
     @required this.isSearching,
     @required this.isSearchFail,
     @required this.isSearchSuccess,
@@ -39,6 +41,7 @@ class AddItemFormState {
   factory AddItemFormState.initial() {
     return AddItemFormState(
       item: null,
+      isItemValid: false,
       isSearching: false,
       isSearchSuccess: false,
       isSearchFail: false,
@@ -50,11 +53,35 @@ class AddItemFormState {
     );
   }
 
+  AddItemFormState searchLoading() {
+    return copyWith(
+      isSearching: true,
+      isSearchSuccess: false,
+      isSearchFail: false,
+    );
+  }
+
+  AddItemFormState searchFailure() {
+    return copyWith(
+      isSearching: false,
+      isSearchSuccess: false,
+      isSearchFail: true,
+    );
+  }
+
+  AddItemFormState searchSuccess(ItemInfo itemInfo) {
+    return copyWith(
+      isSearching: false,
+      isSearchSuccess: true,
+      isSearchFail: false,
+      item: itemInfo,
+      isItemValid: true,
+    );
+  }
+
   AddItemFormState update({
     ItemInfo item,
-    bool isSearching,
-    bool isSearchSuccess,
-    bool isSearchFail,
+    bool isItemValid,
     bool isItemIdEntered,
     bool isItemAmountEntered,
     bool isItemAmountNumber,
@@ -63,9 +90,10 @@ class AddItemFormState {
   }) {
     return copyWith(
       item: item,
-      isSearching: isSearching,
-      isSearchSuccess: isSearchSuccess,
-      isSearchFail: isSearchFail,
+      isItemValid: isItemValid,
+      isSearching: false,
+      isSearchSuccess: false,
+      isSearchFail: false,
       isItemIdEntered: isItemIdEntered,
       isItemAmountEntered: isItemAmountEntered,
       isItemAmountNumber: isItemAmountNumber,
@@ -76,6 +104,7 @@ class AddItemFormState {
 
   AddItemFormState copyWith({
     ItemInfo item,
+    bool isItemValid,
     bool isSearching,
     bool isSearchSuccess,
     bool isSearchFail,
@@ -87,6 +116,7 @@ class AddItemFormState {
   }) {
     return AddItemFormState(
       item: item ?? this.item,
+      isItemValid: isItemValid ?? this.isItemValid,
       isSearching: isSearching ?? this.isSearching,
       isSearchSuccess: isSearchSuccess ?? this.isSearchSuccess,
       isSearchFail: isSearchFail ?? this.isSearchFail,
@@ -104,6 +134,7 @@ class AddItemFormState {
   String toString() {
     return '''AddItemFormState {
       item: $item,
+      isItemValid: $isItemValid,
       isSearching: $isSearching,
       isSearchSuccess: $isSearchSuccess,
       isSearchFail: $isSearchFail,

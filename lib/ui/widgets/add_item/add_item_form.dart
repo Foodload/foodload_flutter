@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_amount.dart';
+import 'package:foodload_flutter/ui/widgets/add_item/add_item_info.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_search_options.dart';
 
 class AddItemForm extends StatefulWidget {
@@ -29,13 +30,12 @@ class _AddItemFormState extends State<AddItemForm> {
     _itemAmountTextController.dispose();
   }
 
-  void dummySearch(String id) {
-    print(id);
+  void _changeItem() {
+    _itemIdTextController.text = '';
+    _addItemFormBloc.add(ItemChange());
   }
 
-  void dummyAmount(var amount) {
-    print(amount);
-  }
+  void showSnackBar(String title) {}
 
   void printInfo() {
     print(_itemIdTextController.text);
@@ -53,7 +53,25 @@ class _AddItemFormState extends State<AddItemForm> {
       },
       child: Column(
         children: <Widget>[
-          BlocBuilder<AddItemFormBloc, AddItemFormState>(
+          BlocConsumer<AddItemFormBloc, AddItemFormState>(
+            listener: (context, state) {
+              if (state.isSearchFail) {
+                Scaffold.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      content: Text(
+                        'Could not find item with the given ID.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onError,
+                        ),
+                      ),
+                    ),
+                  );
+              }
+            },
             builder: (context, state) {
               if (state.isSearching) {
                 return Padding(
@@ -62,22 +80,27 @@ class _AddItemFormState extends State<AddItemForm> {
                     child: CircularProgressIndicator(),
                   ),
                 );
-              } else if (state.isSearchSuccess) {
-                return Text(state.item.title);
+              } else if (state.isItemValid) {
+                return AddItemInfo(
+                  title: state.item.title,
+                  changeHandler: _changeItem,
+                );
               } else {
-                //TODO: If isSearchFail? Listener AND builder?
                 return AddItemSearchOptions(_itemIdTextController);
               }
             },
           ),
           AddItemAmount(_itemAmountTextController),
+          const SizedBox(
+            height: 10,
+          ),
           BlocBuilder<AddItemFormBloc, AddItemFormState>(
             builder: (context, state) => RaisedButton(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.secondary,
               child: Text(
                 'Add',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onSecondary,
                 ),
               ),
               onPressed: state.isFormValid ? printInfo : null,

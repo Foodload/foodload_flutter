@@ -41,28 +41,22 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
       yield* _mapItemAmountChangedToState(event.amount);
     } else if (event is ItemIdSearch) {
       yield* _mapItemIdFetchedToState(event);
+    } else if (event is ItemChange) {
+      yield* _mapItemChangeToState();
     }
   }
 
   Stream<AddItemFormState> _mapItemIdFetchedToState(ItemIdSearch event) async* {
-    yield state.update(
-      isSearching: true,
-    );
+    yield state.searchLoading();
+    await Future.delayed(
+      const Duration(milliseconds: 1000),
+    ); //simulate api call or debounce here
     final itemInfo = await itemRepository.getItem(event.id);
     if (itemInfo == null) {
-      yield state.update(
-        isSearching: false,
-        isSearchFail: true,
-        item: null,
-      );
+      yield state.searchFailure();
       return;
     }
-    yield state.update(
-      isSearching: false,
-      isSearchFail: false,
-      isSearchSuccess: true,
-      item: itemInfo,
-    );
+    yield state.searchSuccess(itemInfo);
   }
 
   Stream<AddItemFormState> _mapItemIdChangedToState(String id) async* {
@@ -97,7 +91,6 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
     if (amount > 999) {
       yield state.update(
-        isItemIdEntered: true,
         isItemAmountNumber: true,
         isItemAmountAtLeastOne: true,
         isItemAmountLimitReached: true,
@@ -107,7 +100,6 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
     if (amount < 1) {
       yield state.update(
-        isItemIdEntered: true,
         isItemAmountNumber: true,
         isItemAmountAtLeastOne: false,
         isItemAmountLimitReached: false,
@@ -116,10 +108,16 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     }
 
     yield state.update(
-      isItemIdEntered: true,
       isItemAmountNumber: true,
       isItemAmountAtLeastOne: true,
       isItemAmountLimitReached: false,
+    );
+  }
+
+  Stream<AddItemFormState> _mapItemChangeToState() async* {
+    yield state.update(
+      isItemValid: false,
+      isItemIdEntered: false,
     );
   }
 }

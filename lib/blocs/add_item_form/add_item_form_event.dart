@@ -42,3 +42,5 @@ class ItemAmountChanged extends AddItemFormEvent {
   @override
   String toString() => 'ItemAmountChanged { amount: $amount }';
 }
+
+class ItemChange extends AddItemFormEvent {}
