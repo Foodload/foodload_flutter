@@ -91,7 +91,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
                 children: <Widget>[
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Type the ID of the item',
                       ),
                       textInputAction: TextInputAction.search,
