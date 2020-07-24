@@ -27,8 +27,12 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
     ScanResult result = await BarcodeScanner.scan(
       options: options,
     );
-    print(result.rawContent);
-    //TODO: call _onSearch with the id
+
+    if (result.type == ResultType.Barcode) {
+      _onSearch(result.rawContent);
+    }
+    //TODO: Prob more error handling
+    //print(result.type);
   }
 
   @override
