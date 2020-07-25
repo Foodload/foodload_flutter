@@ -91,6 +91,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
     if (amount > 999) {
       yield state.update(
+        isItemAmountEntered: true,
         isItemAmountNumber: true,
         isItemAmountAtLeastOne: true,
         isItemAmountLimitReached: true,
@@ -100,6 +101,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
     if (amount < 1) {
       yield state.update(
+        isItemAmountEntered: true,
         isItemAmountNumber: true,
         isItemAmountAtLeastOne: false,
         isItemAmountLimitReached: false,
@@ -108,6 +110,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     }
 
     yield state.update(
+      isItemAmountEntered: true,
       isItemAmountNumber: true,
       isItemAmountAtLeastOne: true,
       isItemAmountLimitReached: false,

@@ -35,7 +35,22 @@ class _AddItemFormState extends State<AddItemForm> {
     _addItemFormBloc.add(ItemChange());
   }
 
-  void showSnackBar(String title) {}
+  void _showSearchFailSnackBar() {
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+            'Could not find item with the given ID.',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onError,
+            ),
+          ),
+        ),
+      );
+  }
 
   void printInfo() {
     print(_itemIdTextController.text);
@@ -44,70 +59,53 @@ class _AddItemFormState extends State<AddItemForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddItemFormBloc, AddItemFormState>(
-      listener: (context, state) {
-        if (state.isFormValid) {
-          //_itemId = state.itemId;
-          //_itemAmount = state.itemAmount;
-        }
-      },
-      child: Column(
-        children: <Widget>[
-          BlocConsumer<AddItemFormBloc, AddItemFormState>(
-            listener: (context, state) {
-              if (state.isSearchFail) {
-                Scaffold.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      content: Text(
-                        'Could not find item with the given ID.',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onError,
-                        ),
-                      ),
-                    ),
-                  );
-              }
-            },
-            builder: (context, state) {
-              if (state.isSearching) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              } else if (state.isItemValid) {
-                return AddItemInfo(
-                  title: state.item.title,
-                  changeHandler: _changeItem,
-                );
-              } else {
-                return AddItemSearchOptions(_itemIdTextController);
-              }
-            },
-          ),
-          AddItemAmount(_itemAmountTextController),
-          const SizedBox(
-            height: 10,
-          ),
-          BlocBuilder<AddItemFormBloc, AddItemFormState>(
-            builder: (context, state) => RaisedButton(
-              color: Theme.of(context).colorScheme.secondary,
-              child: Text(
-                'Add',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
+    return Column(
+      children: <Widget>[
+        BlocConsumer<AddItemFormBloc, AddItemFormState>(
+          listener: (context, state) {
+            if (state.isSearchFail) {
+              _showSearchFailSnackBar();
+            }
+          },
+          builder: (context, state) {
+            if (state.isSearching) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: CircularProgressIndicator(),
                 ),
+              );
+            }
+            return Column(
+              children: <Widget>[
+                if (state.isItemValid)
+                  AddItemInfo(
+                    title: state.item.title,
+                    changeHandler: _changeItem,
+                  ),
+                if (!state.isItemValid)
+                  AddItemSearchOptions(_itemIdTextController),
+                AddItemAmount(_itemAmountTextController),
+              ],
+            );
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        BlocBuilder<AddItemFormBloc, AddItemFormState>(
+          builder: (context, state) => RaisedButton(
+            color: Theme.of(context).colorScheme.secondary,
+            child: Text(
+              'Add',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
-              onPressed: state.isFormValid ? printInfo : null,
             ),
+            onPressed: state.isFormValid ? printInfo : null,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
