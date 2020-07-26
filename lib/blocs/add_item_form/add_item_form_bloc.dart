@@ -43,14 +43,16 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
       yield* _mapItemIdFetchedToState(event);
     } else if (event is ItemChange) {
       yield* _mapItemChangeToState();
+    } else if (event is ItemAdd) {
+      yield* _mapItemAddToState(event.amount);
+    } else if (event is AddItemFormReset) {
+      yield* _mapAddItemFormResetToState();
     }
   }
 
   Stream<AddItemFormState> _mapItemIdFetchedToState(ItemIdSearch event) async* {
     yield state.searchLoading();
-    await Future.delayed(
-      const Duration(milliseconds: 1000),
-    ); //simulate api call or debounce here
+    await Future.delayed(const Duration(milliseconds: 1000));
     final itemInfo = await itemRepository.getItem(event.id);
     if (itemInfo == null) {
       yield state.searchFailure();
@@ -122,5 +124,24 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
       isItemValid: false,
       isItemIdEntered: false,
     );
+  }
+
+  Stream<AddItemFormState> _mapItemAddToState(String amountText) async* {
+    final id = state.item.id;
+    final amount = int.tryParse(amountText);
+    //TODO: Call item repo to add item.
+    yield state.adding();
+    try {
+      await Future.delayed(
+        const Duration(milliseconds: 1200),
+      );
+      yield state.addSuccess();
+    } catch (error) {
+      yield state.addFail();
+    }
+  }
+
+  Stream<AddItemFormState> _mapAddItemFormResetToState() async* {
+    yield AddItemFormState.initial();
   }
 }

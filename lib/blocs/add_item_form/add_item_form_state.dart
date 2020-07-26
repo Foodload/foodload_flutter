@@ -3,6 +3,11 @@ import 'package:meta/meta.dart';
 
 @immutable
 class AddItemFormState {
+  //Add
+  final bool isAdding;
+  final bool isAddSuccess;
+  final bool isAddFail;
+
   //Item to be added
   final ItemInfo item;
   final bool isItemValid;
@@ -26,6 +31,9 @@ class AddItemFormState {
       !isItemAmountLimitReached;
 
   AddItemFormState({
+    @required this.isAdding,
+    @required this.isAddSuccess,
+    @required this.isAddFail,
     @required this.item,
     @required this.isItemValid,
     @required this.isSearching,
@@ -40,6 +48,9 @@ class AddItemFormState {
 
   factory AddItemFormState.initial() {
     return AddItemFormState(
+      isAdding: false,
+      isAddSuccess: false,
+      isAddFail: false,
       item: null,
       isItemValid: false,
       isSearching: false,
@@ -50,6 +61,30 @@ class AddItemFormState {
       isItemAmountNumber: true,
       isItemAmountAtLeastOne: true,
       isItemAmountLimitReached: false,
+    );
+  }
+
+  AddItemFormState adding() {
+    return copyWith(
+      isAdding: true,
+      isAddSuccess: false,
+      isAddFail: false,
+    );
+  }
+
+  AddItemFormState addSuccess() {
+    return copyWith(
+      isAdding: false,
+      isAddSuccess: true,
+      isAddFail: false,
+    );
+  }
+
+  AddItemFormState addFail() {
+    return copyWith(
+      isAdding: false,
+      isAddSuccess: false,
+      isAddFail: true,
     );
   }
 
@@ -89,6 +124,9 @@ class AddItemFormState {
     bool isItemAmountLimitReached,
   }) {
     return copyWith(
+      isAdding: false,
+      isAddSuccess: false,
+      isAddFail: false,
       item: item,
       isItemValid: isItemValid,
       isSearching: false,
@@ -103,6 +141,9 @@ class AddItemFormState {
   }
 
   AddItemFormState copyWith({
+    bool isAdding,
+    bool isAddSuccess,
+    bool isAddFail,
     ItemInfo item,
     bool isItemValid,
     bool isSearching,
@@ -115,6 +156,9 @@ class AddItemFormState {
     bool isItemAmountLimitReached,
   }) {
     return AddItemFormState(
+      isAdding: isAdding ?? this.isAdding,
+      isAddSuccess: isAddSuccess ?? this.isAddSuccess,
+      isAddFail: isAddFail ?? this.isAddFail,
       item: item ?? this.item,
       isItemValid: isItemValid ?? this.isItemValid,
       isSearching: isSearching ?? this.isSearching,
@@ -133,6 +177,9 @@ class AddItemFormState {
   @override
   String toString() {
     return '''AddItemFormState {
+      isAdding: $isAdding,
+      isAddSuccess: $isAddSuccess,
+      isAddFail: $isAddFail,
       item: $item,
       isItemValid: $isItemValid,
       isSearching: $isSearching,

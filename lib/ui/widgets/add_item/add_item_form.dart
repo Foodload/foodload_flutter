@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_amount.dart';
+import 'package:foodload_flutter/ui/widgets/add_item/add_item_dialog.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_info.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_search_options.dart';
 
@@ -52,9 +53,26 @@ class _AddItemFormState extends State<AddItemForm> {
       );
   }
 
-  void printInfo() {
-    print(_itemIdTextController.text);
-    print(_itemAmountTextController.text);
+  Future<void> _showAddDialog() async {
+    return showDialog(
+      context: context,
+      builder: (_) => BlocProvider<AddItemFormBloc>.value(
+        value: _addItemFormBloc,
+        child: AddItemDialog(),
+      ),
+    );
+  }
+
+  void _resetForm() {
+    _itemIdTextController.text = '';
+    _itemAmountTextController.text = _initAmountValue.toString();
+  }
+
+  void _addItem() async {
+    _addItemFormBloc.add(ItemAdd(amount: _itemAmountTextController.text));
+    await _showAddDialog();
+    _addItemFormBloc.add(AddItemFormReset());
+    _resetForm();
   }
 
   @override
@@ -102,7 +120,7 @@ class _AddItemFormState extends State<AddItemForm> {
                 color: Theme.of(context).colorScheme.onSecondary,
               ),
             ),
-            onPressed: state.isFormValid ? printInfo : null,
+            onPressed: state.isFormValid ? _addItem : null,
           ),
         ),
       ],
