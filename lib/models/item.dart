@@ -6,14 +6,12 @@ class Item extends Equatable {
   final String title;
   final String description;
   final int amount;
-  final String imageUrl;
 
   const Item({
     @required this.id,
     @required this.title,
     @required this.description,
     @required this.amount,
-    @required this.imageUrl,
   });
 
   @override

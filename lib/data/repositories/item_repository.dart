@@ -22,16 +22,12 @@ class ItemRepository {
         title: 'Milk',
         description: 'Arla Milk',
         amount: 5,
-        imageUrl:
-            'https://static.mathem.se/shared/images/products/medium/07310865001825_g1l1.jpeg.jpg',
       ),
       Item(
         id: '2',
         title: 'Bread',
         description: 'Pagen',
         amount: 2,
-        imageUrl:
-            'https://assets.icanet.se/t_product_large_v1,f_auto/7311070008470.jpg',
       ),
       Item(
         id: '3',
@@ -53,7 +49,10 @@ class ItemRepository {
         id: '2',
         title: 'Bread',
       ),
-      ItemInfo(id: '3', title: 'Yoghurt'),
+      ItemInfo(
+        id: '3',
+        title: 'Yoghurt',
+      ),
     ];
 
     return itemsDummy.firstWhere((itemInfo) => itemInfo.id == id,

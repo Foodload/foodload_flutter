@@ -14,6 +14,16 @@ class AddItemScreen extends StatefulWidget {
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
+  UserRepository _userRepository;
+  ItemRepository _itemRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _userRepository = RepositoryProvider.of<UserRepository>(context);
+    _itemRepository = RepositoryProvider.of<ItemRepository>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,13 +33,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       body: SingleChildScrollView(
         child: BlocProvider<AddItemFormBloc>(
           create: (context) {
-            final userRepository =
-                RepositoryProvider.of<UserRepository>(context);
-            final itemRepository =
-                RepositoryProvider.of<ItemRepository>(context);
             return AddItemFormBloc(
-              itemRepository: itemRepository,
-              userRepository: userRepository,
+              itemRepository: _itemRepository,
+              userRepository: _userRepository,
             );
           },
           child: AddItemForm(),

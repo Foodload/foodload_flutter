@@ -1,9 +1,12 @@
+import 'package:foodload_flutter/models/storage_type.dart';
+import 'package:meta/meta.dart';
+
 class StorageOverviewArgument {
   final title;
-  final storageType;
+  final StorageType storageType;
 
   const StorageOverviewArgument({
-    this.title,
-    this.storageType,
+    @required this.title,
+    @required this.storageType,
   });
 }

@@ -77,7 +77,7 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
           return ListView.builder(
             itemCount: filteredItems.length,
             itemBuilder: (ctx, index) => ListItem(
-              itemRepresentation: filteredItems[index],
+              item: filteredItems[index],
             ),
           );
         },
