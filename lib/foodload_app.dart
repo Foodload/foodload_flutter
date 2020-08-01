@@ -12,6 +12,7 @@ import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
+import 'package:foodload_flutter/ui/screens/test_screen.dart';
 
 class FoodLoadApp extends StatelessWidget {
   const FoodLoadApp();
@@ -47,6 +48,7 @@ class FoodLoadApp extends StatelessWidget {
             ),
         AddItemScreen.routeName: (ctx) => AddItemScreen(),
         ItemDetailScreen.routeName: (ctx) => ItemDetailScreen(),
+        TestScreen.routeName: (ctx) => TestScreen(),
       },
     );
   }

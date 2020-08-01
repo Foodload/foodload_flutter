@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/helpers/keys.dart';
 import 'package:foodload_flutter/models/storage_type.dart';
+import 'package:foodload_flutter/ui/screens/test_screen.dart';
 import 'package:foodload_flutter/ui/widgets/storage.dart';
 
 class LandingScreen extends StatelessWidget {
@@ -71,17 +72,26 @@ class LandingScreen extends StatelessWidget {
                 ),
                 value: 'logout',
               ),
+              DropdownMenuItem(
+                child: Container(
+                  child: const Text('Test'),
+                ),
+                value: 'test',
+              ),
             ],
-            onChanged: (itemId) {
-              switch (itemId) {
+            onChanged: (val) {
+              switch (val) {
                 case 'logout':
                   //Navigator.of(context).pushReplacementNamed('/'); //if logout should be possible from wherever
                   BlocProvider.of<AuthBloc>(context).add(
                     AuthLoggedOut(),
                   );
                   break;
+                case 'test':
+                  Navigator.of(context).pushNamed(TestScreen.routeName);
+                  break;
                 default:
-                  print(itemId);
+                  print(val);
               }
             },
           ),
