@@ -54,7 +54,7 @@ class ItemRepository {
   }
 
   Future<void> getItems() async {
-    //TODO: API CALL TO GET ITEMS
+    //TODO: API CALL TO GET ITEMS OR GET ITEMS THROUGH SOCKET
     await Future.delayed(
         const Duration(milliseconds: 2000)); //Simulate time for testing...
     final receivedItems = itemsDummy;

@@ -25,4 +25,13 @@ class Item extends Equatable {
   @override
   String toString() =>
       'Item { id: $id, title: $title, description: $description, amount: $amount}';
+
+  Item copyWith({int amount}) {
+    return Item(
+      id: this.id,
+      title: this.id,
+      description: this.description,
+      amount: amount ?? this.amount,
+    );
+  }
 }
