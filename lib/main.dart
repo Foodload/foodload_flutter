@@ -16,14 +16,15 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  final _userRepository = UserRepository();
+  final _itemRepository = ItemRepository(
+    foodloadApiClient: FoodloadApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
-    final _userRepository = UserRepository();
-    final _itemRepository = ItemRepository(
-      foodloadApiClient: FoodloadApiClient(
-        httpClient: http.Client(),
-      ),
-    );
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
