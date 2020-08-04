@@ -6,3 +6,5 @@ const freezer_image_path = 'assets/freezer.jpg';
 const fridge_title = 'Fridge';
 const freezer_title = 'Freezer';
 const pantry_title = 'Pantry';
+
+const socket_uri = 'http://10.0.2.2:3000/';
