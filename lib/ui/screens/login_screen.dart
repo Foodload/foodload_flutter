@@ -51,22 +51,21 @@ class _LoginScreenState extends State<LoginScreen> {
               ..showSnackBar(
                 SnackBar(
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  content: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Logging In...',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      CircularProgressIndicator(),
-                    ],
+                  content: Text(
+                    'Logging In...',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               );
           }
           if (state.isSuccess) {
             BlocProvider.of<AuthBloc>(context).add(AuthLoggedIn());
+          }
+          if (state.isInitial) {
+            setState(() {
+              _isLoading = false;
+            });
           }
         },
         child: Container(
