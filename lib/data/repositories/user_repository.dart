@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FoodloadApiClient _foodloadApiClient;
 
-  UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
+  UserRepository(
+      {FirebaseAuth firebaseAuth,
+      GoogleSignIn googleSignIn,
+      FoodloadApiClient foodloadApiClient})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+        _googleSignIn = googleSignIn ?? GoogleSignIn(),
+        _foodloadApiClient = foodloadApiClient ?? FoodloadApiClient();
 
   Future<FirebaseUser> signInWithGoogle() async {
     try {
@@ -56,5 +62,14 @@ class UserRepository {
     final user = await getUser();
     final tokenRes = await user.getIdToken();
     return tokenRes.token;
+  }
+
+  Future<String> initUser() async {
+    try {
+      final data = await _foodloadApiClient.sendInit(await getToken());
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 }

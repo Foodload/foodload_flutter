@@ -9,19 +9,36 @@ import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
 import 'package:http/http.dart' as http;
 
+import 'data/providers/socket_service.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
   runApp(App());
 }
 
-class App extends StatelessWidget {
-  final _userRepository = UserRepository();
-  final _itemRepository = ItemRepository(
-    foodloadApiClient: FoodloadApiClient(
-      httpClient: http.Client(),
-    ),
-  );
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  var _socketService;
+  var _foodloadApiClient;
+  var _userRepository;
+  var _itemRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _socketService = SocketService();
+    _foodloadApiClient = FoodloadApiClient(httpClient: http.Client());
+    _userRepository = UserRepository(foodloadApiClient: _foodloadApiClient);
+    _itemRepository = ItemRepository(
+      foodloadApiClient: _foodloadApiClient,
+      socketService: _socketService,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

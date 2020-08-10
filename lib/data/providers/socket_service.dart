@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:foodload_flutter/models/item.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:foodload_flutter/helpers/keys.dart';
 
@@ -22,10 +23,21 @@ class SocketService {
       print('Socket is null (setOnUpdateItem)');
       return;
     }
+
+    if (onUpdateItem == null) {
+      _socket.off('update_item');
+      return;
+    }
+
     _socket.on('update_item', (data) {
       print(data);
       Map<String, dynamic> decoded = jsonDecode(data);
-      onUpdateItem(decoded);
+      final item = Item(
+          id: decoded['qrCode'],
+          title: decoded['name'],
+          description: decoded['brand'],
+          amount: decoded['amount']);
+      onUpdateItem(item);
     });
   }
 
