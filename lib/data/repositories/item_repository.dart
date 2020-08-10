@@ -33,7 +33,7 @@ class ItemRepository {
 
   Future<void> sendToken(String token) async {
     print('From Item Repo: $token');
-    await foodloadApiClient.sendToken(token);
+    await foodloadApiClient.sendInit(token);
   }
 
   Stream<List<Item>> items() {
@@ -59,5 +59,19 @@ class ItemRepository {
         const Duration(milliseconds: 2000)); //Simulate time for testing...
     final receivedItems = itemsDummy;
     _items.updateItems(receivedItems);
+  }
+
+  Future<void> addItem(String token, String qr, String storageType) async {
+    //TODO: API stuff
+    await foodloadApiClient.addItemQR(token, qr, storageType);
+  }
+
+  Future<void> removeItem(String token, String qr, String storageType) async {
+    //TODO: API stuff
+    await foodloadApiClient.removeItemQR(token, qr, storageType);
+  }
+
+  Future<void> checkFridge(String token) async {
+    await foodloadApiClient.checkFridge(token);
   }
 }

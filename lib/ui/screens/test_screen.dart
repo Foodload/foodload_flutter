@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/keys.dart';
 
 class TestScreen extends StatefulWidget {
   static const routeName = '/test-screen';
@@ -23,7 +24,21 @@ class _TestScreenState extends State<TestScreen> {
     itemRepo = RepositoryProvider.of<ItemRepository>(context);
   }
 
-  void test() async {
+  void addItem() async {
+    itemRepo.addItem(await userRepo.getToken(), '7310865875020', fridge_title);
+    //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
+    print('test');
+  }
+
+  void removeItem() async {
+    itemRepo.removeItem(
+        await userRepo.getToken(), '7310865062024', fridge_title);
+    //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
+    print('test');
+  }
+
+  void checkFridge() async {
+    itemRepo.checkFridge(await userRepo.getToken());
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
@@ -32,14 +47,22 @@ class _TestScreenState extends State<TestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Test'),
+        title: Text('TEST'),
       ),
       body: Center(
         child: Column(
           children: <Widget>[
             RaisedButton(
-              child: Text('Press me'),
-              onPressed: test,
+              child: Text('ADD'),
+              onPressed: addItem,
+            ),
+            RaisedButton(
+              child: Text('REMOVE'),
+              onPressed: removeItem,
+            ),
+            RaisedButton(
+              child: Text('CHECKFRIDGE'),
+              onPressed: checkFridge,
             ),
           ],
         ),
