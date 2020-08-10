@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -14,7 +15,8 @@ class UserRepository {
       FoodloadApiClient foodloadApiClient})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _googleSignIn = googleSignIn ?? GoogleSignIn(),
-        _foodloadApiClient = foodloadApiClient ?? FoodloadApiClient();
+        _foodloadApiClient =
+            foodloadApiClient ?? FoodloadApiClient(httpClient: http.Client());
 
   Future<FirebaseUser> signInWithGoogle() async {
     try {
