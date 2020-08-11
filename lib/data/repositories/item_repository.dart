@@ -65,4 +65,18 @@ class ItemRepository {
   void setOnUpdateItem(Function onUpdateItem) {
     socketService.setOnUpdateItem(onUpdateItem);
   }
+
+  Future<void> addItem(String token, String qr, String storageType) async {
+    //TODO: API stuff
+    await foodloadApiClient.addItemQR(token, qr, storageType);
+  }
+
+  Future<void> removeItem(String token, String qr, String storageType) async {
+    //TODO: API stuff
+    await foodloadApiClient.removeItemQR(token, qr, storageType);
+  }
+
+  Future<void> checkFridge(String token) async {
+    await foodloadApiClient.checkFridge(token);
+  }
 }

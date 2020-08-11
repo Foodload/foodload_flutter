@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -69,6 +70,7 @@ class UserRepository {
   Future<String> initUser() async {
     try {
       final data = await _foodloadApiClient.sendInit(await getToken());
+
       return data;
     } catch (error) {
       throw error;
