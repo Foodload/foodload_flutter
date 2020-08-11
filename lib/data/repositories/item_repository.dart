@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
+import 'package:foodload_flutter/data/providers/socket_service.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/items.dart';
@@ -6,6 +8,8 @@ import 'package:meta/meta.dart';
 
 class ItemRepository {
   final FoodloadApiClient foodloadApiClient;
+  final SocketService socketService;
+
   final _items = Items();
   final itemsDummy = [
     Item(
@@ -28,13 +32,9 @@ class ItemRepository {
     ),
   ];
 
-  ItemRepository({@required this.foodloadApiClient})
-      : assert(foodloadApiClient != null);
-
-  Future<void> sendToken(String token) async {
-    print('From Item Repo: $token');
-    await foodloadApiClient.sendToken(token);
-  }
+  ItemRepository(
+      {@required this.foodloadApiClient, @required this.socketService})
+      : assert(foodloadApiClient != null && socketService != null);
 
   Stream<List<Item>> items() {
     getItems();
@@ -53,11 +53,16 @@ class ItemRepository {
     );
   }
 
-  Future<void> getItems() async {
+  Future<List<Item>> getItems() async {
     //TODO: API CALL TO GET ITEMS OR GET ITEMS THROUGH SOCKET
     await Future.delayed(
         const Duration(milliseconds: 2000)); //Simulate time for testing...
     final receivedItems = itemsDummy;
-    _items.updateItems(receivedItems);
+    return receivedItems;
+//    _items.updateItems(receivedItems);
+  }
+
+  void setOnUpdateItem(Function onUpdateItem) {
+    socketService.setOnUpdateItem(onUpdateItem);
   }
 }
