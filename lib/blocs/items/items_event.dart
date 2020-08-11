@@ -8,19 +8,16 @@ abstract class ItemsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-//For testing
-class SendToken extends ItemsEvent {}
-
 class ItemsLoad extends ItemsEvent {}
 
 class ItemsUpdated extends ItemsEvent {
-  final List<Item> items;
+  final Item item;
 
-  const ItemsUpdated(this.items);
-
-  @override
-  List<Object> get props => [items];
+  const ItemsUpdated(this.item);
 
   @override
-  String toString() => 'ItemsUpdated  { items: $items }';
+  List<Object> get props => [item];
+
+  @override
+  String toString() => 'ItemsUpdated  { item: $item }';
 }

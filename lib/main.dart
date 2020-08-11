@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/blocs/simple_bloc_observer.dart';
+import 'package:foodload_flutter/blocs/socket/bloc.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
@@ -27,6 +28,8 @@ class _AppState extends State<App> {
   var _foodloadApiClient;
   var _userRepository;
   var _itemRepository;
+  var _authBloc;
+  var _socketBloc;
 
   @override
   void initState() {
@@ -38,17 +41,26 @@ class _AppState extends State<App> {
       foodloadApiClient: _foodloadApiClient,
       socketService: _socketService,
     );
+    _authBloc = AuthBloc(userRepository: _userRepository)..add(AuthStarted());
+    _socketBloc = SocketBloc(
+        userRepository: _userRepository,
+        authBloc: _authBloc,
+        socketService: _socketService);
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (context) {
-            return AuthBloc(userRepository: _userRepository)
-              ..add(AuthStarted());
-          },
+        BlocProvider<AuthBloc>.value(
+          value: _authBloc,
+//          create: (context) {
+//            return AuthBloc(userRepository: _userRepository)
+//              ..add(AuthStarted());
+//          },
+        ),
+        BlocProvider<SocketBloc>.value(
+          value: _socketBloc,
         ),
         BlocProvider<ItemsBloc>(
           create: (context) {

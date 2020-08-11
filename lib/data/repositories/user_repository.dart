@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
+import 'package:foodload_flutter/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,6 +10,7 @@ class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FoodloadApiClient _foodloadApiClient;
+  User foodloadUser;
 
   UserRepository(
       {FirebaseAuth firebaseAuth,
@@ -18,6 +20,8 @@ class UserRepository {
         _googleSignIn = googleSignIn ?? GoogleSignIn(),
         _foodloadApiClient =
             foodloadApiClient ?? FoodloadApiClient(httpClient: http.Client());
+
+  bool get isInit => foodloadUser != null;
 
   Future<FirebaseUser> signInWithGoogle() async {
     try {
@@ -49,6 +53,7 @@ class UserRepository {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
     await _googleSignIn.signOut();
+    //TODO: Set foodloadUser to null?
   }
 
   Future<bool> isSignedIn() async {
@@ -67,12 +72,12 @@ class UserRepository {
     return tokenRes.token;
   }
 
-  Future<String> initUser() async {
+  Future<void> initUser() async {
     try {
-      final data = await _foodloadApiClient.sendInit(await getToken());
-
-      return data;
+      final user = await _foodloadApiClient.sendInit(await getToken());
+      foodloadUser = user;
     } catch (error) {
+      //TODO: Maybe create more exceptions, more business logic related?
       throw error;
     }
   }

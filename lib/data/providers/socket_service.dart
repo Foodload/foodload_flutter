@@ -8,9 +8,20 @@ class SocketService {
   IO.Socket _socket;
 
   void createSocketConnection(String token) {
+    print("connecting to socket");
+    print(token);
     _socket = IO.io(socket_uri, <String, dynamic>{
       'transports': ['websocket'],
       'query': {'token': token},
+    });
+
+    _socket.on('connect', (_) {
+      print('connect');
+    });
+
+    _socket.on('error', (data) {
+      print('error');
+      print(data);
     });
 
     _socket.on('connect_error', (_) {
@@ -28,6 +39,8 @@ class SocketService {
       _socket.off('update_item');
       return;
     }
+
+    print('setting update item');
 
     _socket.on('update_item', (data) {
       print(data);

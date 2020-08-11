@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:foodload_flutter/helpers/keys.dart';
+import 'package:foodload_flutter/models/exceptions/bad_response_exception.dart';
+import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
@@ -18,18 +22,34 @@ class FoodloadApiClient {
     return headers;
   }
 
-  Future<String> sendInit(String token) async {
+  Map<String, dynamic> _itemBody(
+      String qrCode, String storageType, int amount) {
+    Map<String, dynamic> body = {
+      'qrCode': qrCode,
+      'storageType': storageType,
+      'amount': amount,
+    };
+    return body;
+  }
+
+  Future<User> sendInit(String token) async {
     const urlSegment = 'login';
     final headers = _headers(token);
-
     final resp = await http.get(backend_url + urlSegment, headers: headers);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
+      //TODO: Handle bad response message
       print(resp.body);
-      throw Error();
+      throw BadResponseException('Something went wrong...');
     }
-    print("RESP:" + resp.body);
-    return resp.body;
+    final decode = jsonDecode(resp.body);
+    final user = User(
+      token: decode['token'],
+      email: decode['client']['email'],
+      familyId: decode['client']['family']['id'],
+      familyName: decode['client']['family']['name'],
+    );
+    return user;
   }
 
   Future<String> addItemQR(String token, String qr, String storageType) async {

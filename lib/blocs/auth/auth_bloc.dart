@@ -47,9 +47,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _initUser() async {
     try {
-      final data = await _userRepository.initUser();
-      print(data);
+      await _userRepository.initUser();
     } catch (error) {
+      //TODO: HANDLE ERROR
       print(error);
     }
   }
