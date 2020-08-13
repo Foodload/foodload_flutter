@@ -45,6 +45,7 @@ class SocketService {
     _socket.on('update_item', (data) {
       print(data);
       Map<String, dynamic> decoded = jsonDecode(data);
+      print(decoded);
       final item = Item(
           id: decoded['qrCode'],
           title: decoded['name'],

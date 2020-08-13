@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:foodload_flutter/helpers/keys.dart';
 import 'package:foodload_flutter/models/exceptions/bad_response_exception.dart';
+import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -52,7 +53,7 @@ class FoodloadApiClient {
     return user;
   }
 
-  Future<String> addItemQR(String token, String qr, String storageType) async {
+  Future<void> addItemQR(String token, String qr, String storageType) async {
     const urlSegment = 'addItemQR';
     final headers = _headers(token);
     String json =
@@ -61,10 +62,10 @@ class FoodloadApiClient {
         await http.post(backend_url + urlSegment, headers: headers, body: json);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
+      //TODO: Handle bad response message
       print(resp.body);
-      throw Error();
+      throw BadResponseException('Something went wrong...');
     }
-    print("RESP:" + resp.body);
     return resp.body;
   }
 
@@ -85,17 +86,21 @@ class FoodloadApiClient {
     return resp.body;
   }
 
-  Future<String> checkFridge(String token) async {
+  Future<List<Item>> checkFridge(String token) async {
     const urlSegment = 'checkFridge';
     final headers = _headers(token);
     final resp = await http.get(backend_url + urlSegment, headers: headers);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
+      //TODO: Handle bad response message
       print(resp.body);
-      throw Error();
+      throw BadResponseException('Something went wrong...');
     }
-    print("RESP:" + resp.body);
-    return resp.body;
+
+    List<Item> fridgeItems = (jsonDecode(resp.body) as List)
+        .map((jsonItem) => Item.fromJson(jsonItem))
+        .toList();
+    return fridgeItems;
   }
 
   Future<String> requestFamilyToken(String userToken) async {

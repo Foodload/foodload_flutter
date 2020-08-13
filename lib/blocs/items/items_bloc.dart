@@ -21,17 +21,6 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
 
   @override
   Stream<ItemsState> mapEventToState(ItemsEvent event) async* {
-//    if (event is SendToken) {
-//      yield ItemSendInProgress();
-//      try {
-//        final token = await userRepository.getToken();
-//        print('From Item Bloc: $token');
-//        await itemRepository.sendToken(token);
-//        yield ItemSendSuccess();
-//      } catch (_) {
-//        yield ItemSendFailure();
-//      }
-//    }
     if (event is ItemsLoad) {
       yield* _mapItemsLoadToState();
     } else if (event is ItemsUpdated) {
@@ -46,7 +35,8 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
 //        .listen((items) => add(ItemsUpdated(items)));
 
     try {
-      final items = await itemRepository.getItems();
+      final items =
+          await itemRepository.getItems(await userRepository.getToken());
       yield ItemsLoadSuccess(items: items);
       itemRepository.setOnUpdateItem(
           (Item updatedItem) => add(ItemsUpdated(updatedItem)));

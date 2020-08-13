@@ -37,7 +37,7 @@ class ItemRepository {
       : assert(foodloadApiClient != null && socketService != null);
 
   Stream<List<Item>> items() {
-    getItems();
+    //getItems();
     return _items.stream;
   }
 
@@ -53,13 +53,10 @@ class ItemRepository {
     );
   }
 
-  Future<List<Item>> getItems() async {
-    //TODO: API CALL TO GET ITEMS OR GET ITEMS THROUGH SOCKET
-    await Future.delayed(
-        const Duration(milliseconds: 2000)); //Simulate time for testing...
-    final receivedItems = itemsDummy;
-    return receivedItems;
-//    _items.updateItems(receivedItems);
+  Future<List<Item>> getItems(String token) async {
+    //TODO: API CALL TO GET >>>ALL<<< ITEMS OR GET ITEMS THROUGH SOCKET
+    List<Item> items = await foodloadApiClient.checkFridge(token);
+    return items;
   }
 
   void setOnUpdateItem(Function onUpdateItem) {

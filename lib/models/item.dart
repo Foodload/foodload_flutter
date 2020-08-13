@@ -34,4 +34,10 @@ class Item extends Equatable {
       amount: amount ?? this.amount,
     );
   }
+
+  Item.fromJson(Map<String, dynamic> json)
+      : id = json['itemId']['qrCode'],
+        title = json['itemId']['name'],
+        description = json['itemId']['brand'],
+        amount = json['count'];
 }
