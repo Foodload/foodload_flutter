@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 class ItemInfo extends Equatable {
-  final String id;
+  final int id;
   final String title;
 
   const ItemInfo({

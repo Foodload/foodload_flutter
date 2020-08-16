@@ -8,27 +8,27 @@ abstract class AddItemFormEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ItemIdChanged extends AddItemFormEvent {
-  final String id;
+class ItemQrChanged extends AddItemFormEvent {
+  final String qr;
 
-  const ItemIdChanged({@required this.id});
-
-  @override
-  List<Object> get props => [id];
+  const ItemQrChanged({@required this.qr});
 
   @override
-  String toString() => 'ItemIdChanged { id: $id }';
+  List<Object> get props => [qr];
+
+  @override
+  String toString() => 'ItemQrChanged { qr: $qr }';
 }
 
-class ItemIdSearch extends AddItemFormEvent {
-  final String id;
+class ItemQrSearch extends AddItemFormEvent {
+  final String qr;
 
-  const ItemIdSearch({
-    @required this.id,
+  const ItemQrSearch({
+    @required this.qr,
   });
 
   @override
-  String toString() => 'ItemIdFetched { id: $id }';
+  String toString() => 'ItemQrFetched { qr: $qr }';
 }
 
 class ItemAmountChanged extends AddItemFormEvent {

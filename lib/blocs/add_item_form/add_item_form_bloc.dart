@@ -22,10 +22,10 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     TransitionFunction<AddItemFormEvent, AddItemFormState> transFn,
   ) {
     final nonDebounceStream = events.where((event) {
-      return (event is! ItemIdChanged);
+      return (event is! ItemQrChanged);
     });
     final debounceStream = events.where((event) {
-      return (event is ItemIdChanged);
+      return (event is ItemQrChanged);
     }).debounceTime(Duration(milliseconds: 300));
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
@@ -35,12 +35,12 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
   @override
   Stream<AddItemFormState> mapEventToState(AddItemFormEvent event) async* {
-    if (event is ItemIdChanged) {
-      yield* _mapItemIdChangedToState(event.id);
+    if (event is ItemQrChanged) {
+      yield* _mapItemQrChangedToState(event.qr);
     } else if (event is ItemAmountChanged) {
       yield* _mapItemAmountChangedToState(event.amount);
-    } else if (event is ItemIdSearch) {
-      yield* _mapItemIdFetchedToState(event);
+    } else if (event is ItemQrSearch) {
+      yield* _mapItemQrFetchedToState(event);
     } else if (event is ItemChange) {
       yield* _mapItemChangeToState();
     } else if (event is ItemAdd) {
@@ -50,10 +50,10 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     }
   }
 
-  Stream<AddItemFormState> _mapItemIdFetchedToState(ItemIdSearch event) async* {
+  Stream<AddItemFormState> _mapItemQrFetchedToState(ItemQrSearch event) async* {
     yield state.searchLoading();
     await Future.delayed(const Duration(milliseconds: 1000));
-    final itemInfo = await itemRepository.getItem(event.id);
+    final itemInfo = await itemRepository.getItem(event.qr);
     if (itemInfo == null) {
       yield state.searchFailure();
       return;
@@ -61,8 +61,8 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     yield state.searchSuccess(itemInfo);
   }
 
-  Stream<AddItemFormState> _mapItemIdChangedToState(String id) async* {
-    final isEntered = (id != null && id.isNotEmpty);
+  Stream<AddItemFormState> _mapItemQrChangedToState(String qr) async* {
+    final isEntered = (qr != null && qr.isNotEmpty);
     if (!isEntered) {
       yield state.update(
         isItemIdEntered: false,

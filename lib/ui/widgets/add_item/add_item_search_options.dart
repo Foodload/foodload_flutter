@@ -45,15 +45,15 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
 
   void _onItemIdChanged() {
     _addItemFormBloc.add(
-      ItemIdChanged(
-        id: _itemIdTextController.text,
+      ItemQrChanged(
+        qr: _itemIdTextController.text,
       ),
     );
   }
 
-  void _onSearch(String id) {
+  void _onSearch(String qr) {
     _addItemFormBloc.add(
-      ItemIdSearch(id: id),
+      ItemQrSearch(qr: qr),
     );
   }
 
