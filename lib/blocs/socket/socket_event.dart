@@ -8,3 +8,5 @@ abstract class SocketEvent extends Equatable {
 }
 
 class SocketStarted extends SocketEvent {}
+
+class SocketClosing extends SocketEvent {}

@@ -9,9 +9,9 @@ class SocketService {
 
   void createSocketConnection(String token) {
     print("connecting to socket");
-    print(token);
     _socket = IO.io(socket_uri, <String, dynamic>{
       'transports': ['websocket'],
+      'forceNew': true,
       'query': {'token': token},
     });
 
@@ -26,6 +26,36 @@ class SocketService {
 
     _socket.on('connect_error', (_) {
       print('connect error...');
+    });
+
+    _socket.on('connecting', (_) {
+      print('connecting');
+    });
+
+    _socket.on('connect_timeout', (_) {
+      print('connect_timeout...');
+    });
+
+    _socket.on('reconnect_error', (_) {
+      print('reconnect error...');
+    });
+
+    _socket.on('reconnect', (data) => print('reconnect'));
+
+    _socket.on('reconnect_failed', (_) {
+      print('reconnect failed...');
+    });
+
+    _socket.on('reconnect_attempt', (_) {
+      print('reconnect_attempt...');
+    });
+
+    _socket.on('reconnecting', (_) {
+      print('reconnecting...');
+    });
+
+    _socket.on('disconnect', (_) {
+      print('disconnect');
     });
   }
 
@@ -79,6 +109,7 @@ class SocketService {
 
   void dispose() {
     if (_socket != null) {
+      print('disposing socket');
       _socket.dispose();
     }
   }

@@ -11,7 +11,7 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
   final UserRepository _userRepository;
   final SocketService _socketService;
   final AuthBloc _authBloc;
-  StreamSubscription authSubscription;
+  StreamSubscription _authSubscription;
 
   SocketBloc({
     @required UserRepository userRepository,
@@ -24,9 +24,12 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
         _socketService = socketService,
         _authBloc = authBloc,
         super(SocketLoading()) {
-    authSubscription = _authBloc.listen((state) {
+    _authSubscription = _authBloc.listen((state) {
       if (state is AuthSuccess) {
         add(SocketStarted());
+      }
+      if (state is AuthFailure) {
+        add(SocketClosing());
       }
     });
   }
@@ -35,6 +38,8 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
   Stream<SocketState> mapEventToState(SocketEvent event) async* {
     if (event is SocketStarted) {
       yield* _mapSocketStartedToState();
+    } else if (event is SocketClosing) {
+      yield* _mapSocketClosingToState();
     }
   }
 
@@ -52,9 +57,15 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
     yield SocketSuccess();
   }
 
+  Stream<SocketState> _mapSocketClosingToState() async* {
+    _socketService.dispose();
+    yield SocketFailure();
+  }
+
   @override
   Future<void> close() {
-    authSubscription.cancel();
+    _authSubscription.cancel();
+    _socketService.dispose();
     return super.close();
   }
 }
