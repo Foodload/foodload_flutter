@@ -87,7 +87,7 @@ class FoodloadApiClient {
   }
 
   Future<List<Item>> checkFridge(String token) async {
-    const urlSegment = 'checkFridge';
+    const urlSegment = 'check-fridge';
     final headers = _headers(token);
     final resp = await http.get(backend_url + urlSegment, headers: headers);
     int statusCode = resp.statusCode;
@@ -96,7 +96,7 @@ class FoodloadApiClient {
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
-
+    //print(resp.body);
     List<Item> fridgeItems = (jsonDecode(resp.body) as List)
         .map((jsonItem) => Item.fromJson(jsonItem))
         .toList();
