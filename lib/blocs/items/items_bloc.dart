@@ -1,6 +1,7 @@
-//import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/blocs/items/items_state.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
@@ -9,15 +10,32 @@ import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
 class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
-  final ItemRepository itemRepository;
-  final UserRepository userRepository;
-  //StreamSubscription _updateItemSubscription;
+  final ItemRepository _itemRepository;
+  final UserRepository _userRepository;
+  final AuthBloc _authBloc;
+  StreamSubscription _authSubscription;
 
   ItemsBloc({
-    @required this.itemRepository,
-    @required this.userRepository,
-  })  : assert(itemRepository != null && userRepository != null),
-        super(ItemsLoadInProgress());
+    @required itemRepository,
+    @required userRepository,
+    @required authBloc,
+  })  : assert(itemRepository != null &&
+            userRepository != null &&
+            authBloc != null),
+        _itemRepository = itemRepository,
+        _userRepository = userRepository,
+        _authBloc = authBloc,
+        super(ItemsLoadInProgress()) {
+    _authSubscription = _authBloc.listen((state) {
+      if (state is AuthSuccess) {
+        add(ItemsLoad());
+      }
+      if (state is AuthFailure) {
+        //TODO: Remove items...?
+        print('remove items (ItemsBloc)');
+      }
+    });
+  }
 
   @override
   Stream<ItemsState> mapEventToState(ItemsEvent event) async* {
@@ -29,16 +47,11 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   }
 
   Stream<ItemsState> _mapItemsLoadToState() async* {
-//    _updateItemSubscription?.cancel();
-//    _updateItemSubscription = itemRepository
-//        .updateItem(data)
-//        .listen((items) => add(ItemsUpdated(items)));
-
     try {
       final items =
-          await itemRepository.getItems(await userRepository.getToken());
+          await _itemRepository.getItems(await _userRepository.getToken());
       yield ItemsLoadSuccess(items: items);
-      itemRepository.setOnUpdateItem(
+      _itemRepository.setOnUpdateItem(
           (Item updatedItem) => add(ItemsUpdated(updatedItem)));
     } catch (_) {
       yield ItemsLoadFailure();
@@ -62,9 +75,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
 
   @override
   Future<void> close() {
-//    _itemsSubscription?.cancel();
-    print("removing setonupdateitem");
-    itemRepository.setOnUpdateItem(null);
+    _authSubscription?.cancel();
     return super.close();
   }
 }

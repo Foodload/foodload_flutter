@@ -49,6 +49,13 @@ class _AppState extends State<App> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _authBloc.dispose();
+    _socketBloc.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
@@ -67,10 +74,10 @@ class _AppState extends State<App> {
             return ItemsBloc(
               itemRepository: _itemRepository,
               userRepository: _userRepository,
-            )..add(
-                ItemsLoad(),
-              );
+              authBloc: _authBloc,
+            );
           },
+          //lazy: false,
         ),
       ],
       child: MultiRepositoryProvider(
