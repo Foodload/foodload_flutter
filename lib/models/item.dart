@@ -36,8 +36,8 @@ class Item extends Equatable {
   }
 
   Item.fromJson(Map<String, dynamic> json)
-      : id = json['itemId']['qrCode'],
-        title = json['itemId']['name'],
-        description = json['itemId']['brand'],
-        amount = json['count'];
+      : id = json['qrCode'],
+        title = json['name'],
+        description = json['brand'],
+        amount = json['ammount'];
 }
