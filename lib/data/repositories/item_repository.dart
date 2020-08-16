@@ -13,19 +13,22 @@ class ItemRepository {
   final _items = Items();
   final itemsDummy = [
     Item(
-      id: '1',
+      id: 1,
+      qrCode: '1',
       title: 'Milk',
       description: 'Arla Milk',
       amount: 5,
     ),
     Item(
-      id: '2',
+      id: 2,
+      qrCode: '2',
       title: 'Bread',
       description: 'Pagen',
       amount: 2,
     ),
     Item(
-      id: '3',
+      id: 3,
+      qrCode: '3',
       title: 'Yoghurt',
       description: 'Strawberry yoghurt',
       amount: 3,
@@ -41,11 +44,11 @@ class ItemRepository {
     return _items.stream;
   }
 
-  Future<ItemInfo> getItem(String id) async {
+  Future<ItemInfo> getItem(String qr) async {
     //TODO: API stuff
 
     final item =
-        itemsDummy.firstWhere((item) => item.id == id, orElse: () => null);
+        itemsDummy.firstWhere((item) => item.qrCode == qr, orElse: () => null);
     if (item == null) return null;
     return ItemInfo(
       id: item.id,
@@ -61,6 +64,10 @@ class ItemRepository {
 
   void setOnUpdateItem(Function onUpdateItem) {
     socketService.setOnUpdateItem(onUpdateItem);
+  }
+
+  Future<void> incrementItem(String token, int id) async {
+    await foodloadApiClient.incrementItem(token, id);
   }
 
   Future<void> addItem(String token, String qr, String storageType) async {

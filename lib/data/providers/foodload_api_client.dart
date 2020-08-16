@@ -96,11 +96,31 @@ class FoodloadApiClient {
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
-    //print(resp.body);
+    print(resp.headers);
+    print(resp.body);
     List<Item> fridgeItems = (jsonDecode(resp.body) as List)
         .map((jsonItem) => Item.fromJson(jsonItem))
         .toList();
     return fridgeItems;
+  }
+
+  Future<void> incrementItem(String token, int id) async {
+    const urlSegment = 'increment-item';
+    final headers = _headers(token);
+    Map<String, dynamic> body = {
+      'id': id,
+    };
+    final resp = await http.post(
+      backend_url + urlSegment,
+      headers: headers,
+      body: json.encode(body),
+    );
+    int statusCode = resp.statusCode;
+    if (statusCode != 200) {
+      //TODO: Handle bad response
+      print(resp.body);
+      throw BadResponseException('Something went wrong...');
+    }
   }
 
   Future<String> requestFamilyToken(String userToken) async {
