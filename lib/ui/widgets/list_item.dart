@@ -1,3 +1,5 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/blocs/item/item.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_detail_argument.dart';
 import 'package:foodload_flutter/ui/screens/item_detail_screen.dart';
@@ -32,14 +34,20 @@ class ListItem extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () {},
+                  onPressed: () {
+                    //TODO: Increment this item WITH itemCount id
+                    BlocProvider.of<ItemBloc>(context)
+                        .add(ItemIncrement(item.id));
+                  },
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 IconButton(
                   icon: Icon(Icons.remove),
-                  onPressed: () {},
+                  onPressed: () {
+                    //TODO: Decrement this item
+                  },
                 ),
                 IconButton(
                   icon: Icon(Icons.settings),

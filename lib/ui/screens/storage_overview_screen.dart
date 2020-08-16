@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
+import 'package:foodload_flutter/blocs/item/item.dart';
+import 'package:foodload_flutter/data/repositories/item_repository.dart';
+import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/models/storage_overview_argument.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/widgets/list_item.dart';
@@ -13,7 +16,16 @@ class StorageOverviewScreen extends StatefulWidget {
 }
 
 class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
+  UserRepository _userRepository;
+  ItemRepository _itemRepository;
   var isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userRepository = RepositoryProvider.of<UserRepository>(context);
+    _itemRepository = RepositoryProvider.of<ItemRepository>(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +86,17 @@ class _StorageOverviewScreenState extends State<StorageOverviewScreen> {
 
           final filteredItems =
               (state as FilteredItemsLoadSuccess).filteredItems;
-          return ListView.builder(
-            itemCount: filteredItems.length,
-            itemBuilder: (ctx, index) => ListItem(
-              item: filteredItems[index],
+          return BlocProvider<ItemBloc>(
+            create: (context) {
+              return ItemBloc(
+                  userRepository: _userRepository,
+                  itemRepository: _itemRepository);
+            },
+            child: ListView.builder(
+              itemCount: filteredItems.length,
+              itemBuilder: (ctx, index) => ListItem(
+                item: filteredItems[index],
+              ),
             ),
           );
         },
