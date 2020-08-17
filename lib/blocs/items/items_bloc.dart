@@ -62,15 +62,19 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     final items = (state as ItemsLoadSuccess).items;
 
     final itemIdx = items.lastIndexWhere((item) => item.id == event.item.id);
+    final newItems = [...items];
     if (itemIdx == -1) {
-      items.add(event.item);
-      yield ItemsLoadSuccess(items: items);
+      //print('adding');
+      //TODO: Needs testing
+      newItems.add(event.item);
+      yield ItemsLoadSuccess(items: newItems);
       return;
     }
 
-    items.removeAt(itemIdx);
-    items.insert(itemIdx, event.item);
-    yield ItemsLoadSuccess(items: items);
+    newItems.removeAt(itemIdx);
+    newItems.insert(itemIdx, event.item);
+    //print('incrementing');
+    yield ItemsLoadSuccess(items: newItems);
   }
 
   @override
