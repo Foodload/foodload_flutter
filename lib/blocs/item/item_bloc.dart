@@ -19,13 +19,25 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   @override
   Stream<ItemState> mapEventToState(ItemEvent event) async* {
     if (event is ItemIncrement) {
-      yield* _mapItemAddToState(event);
+      yield* _mapItemIncrementToState(event);
+    } else if (event is ItemDecrement) {
+      yield* _mapItemDecrementToState(event);
     }
   }
 
-  Stream<ItemState> _mapItemAddToState(ItemIncrement event) async* {
+  Stream<ItemState> _mapItemIncrementToState(ItemIncrement event) async* {
     try {
       await _itemRepository.incrementItem(
+          await _userRepository.getToken(), event.id);
+      yield ItemSuccess();
+    } catch (error) {
+      yield ItemFailure();
+    }
+  }
+
+  Stream<ItemState> _mapItemDecrementToState(ItemDecrement event) async* {
+    try {
+      await _itemRepository.decrementItem(
           await _userRepository.getToken(), event.id);
       yield ItemSuccess();
     } catch (error) {

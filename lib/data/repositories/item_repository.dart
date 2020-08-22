@@ -70,6 +70,10 @@ class ItemRepository {
     await foodloadApiClient.incrementItem(token, id);
   }
 
+  Future<void> decrementItem(String token, int id) async {
+    await foodloadApiClient.decrementItem(token, id);
+  }
+
   Future<void> addItem(String token, String qr, String storageType) async {
     //TODO: API stuff
     await foodloadApiClient.addItemQR(token, qr, storageType);

@@ -35,7 +35,6 @@ class ListItem extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
-                    //TODO: Increment this item WITH itemCount id
                     BlocProvider.of<ItemBloc>(context)
                         .add(ItemIncrement(item.id));
                   },
@@ -46,7 +45,8 @@ class ListItem extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    //TODO: Decrement this item
+                    BlocProvider.of<ItemBloc>(context)
+                        .add(ItemDecrement(item.id));
                   },
                 ),
                 IconButton(

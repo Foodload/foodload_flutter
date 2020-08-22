@@ -11,6 +11,10 @@ class ItemIncrement extends ItemEvent {
   ItemIncrement(this.id);
 }
 
-class ItemDecrement extends ItemEvent {}
+class ItemDecrement extends ItemEvent {
+  final int id;
+
+  ItemDecrement(this.id);
+}
 
 //TODO: Move, change amount, etc...
