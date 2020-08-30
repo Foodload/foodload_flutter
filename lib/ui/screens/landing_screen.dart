@@ -8,21 +8,23 @@ import 'package:foodload_flutter/ui/widgets/app_drawer.dart';
 import 'package:foodload_flutter/ui/widgets/storage.dart';
 
 class LandingScreen extends StatelessWidget {
+  static const routeName = '/';
+
   final fridge = const Storage(
-    title: fridge_title,
-    imagePath: fridge_image_path,
+    title: fridgeTitle,
+    imagePath: fridgeImagePath,
     storageType: StorageType.Fridge,
   );
 
   final freezer = const Storage(
-    title: freezer_title,
-    imagePath: freezer_image_path,
+    title: freezerTitle,
+    imagePath: freezerImagePath,
     storageType: StorageType.Freezer,
   );
 
   final pantry = const Storage(
-    title: pantry_title,
-    imagePath: pantry_image_path,
+    title: pantryTitle,
+    imagePath: pantryImagePath,
     storageType: StorageType.Pantry,
   );
 
@@ -56,7 +58,7 @@ class LandingScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       drawer: AppDrawer(),
       appBar: AppBar(
-        title: const Text(storages_title),
+        title: const Text(landingScreenTitle),
         actions: <Widget>[
           DropdownButton(
             underline: Container(),
