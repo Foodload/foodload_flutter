@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/helpers/keys.dart';
+import 'package:foodload_flutter/ui/screens/family_screen.dart';
+import 'package:foodload_flutter/ui/screens/landing_screen.dart';
+import 'package:foodload_flutter/ui/screens/templates_overview_screen.dart';
 
 class AppDrawer extends StatelessWidget {
+  void _changeScreenTo(BuildContext context, String routeName) {
+    Navigator.of(context).pushReplacementNamed(routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -11,20 +18,20 @@ class AppDrawer extends StatelessWidget {
           children: <Widget>[
             const _DrawerHeader(),
             _DrawerListItem(
-              icon: Icons.fastfood,
-              title: 'Templates',
-              nav: () {
-                // Navigator.of(context)
-                //     .pushReplacementNamed(TestScreen.routeName);
-              },
+              icon: Icons.home,
+              title: 'Home',
+              nav: () => _changeScreenTo(context, LandingScreen.routeName),
             ),
             _DrawerListItem(
-              icon: Icons.settings,
-              title: 'Settings',
-              nav: () {
-                // Navigator.of(context)
-                //     .pushReplacementNamed(TestScreen.routeName);
-              },
+              icon: Icons.fastfood,
+              title: 'Templates',
+              nav: () =>
+                  _changeScreenTo(context, TemplatesOverviewScreen.routeName),
+            ),
+            _DrawerListItem(
+              icon: Icons.group,
+              title: 'Family',
+              nav: () => _changeScreenTo(context, FamilyScreen.routeName),
             ),
           ],
         ),
@@ -86,7 +93,7 @@ class AppDrawer extends StatelessWidget {
 }
 
 class _DrawerHeader extends StatelessWidget {
-  final backgroundImage = const AssetImage(pantry_image_path);
+  final backgroundImage = const AssetImage(pantryImagePath);
   final title = 'Foodload';
 
   const _DrawerHeader();

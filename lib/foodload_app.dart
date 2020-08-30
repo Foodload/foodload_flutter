@@ -7,11 +7,13 @@ import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/blocs/login/bloc.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
+import 'package:foodload_flutter/ui/screens/family_screen.dart';
 import 'package:foodload_flutter/ui/screens/item_detail_screen.dart';
 import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
+import 'package:foodload_flutter/ui/screens/templates_overview_screen.dart';
 import 'package:foodload_flutter/ui/screens/test_screen.dart';
 
 class FoodLoadApp extends StatelessWidget {
@@ -49,6 +51,8 @@ class FoodLoadApp extends StatelessWidget {
         AddItemScreen.routeName: (ctx) => AddItemScreen(),
         ItemDetailScreen.routeName: (ctx) => ItemDetailScreen(),
         TestScreen.routeName: (ctx) => TestScreen(),
+        TemplatesOverviewScreen.routeName: (ctx) => TemplatesOverviewScreen(),
+        FamilyScreen.routeName: (ctx) => FamilyScreen(),
       },
     );
   }
