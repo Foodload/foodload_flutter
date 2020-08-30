@@ -1,12 +1,12 @@
-const storages_title = 'Storages Overview';
+const landingScreenTitle = 'Storages';
 
-const pantry_image_path = 'assets/pantry.jpg';
-const fridge_image_path = 'assets/fridge.jpg';
-const freezer_image_path = 'assets/freezer.jpg';
-const fridge_title = 'Fridge';
-const freezer_title = 'Freezer';
-const pantry_title = 'Pantry';
+const pantryImagePath = 'assets/pantry.jpg';
+const fridgeImagePath = 'assets/fridge.jpg';
+const freezerImagePath = 'assets/freezer.jpg';
+const fridgeTitle = 'Fridge';
+const freezerTitle = 'Freezer';
+const pantryTitle = 'Pantry';
 
-const socket_uri =
+const socketURL =
     'https://foodload-notification.herokuapp.com/'; //'http://10.0.2.2:3000';
-const backend_url = 'https://foodload.herokuapp.com/';
+const backendURL = 'https://foodload.herokuapp.com/';

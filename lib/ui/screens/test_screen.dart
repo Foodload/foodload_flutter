@@ -25,14 +25,14 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void addItem() async {
-    itemRepo.addItem(await userRepo.getToken(), '7310865875020', fridge_title);
+    itemRepo.addItem(await userRepo.getToken(), '7310865875020', fridgeTitle);
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
 
   void removeItem() async {
     itemRepo.removeItem(
-        await userRepo.getToken(), '7310865062024', fridge_title);
+        await userRepo.getToken(), '7310865062024', fridgeTitle);
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }

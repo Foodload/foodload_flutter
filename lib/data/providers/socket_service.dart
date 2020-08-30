@@ -9,7 +9,7 @@ class SocketService {
 
   void createSocketConnection(String token) {
     print("connecting to socket");
-    _socket = IO.io(socket_uri, <String, dynamic>{
+    _socket = IO.io(socketURL, <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
       'query': {'token': token},

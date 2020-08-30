@@ -36,7 +36,7 @@ class FoodloadApiClient {
   Future<User> sendInit(String token) async {
     const urlSegment = 'login';
     final headers = _headers(token);
-    final resp = await http.get(backend_url + urlSegment, headers: headers);
+    final resp = await http.get(backendURL + urlSegment, headers: headers);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
       //TODO: Handle bad response message
@@ -59,7 +59,7 @@ class FoodloadApiClient {
     String json =
         '{"qrCode": "$qr", "storageType": "$storageType", "ammount": "1"}';
     final resp =
-        await http.post(backend_url + urlSegment, headers: headers, body: json);
+        await http.post(backendURL + urlSegment, headers: headers, body: json);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
       //TODO: Handle bad response message
@@ -76,7 +76,7 @@ class FoodloadApiClient {
     String json =
         '{"qrCode": "$qr", "storageType": "$storageType", "ammount": "1"}';
     final resp =
-        await http.post(backend_url + urlSegment, headers: headers, body: json);
+        await http.post(backendURL + urlSegment, headers: headers, body: json);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
       print(resp.body);
@@ -89,7 +89,7 @@ class FoodloadApiClient {
   Future<List<Item>> checkFridge(String token) async {
     const urlSegment = 'check-fridge';
     final headers = _headers(token);
-    final resp = await http.get(backend_url + urlSegment, headers: headers);
+    final resp = await http.get(backendURL + urlSegment, headers: headers);
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
       //TODO: Handle bad response message
@@ -111,7 +111,7 @@ class FoodloadApiClient {
       'id': id,
     };
     final resp = await http.post(
-      backend_url + urlSegment,
+      backendURL + urlSegment,
       headers: headers,
       body: json.encode(body),
     );
@@ -130,7 +130,7 @@ class FoodloadApiClient {
       'id': id,
     };
     final resp = await http.post(
-      backend_url + urlSegment,
+      backendURL + urlSegment,
       headers: headers,
       body: json.encode(body),
     );
