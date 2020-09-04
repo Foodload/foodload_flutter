@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:foodload_flutter/helpers/keys.dart';
 import 'package:foodload_flutter/models/exceptions/bad_response_exception.dart';
 import 'package:foodload_flutter/models/item.dart';
+import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -140,6 +141,33 @@ class FoodloadApiClient {
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
+  }
+
+  Future<List<ItemInfo>> findItemByName(
+      String searchText, int startIndex, String userToken) async {
+    const urlSegment = 'find-item-by-name';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {
+      'name': searchText,
+      'start': startIndex,
+    };
+
+    final resp = await http.post(
+      backendURL + urlSegment,
+      headers: headers,
+      body: json.encode(body),
+    );
+    int statusCode = resp.statusCode;
+    if (statusCode != 200) {
+      //TODO: Handle bad response
+      print(resp.body);
+      throw BadResponseException('Something went wrong...');
+    }
+    print(resp.body);
+    List<ItemInfo> results = (jsonDecode(resp.body) as List)
+        .map((jsonItem) => ItemInfo.fromJson(jsonItem))
+        .toList();
+    return results;
   }
 
   Future<String> requestFamilyToken(String userToken) async {
