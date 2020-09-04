@@ -127,7 +127,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
   }
 
   Stream<AddItemFormState> _mapItemAddToState(String amountText) async* {
-    final id = state.item.id;
+    final qrCode = state.item.qrCode;
     final amount = int.tryParse(amountText);
     //TODO: Call item repo to add item.
     yield state.adding();
