@@ -25,7 +25,7 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void addItem() async {
-    itemRepo.addItem(await userRepo.getToken(), '7310865875020', fridgeTitle);
+    itemRepo.addItem('7310865875020', 1, await userRepo.getToken());
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
