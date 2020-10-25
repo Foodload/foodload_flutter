@@ -38,13 +38,19 @@ class _AddItemAmountState extends State<AddItemAmount> {
   }
 
   void incrementAmount() {
-    var amount = int.parse(_itemAmountTextController.text);
+    var amount = int.tryParse(_itemAmountTextController.text);
+    if (amount == null) {
+      return;
+    }
     var newValue = (++amount).toString();
     _itemAmountTextController.value = _getNewAmountValue(newValue);
   }
 
   void decrementAmount() {
-    int amount = int.parse(_itemAmountTextController.text);
+    int amount = int.tryParse(_itemAmountTextController.text);
+    if (amount == null) {
+      return;
+    }
     var newValue = (--amount).toString();
     _itemAmountTextController.value = _getNewAmountValue(newValue);
   }

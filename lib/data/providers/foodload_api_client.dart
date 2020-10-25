@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:foodload_flutter/helpers/keys.dart';
-import 'package:foodload_flutter/models/exceptions/bad_response_exception.dart';
+import 'package:foodload_flutter/models/exceptions/bad_request_exception.dart';
+import 'package:foodload_flutter/models/exceptions/internal_server_error_exception.dart';
+import 'package:foodload_flutter/models/exceptions/not_found_exception.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/user.dart';
@@ -54,20 +56,23 @@ class FoodloadApiClient {
     return user;
   }
 
-  Future<void> addItemQR(String token, String qr, String storageType) async {
-    const urlSegment = 'addItemQR';
+  Future<void> addItemQR(String qr, int amount, String token) async {
+    const urlSegment = 'add-item';
     final headers = _headers(token);
-    String json =
-        '{"qrCode": "$qr", "storageType": "$storageType", "ammount": "1"}';
-    final resp =
-        await http.post(backendURL + urlSegment, headers: headers, body: json);
+    //TODO: Remove hard coded storageType
+    Map<String, dynamic> body = {
+      'qrCode': qr,
+      'amount': amount,
+      'storageType': 'Fridge',
+    };
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
     int statusCode = resp.statusCode;
     if (statusCode != 200) {
       //TODO: Handle bad response message
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
-    return resp.body;
   }
 
   Future<String> removeItemQR(
@@ -163,11 +168,35 @@ class FoodloadApiClient {
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
-    print(resp.body);
+    //print(resp.body);
     List<ItemInfo> results = (jsonDecode(resp.body) as List)
         .map((jsonItem) => ItemInfo.fromJson(jsonItem))
         .toList();
     return results;
+  }
+
+  Future<ItemInfo> findItemByQr(String qr, String userToken) async {
+    const urlSegment = 'search-item';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {'qrCode': qr};
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
+    int statusCode = resp.statusCode;
+    final jsonItem = jsonDecode(resp.body);
+    if (statusCode != 200) {
+      final errorMsg = jsonItem['message'];
+      if (statusCode == 404) {
+        throw NotFoundException(errorMsg);
+      } else if (statusCode == 400) {
+        throw BadResponseException(errorMsg);
+      } else if (statusCode == 500) {
+        throw InternalServerErrorException(errorMsg);
+      } else {
+        throw Exception('Ops, something went wrong. Please try again.');
+      }
+    }
+    final itemInfo = ItemInfo.fromJson(jsonItem);
+    return itemInfo;
   }
 
   Future<String> requestFamilyToken(String userToken) async {

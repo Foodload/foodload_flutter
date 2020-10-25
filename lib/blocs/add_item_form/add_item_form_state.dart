@@ -10,24 +10,28 @@ class AddItemFormState {
 
   //Item to be added
   final ItemInfo item;
-  final bool isItemValid;
 
   //Search
   final bool isSearching;
   final bool isSearchFail;
   final bool isSearchSuccess;
+  final String failMessage;
 
-  //ID and amount field
-  final bool isItemIdEntered;
+  //Amount field
   final bool isItemAmountEntered;
   final bool isItemAmountNumber;
   final bool isItemAmountAtLeastOne;
   final bool isItemAmountLimitReached;
 
+  //Id field
+  final bool isItemIdEntered;
+
   bool get isFormValid =>
-      (item != null && isItemValid) &&
+      item != null &&
+      isItemIdEntered &&
       isItemAmountNumber &&
       isItemAmountAtLeastOne &&
+      isItemAmountEntered &&
       !isItemAmountLimitReached;
 
   AddItemFormState({
@@ -35,11 +39,11 @@ class AddItemFormState {
     @required this.isAddSuccess,
     @required this.isAddFail,
     @required this.item,
-    @required this.isItemValid,
+    @required this.isItemIdEntered,
     @required this.isSearching,
     @required this.isSearchFail,
     @required this.isSearchSuccess,
-    @required this.isItemIdEntered,
+    @required this.failMessage,
     @required this.isItemAmountEntered,
     @required this.isItemAmountNumber,
     @required this.isItemAmountAtLeastOne,
@@ -52,15 +56,34 @@ class AddItemFormState {
       isAddSuccess: false,
       isAddFail: false,
       item: null,
-      isItemValid: false,
+      isItemIdEntered: false,
       isSearching: false,
       isSearchSuccess: false,
       isSearchFail: false,
-      isItemIdEntered: false,
       isItemAmountEntered: true, //init to 1
       isItemAmountNumber: true,
       isItemAmountAtLeastOne: true,
       isItemAmountLimitReached: false,
+    );
+  }
+
+  AddItemFormState changeItem() {
+    return AddItemFormState(
+      isAdding: isAdding ?? this.isAdding,
+      isAddSuccess: isAddSuccess ?? this.isAddSuccess,
+      isAddFail: isAddFail ?? this.isAddFail,
+      item: null,
+      isItemIdEntered: false,
+      isSearching: isSearching ?? this.isSearching,
+      isSearchSuccess: isSearchSuccess ?? this.isSearchSuccess,
+      isSearchFail: isSearchFail ?? this.isSearchFail,
+      failMessage: failMessage ?? this.failMessage,
+      isItemAmountEntered: isItemAmountEntered ?? this.isItemAmountEntered,
+      isItemAmountNumber: isItemAmountNumber ?? this.isItemAmountNumber,
+      isItemAmountAtLeastOne:
+          isItemAmountAtLeastOne ?? this.isItemAmountAtLeastOne,
+      isItemAmountLimitReached:
+          isItemAmountLimitReached ?? this.isItemAmountLimitReached,
     );
   }
 
@@ -96,12 +119,12 @@ class AddItemFormState {
     );
   }
 
-  AddItemFormState searchFailure() {
+  AddItemFormState searchFailure(failMsg) {
     return copyWith(
-      isSearching: false,
-      isSearchSuccess: false,
-      isSearchFail: true,
-    );
+        isSearching: false,
+        isSearchSuccess: false,
+        isSearchFail: true,
+        failMessage: failMsg);
   }
 
   AddItemFormState searchSuccess(ItemInfo itemInfo) {
@@ -149,6 +172,7 @@ class AddItemFormState {
     bool isSearching,
     bool isSearchSuccess,
     bool isSearchFail,
+    String failMessage,
     bool isItemIdEntered,
     bool isItemAmountEntered,
     bool isItemAmountNumber,
@@ -160,11 +184,11 @@ class AddItemFormState {
       isAddSuccess: isAddSuccess ?? this.isAddSuccess,
       isAddFail: isAddFail ?? this.isAddFail,
       item: item ?? this.item,
-      isItemValid: isItemValid ?? this.isItemValid,
+      isItemIdEntered: isItemIdEntered ?? this.isItemIdEntered,
       isSearching: isSearching ?? this.isSearching,
       isSearchSuccess: isSearchSuccess ?? this.isSearchSuccess,
       isSearchFail: isSearchFail ?? this.isSearchFail,
-      isItemIdEntered: isItemIdEntered ?? this.isItemIdEntered,
+      failMessage: failMessage ?? this.failMessage,
       isItemAmountEntered: isItemAmountEntered ?? this.isItemAmountEntered,
       isItemAmountNumber: isItemAmountNumber ?? this.isItemAmountNumber,
       isItemAmountAtLeastOne:
@@ -181,11 +205,10 @@ class AddItemFormState {
       isAddSuccess: $isAddSuccess,
       isAddFail: $isAddFail,
       item: $item,
-      isItemValid: $isItemValid,
+      isItemIdEntered: $isItemIdEntered,
       isSearching: $isSearching,
       isSearchSuccess: $isSearchSuccess,
       isSearchFail: $isSearchFail,
-      isItemIdEntered: $isItemIdEntered,
       isItemAmountEntered: $isItemAmountEntered,
       isItemAmountNumber: $isItemAmountNumber,
       isItemAmountAtLeastOne: $isItemAmountAtLeastOne,

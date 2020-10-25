@@ -36,7 +36,7 @@ class _AddItemFormState extends State<AddItemForm> {
     _addItemFormBloc.add(ItemChange());
   }
 
-  void _showSearchFailSnackBar() {
+  void _showSearchFailSnackBar(String failMessage) {
     Scaffold.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -44,7 +44,7 @@ class _AddItemFormState extends State<AddItemForm> {
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).colorScheme.error,
           content: Text(
-            'Could not find item with the given ID.',
+            failMessage,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onError,
             ),
@@ -69,8 +69,9 @@ class _AddItemFormState extends State<AddItemForm> {
   }
 
   void _addItem() async {
+    print(_itemAmountTextController.text);
     _addItemFormBloc.add(ItemAdd(amount: _itemAmountTextController.text));
-    await _showAddDialog();
+    await _showAddDialog(); //TODO: If failed, return false and don't reset?
     _addItemFormBloc.add(AddItemFormReset());
     _resetForm();
   }
@@ -82,7 +83,7 @@ class _AddItemFormState extends State<AddItemForm> {
         BlocConsumer<AddItemFormBloc, AddItemFormState>(
           listener: (context, state) {
             if (state.isSearchFail) {
-              _showSearchFailSnackBar();
+              _showSearchFailSnackBar(state.failMessage);
             }
           },
           builder: (context, state) {
@@ -96,12 +97,13 @@ class _AddItemFormState extends State<AddItemForm> {
             }
             return Column(
               children: <Widget>[
-                if (state.isItemValid)
+                if (state.item != null)
                   AddItemInfo(
                     title: state.item.title,
+                    brand: state.item.brand,
                     changeHandler: _changeItem,
                   ),
-                if (!state.isItemValid)
+                if (state.item == null)
                   AddItemSearchOptions(_itemIdTextController),
                 AddItemAmount(_itemAmountTextController),
               ],

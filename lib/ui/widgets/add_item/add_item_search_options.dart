@@ -52,6 +52,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
   }
 
   void _onSearch(String qr) {
+    if (qr.trim().length == 0) return;
     _addItemFormBloc.add(
       ItemQrSearch(qr: qr),
     );
@@ -95,6 +96,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
                 children: <Widget>[
                   Expanded(
                     child: TextFormField(
+                      enableInteractiveSelection: true,
                       decoration: const InputDecoration(
                         hintText: 'Type the ID of the item',
                       ),
@@ -104,7 +106,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
                       autocorrect: false,
                       autovalidate: true,
                       validator: (_) {
-                        return !state.isItemIdEntered
+                        return state.item == null
                             ? 'Please enter the ID of the item'
                             : null;
                       },

@@ -52,13 +52,13 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
 
   Stream<AddItemFormState> _mapItemQrFetchedToState(ItemQrSearch event) async* {
     yield state.searchLoading();
-    await Future.delayed(const Duration(milliseconds: 1000));
-    final itemInfo = await itemRepository.getItem(event.qr);
-    if (itemInfo == null) {
-      yield state.searchFailure();
-      return;
+    try {
+      final itemInfo = await itemRepository.getItem(
+          event.qr, await userRepository.getToken());
+      yield state.searchSuccess(itemInfo);
+    } catch (error) {
+      yield state.searchFailure(error.message);
     }
-    yield state.searchSuccess(itemInfo);
   }
 
   Stream<AddItemFormState> _mapItemQrChangedToState(String qr) async* {
@@ -120,21 +120,16 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
   }
 
   Stream<AddItemFormState> _mapItemChangeToState() async* {
-    yield state.update(
-      isItemValid: false,
-      isItemIdEntered: false,
-    );
+    yield state.changeItem();
   }
 
   Stream<AddItemFormState> _mapItemAddToState(String amountText) async* {
     final qrCode = state.item.qrCode;
     final amount = int.tryParse(amountText);
-    //TODO: Call item repo to add item.
     yield state.adding();
     try {
-      await Future.delayed(
-        const Duration(milliseconds: 1200),
-      );
+      await itemRepository.addItem(
+          qrCode, amount, await userRepository.getToken());
       yield state.addSuccess();
     } catch (error) {
       yield state.addFail();
