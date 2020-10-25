@@ -12,7 +12,7 @@ class SearchItemScreen extends StatefulWidget {
 
 class _SearchItemScreenState extends State<SearchItemScreen> {
   final _scrollController = ScrollController();
-  final _scrollThreshHold = 100.0;
+  final _scrollThreshHold = 200.0;
   SearchItemBloc _searchItemBloc;
 
   @override
@@ -54,7 +54,7 @@ class _SearchItemScreenState extends State<SearchItemScreen> {
       body: BlocBuilder<SearchItemBloc, SearchItemState>(
         builder: (context, state) {
           if (state is SearchItemInitial) {
-            return Text('Hello');
+            return Container();
           }
           if (state is SearchItemLoading) {
             return Center(

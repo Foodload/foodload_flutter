@@ -38,7 +38,7 @@ class SearchItemBloc extends Bloc<SearchItemEvent, SearchItemState> {
       yield SearchItemSuccess(
           searchText: searchText,
           results: results,
-          hasReachedMax: results.length < 10 ? true : false);
+          hasReachedMax: results.length < 30 ? true : false);
     } catch (error) {
       //TODO: More error handling perhaps
       print(error);
@@ -56,7 +56,7 @@ class SearchItemBloc extends Bloc<SearchItemEvent, SearchItemState> {
             searchText,
             newStart,
             await _userRepository.getToken()); //TODO: try to get 10 more?
-        yield moreResults.isEmpty || moreResults.length < 10
+        yield moreResults.isEmpty
             ? currentState.copyWith(hasReachedMax: true)
             : currentState.copyWith(
                 hasReachedMax: false,
