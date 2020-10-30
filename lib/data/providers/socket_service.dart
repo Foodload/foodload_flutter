@@ -77,7 +77,7 @@ class SocketService {
       Map<String, dynamic> decoded = jsonDecode(data);
       print(decoded);
       final item = Item(
-          id: decoded['itemcountId'],
+          id: decoded['itemCountId'],
           qrCode: decoded['qrCode'],
           title: decoded['name'],
           description: decoded['brand'],
