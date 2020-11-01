@@ -49,7 +49,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   Stream<ItemsState> _mapItemsLoadToState() async* {
     try {
       final items =
-          await _itemRepository.getItems(await _userRepository.getToken());
+          await _itemRepository.getItemCounts(await _userRepository.getToken());
       yield ItemsLoadSuccess(items: items);
       _itemRepository.setOnUpdateItem(
           (Item updatedItem) => add(ItemsUpdated(updatedItem)));
@@ -64,8 +64,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     final itemIdx = items.lastIndexWhere((item) => item.id == event.item.id);
     final newItems = [...items];
     if (itemIdx == -1) {
-      //print('adding');
-      //TODO: Needs testing
+      //TODO: Needs testing with adding new item
       newItems.add(event.item);
       yield ItemsLoadSuccess(items: newItems);
       return;
@@ -73,7 +72,6 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
 
     newItems.removeAt(itemIdx);
     newItems.insert(itemIdx, event.item);
-    //print('incrementing');
     yield ItemsLoadSuccess(items: newItems);
   }
 
