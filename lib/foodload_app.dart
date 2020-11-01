@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/app_theme.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
-import 'package:foodload_flutter/blocs/filtered_items/filtered_items.dart';
-import 'package:foodload_flutter/blocs/items/items.dart';
 import 'package:foodload_flutter/blocs/login/bloc.dart';
 import 'package:foodload_flutter/blocs/search_item/search_item.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/family_screen.dart';
 import 'package:foodload_flutter/ui/screens/item_detail_screen.dart';
@@ -17,8 +16,6 @@ import 'package:foodload_flutter/ui/screens/search_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 import 'package:foodload_flutter/ui/screens/templates_overview_screen.dart';
 import 'package:foodload_flutter/ui/screens/test_screen.dart';
-
-import 'data/repositories/item_repository.dart';
 
 class FoodLoadApp extends StatelessWidget {
   const FoodLoadApp();
@@ -45,13 +42,7 @@ class FoodLoadApp extends StatelessWidget {
         },
       ),
       routes: {
-        StorageOverviewScreen.routeName: (ctx) =>
-            BlocProvider<FilteredItemsBloc>(
-              create: (context) => FilteredItemsBloc(
-                itemsBloc: BlocProvider.of<ItemsBloc>(context),
-              ),
-              child: StorageOverviewScreen(),
-            ),
+        StorageOverviewScreen.routeName: (ctx) => StorageOverviewScreen(),
         AddItemScreen.routeName: (ctx) => AddItemScreen(),
         ItemDetailScreen.routeName: (ctx) => ItemDetailScreen(),
         TestScreen.routeName: (ctx) => TestScreen(),

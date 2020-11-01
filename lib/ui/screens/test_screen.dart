@@ -25,23 +25,28 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void addItem() async {
-    itemRepo.addItem('7310865875020', 1, await userRepo.getToken());
+    itemRepo.addItem(
+        qr: '7310865875020',
+        amount: 1,
+        token: await userRepo.getToken(),
+        storageType: 'Fridge');
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
 
   void removeItem() async {
-    itemRepo.removeItem(
-        await userRepo.getToken(), '7310865062024', fridgeTitle);
+    itemRepo.removeItem(await userRepo.getToken(), '7310865062024', fridge);
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
 
+  /*
   void checkFridge() async {
     itemRepo.checkFridge(await userRepo.getToken());
     //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
     print('test');
   }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +65,7 @@ class _TestScreenState extends State<TestScreen> {
               child: Text('REMOVE'),
               onPressed: removeItem,
             ),
-            RaisedButton(
-              child: Text('CHECKFRIDGE'),
-              onPressed: checkFridge,
-            ),
+            RaisedButton(child: Text('CHECKFRIDGE'), onPressed: null),
           ],
         ),
       ),

@@ -2,40 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/helpers/keys.dart';
-import 'package:foodload_flutter/models/storage_type.dart';
 import 'package:foodload_flutter/ui/screens/search_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/test_screen.dart';
 import 'package:foodload_flutter/ui/widgets/app_drawer.dart';
-import 'package:foodload_flutter/ui/widgets/storage.dart';
+import 'package:foodload_flutter/ui/widgets/storage_icon_link.dart';
 
 class LandingScreen extends StatelessWidget {
   static const routeName = '/';
 
-  final fridge = const Storage(
-    title: fridgeTitle,
+  final fridgeWidget = const StorageIconLink(
+    title: fridge,
     imagePath: fridgeImagePath,
-    storageType: StorageType.Fridge,
+    storageType: fridge,
   );
 
-  final freezer = const Storage(
-    title: freezerTitle,
+  final freezerWidget = const StorageIconLink(
+    title: freezer,
     imagePath: freezerImagePath,
-    storageType: StorageType.Freezer,
+    storageType: freezer,
   );
 
-  final pantry = const Storage(
-    title: pantryTitle,
+  final pantryWidget = const StorageIconLink(
+    title: pantry,
     imagePath: pantryImagePath,
-    storageType: StorageType.Pantry,
+    storageType: pantry,
   );
 
   Widget _buildLandscapeContent() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        fridge,
-        freezer,
-        pantry,
+        fridgeWidget,
+        freezerWidget,
+        pantryWidget,
       ],
     );
   }
@@ -44,9 +43,9 @@ class LandingScreen extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        fridge,
-        freezer,
-        pantry,
+        fridgeWidget,
+        freezerWidget,
+        pantryWidget,
       ],
     );
   }

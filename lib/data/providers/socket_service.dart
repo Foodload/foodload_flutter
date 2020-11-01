@@ -73,15 +73,10 @@ class SocketService {
     print('setting update item');
 
     _socket.on('update_item', (data) {
-      print(data);
+      print("update_item: " + data);
       Map<String, dynamic> decoded = jsonDecode(data);
-      print(decoded);
-      final item = Item(
-          id: decoded['itemCountId'],
-          qrCode: decoded['qrCode'],
-          title: decoded['name'],
-          description: decoded['brand'],
-          amount: decoded['amount']);
+      print("decoded update_item: " + decoded.toString());
+      final item = Item.fromJson(decoded);
       onUpdateItem(item);
     });
   }
