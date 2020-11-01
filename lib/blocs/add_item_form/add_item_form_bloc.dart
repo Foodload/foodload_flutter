@@ -44,7 +44,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     } else if (event is ItemChange) {
       yield* _mapItemChangeToState();
     } else if (event is ItemAdd) {
-      yield* _mapItemAddToState(event.amount);
+      yield* _mapItemAddToState(event);
     } else if (event is AddItemFormReset) {
       yield* _mapAddItemFormResetToState();
     }
@@ -123,13 +123,17 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     yield state.changeItem();
   }
 
-  Stream<AddItemFormState> _mapItemAddToState(String amountText) async* {
+  Stream<AddItemFormState> _mapItemAddToState(ItemAdd event) async* {
     final qrCode = state.item.qrCode;
-    final amount = int.tryParse(amountText);
+    final amount = int.tryParse(event.amount);
+    final storageType = event.storageType;
     yield state.adding();
     try {
       await itemRepository.addItem(
-          qrCode, amount, await userRepository.getToken());
+          qr: qrCode,
+          storageType: storageType,
+          amount: amount,
+          token: await userRepository.getToken());
       yield state.addSuccess();
     } catch (error) {
       yield state.addFail();

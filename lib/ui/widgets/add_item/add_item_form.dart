@@ -7,6 +7,10 @@ import 'package:foodload_flutter/ui/widgets/add_item/add_item_info.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_search_options.dart';
 
 class AddItemForm extends StatefulWidget {
+  final storageType;
+
+  const AddItemForm(this.storageType);
+
   @override
   _AddItemFormState createState() => _AddItemFormState();
 }
@@ -58,7 +62,7 @@ class _AddItemFormState extends State<AddItemForm> {
       context: context,
       builder: (_) => BlocProvider<AddItemFormBloc>.value(
         value: _addItemFormBloc,
-        child: AddItemDialog(),
+        child: AddItemDialog(widget.storageType),
       ),
     );
   }
@@ -69,8 +73,9 @@ class _AddItemFormState extends State<AddItemForm> {
   }
 
   void _addItem() async {
-    print(_itemAmountTextController.text);
-    _addItemFormBloc.add(ItemAdd(amount: _itemAmountTextController.text));
+    _addItemFormBloc.add(ItemAdd(
+        amount: _itemAmountTextController.text,
+        storageType: widget.storageType));
     await _showAddDialog(); //TODO: If failed, return false and don't reset?
     _addItemFormBloc.add(AddItemFormReset());
     _resetForm();

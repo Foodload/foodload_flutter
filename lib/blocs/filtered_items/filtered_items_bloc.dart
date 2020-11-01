@@ -10,9 +10,10 @@ import 'package:meta/meta.dart';
 
 class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
   final ItemsBloc itemsBloc;
+  final String storageType;
   StreamSubscription itemsSubscription;
 
-  FilteredItemsBloc({@required this.itemsBloc})
+  FilteredItemsBloc({@required this.itemsBloc, @required this.storageType})
       : super(
           itemsBloc.state is ItemsLoadSuccess
               ? FilteredItemsLoadSuccess(
@@ -78,15 +79,17 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
   }
 
   List<Item> _mapItemsToFilteredItems(List<Item> items, var filter) {
+    //TODO: Improve this. Maybe get all fridge from items and then filter those
     return items.where((item) {
       if (filter == SearchFilter.all ||
           filter == null ||
           filter.toString().trim().isEmpty) {
-        return true;
+        return item.storageType == storageType;
       } else {
         return item.title
-            .toLowerCase()
-            .contains(filter.toString().trim().toLowerCase());
+                .toLowerCase()
+                .contains(filter.toString().trim().toLowerCase()) &&
+            item.storageType == storageType;
       }
     }).toList();
   }

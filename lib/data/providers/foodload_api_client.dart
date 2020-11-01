@@ -56,14 +56,14 @@ class FoodloadApiClient {
     return user;
   }
 
-  Future<void> addItemQR(String qr, int amount, String token) async {
+  Future<void> addItemQR(
+      {String qr, int amount, String storageType, String token}) async {
     const urlSegment = 'add-item';
     final headers = _headers(token);
-    //TODO: Remove hard coded storageType
     Map<String, dynamic> body = {
       'qrCode': qr,
       'amount': amount,
-      'storageType': 'Fridge',
+      'storageType': storageType,
     };
     final resp = await http.post(backendURL + urlSegment,
         headers: headers, body: json.encode(body));
@@ -80,7 +80,7 @@ class FoodloadApiClient {
     const urlSegment = 'removeItemQR';
     final headers = _headers(token);
     String json =
-        '{"qrCode": "$qr", "storageType": "$storageType", "ammount": "1"}';
+        '{"qrCode": "$qr", "storageType": "$storageType", "amount": "1"}';
     final resp =
         await http.post(backendURL + urlSegment, headers: headers, body: json);
     int statusCode = resp.statusCode;
@@ -92,8 +92,8 @@ class FoodloadApiClient {
     return resp.body;
   }
 
-  Future<List<Item>> checkFridge(String token) async {
-    const urlSegment = 'check-fridge';
+  Future<List<Item>> getItemCounts(String token) async {
+    const urlSegment = 'get-all-item-counts';
     final headers = _headers(token);
     final resp = await http.get(backendURL + urlSegment, headers: headers);
     int statusCode = resp.statusCode;

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/models/add_item_argument.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_form.dart';
 
 class AddItemScreen extends StatefulWidget {
@@ -26,6 +27,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final argument =
+        ModalRoute.of(context).settings.arguments as AddItemArgument;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add item'),
@@ -38,7 +42,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               userRepository: _userRepository,
             );
           },
-          child: AddItemForm(),
+          child: AddItemForm(argument.storageType),
         ),
       ),
     );

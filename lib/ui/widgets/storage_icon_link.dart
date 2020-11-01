@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/models/storage_overview_argument.dart';
-import 'package:foodload_flutter/models/storage_type.dart';
 import 'package:foodload_flutter/ui/screens/storage_overview_screen.dart';
 
-class Storage extends StatelessWidget {
+class StorageIconLink extends StatelessWidget {
   final title;
   final imagePath;
-  final StorageType storageType;
+  final storageType;
 
-  const Storage({
+  const StorageIconLink({
     this.title,
     this.imagePath,
     this.storageType,

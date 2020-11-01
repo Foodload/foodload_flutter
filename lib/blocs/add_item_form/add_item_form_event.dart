@@ -47,14 +47,15 @@ class ItemChange extends AddItemFormEvent {}
 
 class ItemAdd extends AddItemFormEvent {
   final String amount;
+  final storageType;
 
-  const ItemAdd({this.amount});
-
-  @override
-  List<Object> get props => [amount];
+  const ItemAdd({this.amount, this.storageType});
 
   @override
-  String toString() => 'ItemAdd { amount: $amount }';
+  List<Object> get props => [amount, storageType];
+
+  @override
+  String toString() => 'ItemAdd { amount: $amount, storageType: $storageType }';
 }
 
 class AddItemFormReset extends AddItemFormEvent {}

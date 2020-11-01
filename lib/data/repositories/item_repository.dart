@@ -29,9 +29,8 @@ class ItemRepository {
     );
   }
 
-  Future<List<Item>> getItems(String token) async {
-    //TODO: API CALL TO GET >>>ALL<<< ITEMS OR GET ITEMS THROUGH SOCKET
-    List<Item> items = await foodloadApiClient.checkFridge(token);
+  Future<List<Item>> getItemCounts(String token) async {
+    List<Item> items = await foodloadApiClient.getItemCounts(token);
     return items;
   }
 
@@ -54,8 +53,10 @@ class ItemRepository {
     return res;
   }
 
-  Future<void> addItem(String qr, int amount, String token) async {
-    await foodloadApiClient.addItemQR(qr, amount, token);
+  Future<void> addItem(
+      {String qr, int amount, String token, String storageType}) async {
+    await foodloadApiClient.addItemQR(
+        qr: qr, amount: amount, storageType: storageType, token: token);
   }
 
   Future<void> removeItem(String token, String qr, String storageType) async {
@@ -63,7 +64,11 @@ class ItemRepository {
     await foodloadApiClient.removeItemQR(token, qr, storageType);
   }
 
+  //TODO: Necessary?
+  /**
   Future<void> checkFridge(String token) async {
+
     await foodloadApiClient.checkFridge(token);
   }
+      */
 }
