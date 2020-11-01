@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_detail_argument.dart';
-//import 'package:foodload_flutter/models/storage_type.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   static const routeName = '/item-detail';
@@ -16,7 +15,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   final _amountController = TextEditingController();
   final _amountFocusNode = FocusNode();
   Item _item;
-  //StorageType _storageType;
 
   @override
   void initState() {
