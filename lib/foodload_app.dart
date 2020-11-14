@@ -8,7 +8,7 @@ import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/ui/screens/add_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/family_screen.dart';
-import 'package:foodload_flutter/ui/screens/item_detail_screen.dart';
+import 'package:foodload_flutter/ui/screens/item_settings_screen.dart';
 import 'package:foodload_flutter/ui/screens/landing_screen.dart';
 import 'package:foodload_flutter/ui/screens/loading_screen.dart';
 import 'package:foodload_flutter/ui/screens/login_screen.dart';
@@ -44,7 +44,7 @@ class FoodLoadApp extends StatelessWidget {
       routes: {
         StorageOverviewScreen.routeName: (ctx) => StorageOverviewScreen(),
         AddItemScreen.routeName: (ctx) => AddItemScreen(),
-        ItemDetailScreen.routeName: (ctx) => ItemDetailScreen(),
+        ItemSettingsScreen.routeName: (ctx) => ItemSettingsScreen(),
         TestScreen.routeName: (ctx) => TestScreen(),
         SearchItemScreen.routeName: (ctx) => BlocProvider<SearchItemBloc>(
               create: (context) => SearchItemBloc(

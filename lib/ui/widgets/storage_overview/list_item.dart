@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/item/item.dart';
+import 'package:foodload_flutter/blocs/item_settings/item_settings.dart';
+import 'package:foodload_flutter/data/repositories/item_repository.dart';
+import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/models/item.dart';
-import 'package:foodload_flutter/models/item_detail_argument.dart';
-import 'package:foodload_flutter/ui/screens/item_detail_screen.dart';
+import 'package:foodload_flutter/ui/screens/item_settings_screen.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 
@@ -52,11 +54,18 @@ class ListItem extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.settings),
                   onPressed: () {
+                    final userRepo =
+                        RepositoryProvider.of<UserRepository>(context);
+                    final itemRepo =
+                        RepositoryProvider.of<ItemRepository>(context);
+                    // ignore: close_sinks
+                    final bloc = ItemSettingsBloc(
+                        userRepository: userRepo,
+                        itemRepository: itemRepo,
+                        item: item);
                     Navigator.of(context).pushNamed(
-                      ItemDetailScreen.routeName,
-                      arguments: ItemDetailArgument(
-                        item: item,
-                      ),
+                      ItemSettingsScreen.routeName,
+                      arguments: bloc,
                     );
                   },
                 ),
@@ -148,40 +157,3 @@ class ListItemDescription extends StatelessWidget {
     );
   }
 }
-
-//class ListItem extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return ClipRRect(
-//      borderRadius: BorderRadius.circular(10),
-//      child: Card(
-//        child: ListTile(
-//          title: Text('Milk'),
-//          leading: CircleAvatar(
-//            backgroundImage: NetworkImage(
-//                'https://static.mathem.se/shared/images/products/medium/07310865001825_g1l1.jpeg.jpg'),
-//          ),
-//          trailing: Container(
-//            width: 100,
-//            child: Row(
-//              children: <Widget>[
-//                IconButton(
-//                  color: Theme.of(context).colorScheme.primary,
-//                  splashColor: Theme.of(context).colorScheme.primary,
-//                  icon: Icon(Icons.edit),
-//                  onPressed: () {},
-//                ),
-//                IconButton(
-//                  color: Theme.of(context).colorScheme.primary,
-//                  splashColor: Theme.of(context).colorScheme.primary,
-//                  icon: Icon(Icons.info),
-//                  onPressed: () {},
-//                ),
-//              ],
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//}
