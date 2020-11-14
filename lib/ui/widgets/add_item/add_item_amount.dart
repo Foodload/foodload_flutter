@@ -23,6 +23,12 @@ class _AddItemAmountState extends State<AddItemAmount> {
     _itemAmountTextController.addListener(_onItemAmountChanged);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _itemAmountTextController.removeListener(_onItemAmountChanged);
+  }
+
   void _onItemAmountChanged() {
     _addItemFormBloc
         .add(ItemAmountChanged(amount: _itemAmountTextController.text));
