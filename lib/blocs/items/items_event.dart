@@ -11,13 +11,13 @@ abstract class ItemsEvent extends Equatable {
 class ItemsLoad extends ItemsEvent {}
 
 class ItemsUpdated extends ItemsEvent {
-  final Item item;
+  final List<Item> items;
 
-  const ItemsUpdated(this.item);
-
-  @override
-  List<Object> get props => [item];
+  const ItemsUpdated(this.items);
 
   @override
-  String toString() => 'ItemsUpdated  { item: $item }';
+  List<Object> get props => [items];
+
+  @override
+  String toString() => 'ItemsUpdated  { items: $items }';
 }

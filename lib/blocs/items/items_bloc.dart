@@ -52,7 +52,9 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
           await _itemRepository.getItemCounts(await _userRepository.getToken());
       yield ItemsLoadSuccess(items: items);
       _itemRepository.setOnUpdateItem(
-          (Item updatedItem) => add(ItemsUpdated(updatedItem)));
+          (Item updatedItem) => add(ItemsUpdated([updatedItem])));
+      _itemRepository.setOnMoveItem(
+          (List<Item> updatedItems) => add(ItemsUpdated(updatedItems)));
     } catch (_) {
       yield ItemsLoadFailure();
     }
@@ -60,18 +62,18 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
 
   Stream<ItemsState> _mapItemsUpdatedToState(ItemsUpdated event) async* {
     final items = (state as ItemsLoadSuccess).items;
-
-    final itemIdx = items.lastIndexWhere((item) => item.id == event.item.id);
     final newItems = [...items];
-    if (itemIdx == -1) {
-      //TODO: Needs testing with adding new item
-      newItems.add(event.item);
-      yield ItemsLoadSuccess(items: newItems);
-      return;
-    }
 
-    newItems.removeAt(itemIdx);
-    newItems.insert(itemIdx, event.item);
+    event.items.forEach((updatedItem) {
+      final itemIdx = items.lastIndexWhere((item) => item.id == updatedItem.id);
+      if (itemIdx == -1) {
+        //TODO: Needs testing with adding new item
+        newItems.add(updatedItem);
+      }
+      newItems.removeAt(itemIdx);
+      newItems.insert(itemIdx, updatedItem);
+    });
+
     yield ItemsLoadSuccess(items: newItems);
   }
 
