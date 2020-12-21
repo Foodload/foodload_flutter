@@ -50,4 +50,12 @@ class Item extends Equatable {
         description = json['brand'],
         amount = json['amount'],
         storageType = json['storageType'];
+
+  Item.fromItemCountJson(Map<String, dynamic> json)
+      : id = json['id'],
+        storageType = json['storageType'],
+        amount = json['amount'],
+        title = json['item']['name'],
+        description = json['item']['brand'],
+        qrCode = json['item']['qrCode'];
 }
