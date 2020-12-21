@@ -4,6 +4,7 @@ import 'package:foodload_flutter/data/providers/socket_service.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/items.dart';
+import 'package:foodload_flutter/models/move_item_info.dart';
 import 'package:meta/meta.dart';
 
 class ItemRepository {
@@ -38,6 +39,10 @@ class ItemRepository {
     socketService.setOnUpdateItem(onUpdateItem);
   }
 
+  void setOnMoveItem(Function onMoveItem) {
+    socketService.setOnMoveItem(onMoveItem);
+  }
+
   Future<void> incrementItem(String token, int id) async {
     await foodloadApiClient.incrementItem(token, id);
   }
@@ -62,6 +67,38 @@ class ItemRepository {
   Future<void> removeItem(String token, String qr, String storageType) async {
     //TODO: API stuff
     await foodloadApiClient.removeItemQR(token, qr, storageType);
+  }
+
+  Future<MoveItemInfo> moveItemToStorage(
+      {String token,
+      String storageType,
+      int moveAmount,
+      int id,
+      int oldAmount}) async {
+    final moveItemInfo = await foodloadApiClient.moveItemToStorage(
+        userToken: token,
+        storageType: storageType,
+        moveAmount: moveAmount,
+        oldAmount: oldAmount,
+        id: id);
+    //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
+    return moveItemInfo;
+  }
+
+  Future<MoveItemInfo> moveItemFromStorage(
+      {String token,
+      String storageType,
+      int moveAmount,
+      int id,
+      int oldAmount}) async {
+    final moveItemInfo = await foodloadApiClient.moveItemFromStorage(
+        userToken: token,
+        storageType: storageType,
+        moveAmount: moveAmount,
+        oldAmount: oldAmount,
+        id: id);
+    //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
+    return moveItemInfo;
   }
 
   //TODO: Necessary?

@@ -6,6 +6,7 @@ import 'package:foodload_flutter/models/exceptions/internal_server_error_excepti
 import 'package:foodload_flutter/models/exceptions/not_found_exception.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
+import 'package:foodload_flutter/models/move_item_info.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -197,6 +198,58 @@ class FoodloadApiClient {
     }
     final itemInfo = ItemInfo.fromJson(jsonItem);
     return itemInfo;
+  }
+
+  Future<MoveItemInfo> moveItemToStorage(
+      {String userToken,
+      int id,
+      String storageType,
+      int oldAmount,
+      int moveAmount}) async {
+    const urlSegment = 'move-item-to';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'storageType': storageType,
+      'moveAmount': moveAmount,
+      'oldAmount': oldAmount,
+    };
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
+
+    if (resp.statusCode != 200) {
+      throw Exception('Handle other cases (400, dirty read)');
+      //TODO: Handle other cases (400, dirty read)
+    } else {
+      final jsonItem = jsonDecode(resp.body);
+      return MoveItemInfo.fromJson(jsonItem);
+    }
+  }
+
+  Future<MoveItemInfo> moveItemFromStorage(
+      {String userToken,
+      int id,
+      String storageType,
+      int oldAmount,
+      int moveAmount}) async {
+    const urlSegment = 'move-item-from';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'storageType': storageType,
+      'moveAmount': moveAmount,
+      'oldAmount': oldAmount,
+    };
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
+
+    if (resp.statusCode != 200) {
+      throw Exception('Handle other cases (400, dirty read)');
+      //TODO: Handle other cases (400, dirty read)
+    } else {
+      final jsonItem = jsonDecode(resp.body);
+      return MoveItemInfo.fromJson(jsonItem);
+    }
   }
 
   Future<String> requestFamilyToken(String userToken) async {

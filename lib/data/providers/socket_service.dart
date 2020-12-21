@@ -70,14 +70,30 @@ class SocketService {
       return;
     }
 
-    print('setting update item');
-
     _socket.on('update_item', (data) {
-      print("update_item: " + data);
       Map<String, dynamic> decoded = jsonDecode(data);
-      print("decoded update_item: " + decoded.toString());
+      print(decoded);
       final item = Item.fromJson(decoded);
-      onUpdateItem(item);
+      //onUpdateItem(item);
+    });
+  }
+
+  void setOnMoveItem(Function onMoveItem) {
+    if (_socket == null) {
+      print('Socket is null (setOnMoveItem)');
+      return;
+    }
+
+    if (onMoveItem == null) {
+      _socket.off('move_item');
+      return;
+    }
+
+    _socket.on('move_item', (data) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      final srcItem = Item.fromItemCountJson(decoded['srcItemCount']);
+      final destItem = Item.fromItemCountJson(decoded['destItemCount']);
+      onMoveItem([srcItem, destItem]);
     });
   }
 

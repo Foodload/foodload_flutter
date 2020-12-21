@@ -5,4 +5,44 @@ abstract class ItemSettingsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-//TODO: Move, change amount, etc...
+class ItemSettingsUpdateAmount extends ItemSettingsEvent {
+  final newAmount;
+
+  ItemSettingsUpdateAmount(this.newAmount);
+
+  @override
+  String toString() => 'ItemSettingsUpdateAmount { newAmount: $newAmount }';
+}
+
+class ItemSettingsMoveToOtherStorage extends ItemSettingsEvent {
+  final String storage;
+
+  ItemSettingsMoveToOtherStorage(this.storage);
+
+  @override
+  String toString() => 'ItemSettingsMoveToOtherStorage { storage: $storage }';
+}
+
+class ItemSettingsMoveFromOtherStorage extends ItemSettingsEvent {
+  final String storage;
+
+  ItemSettingsMoveFromOtherStorage(this.storage);
+
+  @override
+  String toString() => 'ItemSettingsMoveFromOtherStorage { storage: $storage }';
+}
+
+class ItemSettingsDelete extends ItemSettingsEvent {
+  @override
+  String toString() => 'ItemSettingsDelete { }';
+}
+
+class ItemSettingsQueryDelete extends ItemSettingsEvent {
+  @override
+  String toString() => 'ItemSettingsQueryDelete { }';
+}
+
+class ItemSettingsSetInit extends ItemSettingsEvent {
+  @override
+  String toString() => 'ItemSettingsSetInit {  }';
+}

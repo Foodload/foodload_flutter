@@ -29,8 +29,26 @@ class _ItemInfoState extends State<ItemInfo> {
     );
   }
 
+  void setFocus() {
+    setState(() {
+      _amountFocused = true;
+
+      Future.delayed(Duration(milliseconds: 60), () {
+        FocusScope.of(context).requestFocus(_amountFocusNode);
+      });
+    });
+  }
+
+  void _submit() {
+    setState(() {
+      _amountFocused = false;
+    });
+    print('submitted new amount');
+  }
+
   @override
   Widget build(BuildContext context) {
+    //TODO: Make a listener to update amount when moving to other storages!
     return BlocBuilder<ItemSettingsBloc, ItemSettingsState>(
       builder: (context, state) {
         Item item = state.item;
@@ -50,48 +68,44 @@ class _ItemInfoState extends State<ItemInfo> {
                   width: 60,
                   height: 30,
                   child: Form(
-                    child: TextFormField(
-                      focusNode: _amountFocusNode,
-                      controller: _amountController,
-                      autofocus: false,
-                      keyboardType: TextInputType.number,
-                      enabled: _amountFocused,
-                      style: const TextStyle(fontSize: 20),
-                      onFieldSubmitted: (_) {
-                        setState(() {
-                          _amountFocused = false;
-                        });
-                      },
+                    child: BlocBuilder<ItemSettingsBloc, ItemSettingsState>(
+                      builder: (context, state) => TextFormField(
+                        focusNode: _amountFocusNode,
+                        controller: _amountController,
+                        autofocus: false,
+                        keyboardType: TextInputType.number,
+                        enabled: state is ItemSettingsDeleting
+                            ? false
+                            : _amountFocused,
+                        style: const TextStyle(fontSize: 20),
+                        onFieldSubmitted: (_) {
+                          _submit();
+                        },
+                      ),
                     ),
                   ),
                 ),
                 Container(
-                    height: 20,
-                    child: !_amountFocused
-                        ? IconButton(
-                            padding: const EdgeInsets.all(0.0),
-                            icon: const Icon(Icons.edit),
-                            color: Theme.of(context).colorScheme.primary,
-                            onPressed: () {
-                              setState(() {
-                                _amountFocused = true;
-
-                                Future.delayed(Duration(milliseconds: 60), () {
-                                  FocusScope.of(context)
-                                      .requestFocus(_amountFocusNode);
-                                });
-                              });
-                            })
-                        : IconButton(
-                            padding: const EdgeInsets.all(0.0),
-                            icon: const Icon(Icons.check_circle),
-                            color: Theme.of(context).colorScheme.primary,
-                            onPressed: () {
-                              setState(() {
-                                _amountFocused = false;
-                              });
-                            },
-                          )),
+                  height: 20,
+                  child: BlocBuilder<ItemSettingsBloc, ItemSettingsState>(
+                      builder: (context, state) => !_amountFocused
+                          ? IconButton(
+                              padding: const EdgeInsets.all(0.0),
+                              icon: const Icon(Icons.edit),
+                              color: Theme.of(context).colorScheme.primary,
+                              onPressed: state is ItemSettingsDeleting
+                                  ? null
+                                  : setFocus,
+                            )
+                          : IconButton(
+                              padding: const EdgeInsets.all(0.0),
+                              icon: const Icon(Icons.check_circle),
+                              color: Theme.of(context).colorScheme.primary,
+                              onPressed: state is ItemSettingsDeleting
+                                  ? null
+                                  : _submit,
+                            )),
+                )
               ],
             ),
           ],
