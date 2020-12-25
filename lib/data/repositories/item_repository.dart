@@ -43,6 +43,10 @@ class ItemRepository {
     socketService.setOnMoveItem(onMoveItem);
   }
 
+  void setOnDeleteItem(Function onDeleteItem) {
+    socketService.setOnDeleteItem(onDeleteItem);
+  }
+
   Future<void> incrementItem(String token, int id) async {
     await foodloadApiClient.incrementItem(token, id);
   }
@@ -99,6 +103,15 @@ class ItemRepository {
         id: id);
     //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
     return moveItemInfo;
+  }
+
+  Future<void> deleteItem({
+    String token,
+    int amount,
+    int id,
+  }) async {
+    await foodloadApiClient.deleteItem(
+        userToken: token, amount: amount, id: id);
   }
 
   //TODO: Necessary?

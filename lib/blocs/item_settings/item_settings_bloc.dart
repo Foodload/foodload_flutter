@@ -82,10 +82,17 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
 
   Stream<ItemSettingsState> _mapDeleteToState(ItemSettingsDelete event) async* {
     yield ItemSettingsDeleting(state.item);
-    print("Deleting...");
-    //TODO: API call
-    yield ItemSettingsDeleteSuccess(
-        state.item, 'The item was successfully deleted');
+    try {
+      await _itemRepository.deleteItem(
+          token: await _userRepository.getToken(),
+          id: state.item.id,
+          amount: state.item.amount);
+      yield ItemSettingsDeleteSuccess(
+          state.item, 'The item was successfully deleted');
+    } catch (error) {
+      //TODO: Handle error
+      print(error);
+    }
   }
 
   Stream<ItemSettingsState> _mapSetInitToState(

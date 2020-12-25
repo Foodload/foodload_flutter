@@ -103,8 +103,6 @@ class FoodloadApiClient {
       print(resp.body);
       throw BadResponseException('Something went wrong...');
     }
-    print(resp.headers);
-    print(resp.body);
     List<Item> fridgeItems = (jsonDecode(resp.body) as List)
         .map((jsonItem) => Item.fromJson(jsonItem))
         .toList();
@@ -249,6 +247,22 @@ class FoodloadApiClient {
     } else {
       final jsonItem = jsonDecode(resp.body);
       return MoveItemInfo.fromJson(jsonItem);
+    }
+  }
+
+  Future<void> deleteItem({String userToken, int id, int amount}) async {
+    const urlSegment = 'delete-item';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'amount': amount,
+    };
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
+
+    if (resp.statusCode != 200) {
+      throw Exception('Handle other cases (400, dirty read)');
+      //TODO: Handle other cases (400, dirty read)
     }
   }
 

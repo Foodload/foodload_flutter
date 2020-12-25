@@ -43,6 +43,8 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       yield* _mapItemsLoadToState();
     } else if (event is ItemsUpdated) {
       yield* _mapItemsUpdatedToState(event);
+    } else if (event is ItemsDeleted) {
+      yield* _mapItemsDeletedToState(event);
     }
   }
 
@@ -55,6 +57,8 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
           (Item updatedItem) => add(ItemsUpdated([updatedItem])));
       _itemRepository.setOnMoveItem(
           (List<Item> updatedItems) => add(ItemsUpdated(updatedItems)));
+      _itemRepository
+          .setOnDeleteItem((List<int> itemIds) => add(ItemsDeleted(itemIds)));
     } catch (_) {
       yield ItemsLoadFailure();
     }
@@ -69,9 +73,27 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       if (itemIdx == -1) {
         //TODO: Needs testing with adding new item
         newItems.add(updatedItem);
+      } else {
+        newItems.removeAt(itemIdx);
+        newItems.insert(itemIdx, updatedItem);
       }
-      newItems.removeAt(itemIdx);
-      newItems.insert(itemIdx, updatedItem);
+    });
+
+    yield ItemsLoadSuccess(items: newItems);
+  }
+
+  Stream<ItemsState> _mapItemsDeletedToState(ItemsDeleted event) async* {
+    final items = (state as ItemsLoadSuccess).items;
+    final newItems = [...items];
+
+    event.itemIds.forEach((deletedId) {
+      final itemIdx = items.lastIndexWhere((item) => item.id == deletedId);
+      if (itemIdx == -1) {
+        //TODO: Needs testing
+        //Don't need to do anything
+      } else {
+        newItems.removeAt(itemIdx);
+      }
     });
 
     yield ItemsLoadSuccess(items: newItems);

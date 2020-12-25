@@ -74,7 +74,7 @@ class SocketService {
       Map<String, dynamic> decoded = jsonDecode(data);
       print(decoded);
       final item = Item.fromJson(decoded);
-      //onUpdateItem(item);
+      onUpdateItem(item);
     });
   }
 
@@ -94,6 +94,23 @@ class SocketService {
       final srcItem = Item.fromItemCountJson(decoded['srcItemCount']);
       final destItem = Item.fromItemCountJson(decoded['destItemCount']);
       onMoveItem([srcItem, destItem]);
+    });
+  }
+
+  void setOnDeleteItem(Function onDeleteItem) {
+    if (_socket == null) {
+      print('Socket is null (setOnDeleteItem)');
+      return;
+    }
+
+    if (onDeleteItem == null) {
+      _socket.off('delete_item');
+      return;
+    }
+
+    _socket.on('delete_item', (data) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      onDeleteItem([decoded['itemCountId']].cast<int>());
     });
   }
 
