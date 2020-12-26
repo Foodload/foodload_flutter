@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-class MoveItemInfo extends Equatable {
+class ItemUpdatedInfo extends Equatable {
   final int amount;
 
-  const MoveItemInfo({
+  const ItemUpdatedInfo({
     @required this.amount,
   });
 
@@ -13,8 +13,8 @@ class MoveItemInfo extends Equatable {
 
   @override
   String toString() {
-    return 'MoveItemInfo { amount: $amount }';
+    return 'ItemUpdatedInfo { amount: $amount }';
   }
 
-  MoveItemInfo.fromJson(Map<String, dynamic> json) : amount = json['amount'];
+  ItemUpdatedInfo.fromJson(Map<String, dynamic> json) : amount = json['amount'];
 }

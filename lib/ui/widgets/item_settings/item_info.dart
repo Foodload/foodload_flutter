@@ -43,7 +43,9 @@ class _ItemInfoState extends State<ItemInfo> {
     setState(() {
       _amountFocused = false;
     });
-    print('submitted new amount');
+    print('submit new amount');
+    BlocProvider.of<ItemSettingsBloc>(context)
+        .add(ItemSettingsUpdateAmount(_amountController.text));
   }
 
   @override

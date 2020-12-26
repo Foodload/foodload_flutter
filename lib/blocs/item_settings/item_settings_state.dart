@@ -69,3 +69,17 @@ class ItemSettingsMoveFinish extends ItemSettingsState {
   @override
   List<Object> get props => [item];
 }
+
+class ItemSettingsUpdateAmountSuccess extends ItemSettingsState {
+  ItemSettingsUpdateAmountSuccess(Item item) : super(item);
+
+  @override
+  String toString() {
+    return 'ItemSettingsUpdateAmountSuccess { item: $item }';
+  }
+
+  @override
+  List<Object> get props => [item];
+}
+
+//TODO: Add fail state

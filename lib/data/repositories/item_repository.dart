@@ -4,7 +4,7 @@ import 'package:foodload_flutter/data/providers/socket_service.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/items.dart';
-import 'package:foodload_flutter/models/move_item_info.dart';
+import 'package:foodload_flutter/models/item_updated_info.dart';
 import 'package:meta/meta.dart';
 
 class ItemRepository {
@@ -73,36 +73,36 @@ class ItemRepository {
     await foodloadApiClient.removeItemQR(token, qr, storageType);
   }
 
-  Future<MoveItemInfo> moveItemToStorage(
+  Future<ItemUpdatedInfo> moveItemToStorage(
       {String token,
       String storageType,
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final moveItemInfo = await foodloadApiClient.moveItemToStorage(
+    final itemUpdatedInfo = await foodloadApiClient.moveItemToStorage(
         userToken: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
     //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
-    return moveItemInfo;
+    return itemUpdatedInfo;
   }
 
-  Future<MoveItemInfo> moveItemFromStorage(
+  Future<ItemUpdatedInfo> moveItemFromStorage(
       {String token,
       String storageType,
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final moveItemInfo = await foodloadApiClient.moveItemFromStorage(
+    final itemUpdatedInfo = await foodloadApiClient.moveItemFromStorage(
         userToken: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
     //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
-    return moveItemInfo;
+    return itemUpdatedInfo;
   }
 
   Future<void> deleteItem({
@@ -112,6 +112,13 @@ class ItemRepository {
   }) async {
     await foodloadApiClient.deleteItem(
         userToken: token, amount: amount, id: id);
+  }
+
+  Future<ItemUpdatedInfo> updateItemAmount(
+      {String token, int id, int newAmount, int oldAmount}) async {
+    final itemUpdateInfo = await foodloadApiClient.updateItemAmount(
+        id: id, userToken: token, newAmount: newAmount, oldAmount: oldAmount);
+    return itemUpdateInfo;
   }
 
   //TODO: Necessary?

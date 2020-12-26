@@ -3,6 +3,7 @@ import 'package:foodload_flutter/blocs/item_settings/item_settings.dart';
 import 'package:foodload_flutter/blocs/item_settings/item_settings_state.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/field_validation.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
@@ -37,7 +38,28 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
   Stream<ItemSettingsState> _mapUpdateAmountToState(
       ItemSettingsUpdateAmount event) async* {
     print("Update Amount");
-    //TODO: Old amount must be given and compared with in backend, if same OK; otherwise 400 and return updated ver
+    //TODO: Add set loading state
+    if (!FieldValidation.isInteger(event.newAmount)) {
+      //TODO: Handle non-integer amount
+      print("not an integer");
+      return;
+    }
+    final newAmount = int.parse(event.newAmount);
+    try {
+      final updatedItemInfo = await _itemRepository.updateItemAmount(
+        token: await _userRepository.getToken(),
+        id: state.item.id,
+        oldAmount: state.item.amount,
+        newAmount: newAmount,
+      );
+
+      final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
+      yield ItemSettingsUpdateAmountSuccess(currItem);
+    } catch (error) {
+      //TODO: Handle error
+      print("Update Amount Bloc Error");
+      print(error);
+    }
   }
 
   Stream<ItemSettingsState> _mapMoveToOtherStorageEventToState(
@@ -47,16 +69,15 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
       return;
     }
 
-    final moveItemInfo = await _itemRepository.moveItemToStorage(
+    final updatedItemInfo = await _itemRepository.moveItemToStorage(
         token: await _userRepository.getToken(),
         id: state.item.id,
         moveAmount: 1,
         oldAmount: state.item.amount,
         storageType: event.storage);
 
-    print(moveItemInfo);
     //TODO: Old amount must be given and compared with in backend, if same OK; otherwise 400 and return updated ver
-    final currItem = state.item.copyWith(amount: moveItemInfo.amount);
+    final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
     yield ItemSettingsMoveFinish(currItem);
   }
 
@@ -67,15 +88,14 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
       return;
     }
 
-    final moveItemInfo = await _itemRepository.moveItemFromStorage(
+    final updatedItemInfo = await _itemRepository.moveItemFromStorage(
         token: await _userRepository.getToken(),
         id: state.item.id,
         moveAmount: 1,
         oldAmount: state.item.amount,
         storageType: event.storage);
 
-    print(moveItemInfo);
-    final currItem = state.item.copyWith(amount: moveItemInfo.amount);
+    final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
     yield ItemSettingsMoveFinish(currItem);
     //TODO: Old amount must be given and compared with in backend, if same OK; otherwise 400 and return updated ver
   }

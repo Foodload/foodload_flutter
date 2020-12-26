@@ -6,7 +6,7 @@ import 'package:foodload_flutter/models/exceptions/internal_server_error_excepti
 import 'package:foodload_flutter/models/exceptions/not_found_exception.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
-import 'package:foodload_flutter/models/move_item_info.dart';
+import 'package:foodload_flutter/models/item_updated_info.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -198,7 +198,7 @@ class FoodloadApiClient {
     return itemInfo;
   }
 
-  Future<MoveItemInfo> moveItemToStorage(
+  Future<ItemUpdatedInfo> moveItemToStorage(
       {String userToken,
       int id,
       String storageType,
@@ -220,11 +220,11 @@ class FoodloadApiClient {
       //TODO: Handle other cases (400, dirty read)
     } else {
       final jsonItem = jsonDecode(resp.body);
-      return MoveItemInfo.fromJson(jsonItem);
+      return ItemUpdatedInfo.fromJson(jsonItem);
     }
   }
 
-  Future<MoveItemInfo> moveItemFromStorage(
+  Future<ItemUpdatedInfo> moveItemFromStorage(
       {String userToken,
       int id,
       String storageType,
@@ -246,7 +246,7 @@ class FoodloadApiClient {
       //TODO: Handle other cases (400, dirty read)
     } else {
       final jsonItem = jsonDecode(resp.body);
-      return MoveItemInfo.fromJson(jsonItem);
+      return ItemUpdatedInfo.fromJson(jsonItem);
     }
   }
 
@@ -263,6 +263,27 @@ class FoodloadApiClient {
     if (resp.statusCode != 200) {
       throw Exception('Handle other cases (400, dirty read)');
       //TODO: Handle other cases (400, dirty read)
+    }
+  }
+
+  Future<ItemUpdatedInfo> updateItemAmount(
+      {String userToken, int id, int newAmount, int oldAmount}) async {
+    const urlSegment = 'change-item-count';
+    final headers = _headers(userToken);
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'amount': oldAmount,
+      'newAmount': newAmount,
+    };
+    final resp = await http.post(backendURL + urlSegment,
+        headers: headers, body: json.encode(body));
+
+    if (resp.statusCode != 200) {
+      throw Exception('Handle other cases (400, dirty read)');
+      //TODO: Handle other cases (400, dirty read)
+    } else {
+      final jsonItem = jsonDecode(resp.body);
+      return ItemUpdatedInfo.fromJson(jsonItem);
     }
   }
 
