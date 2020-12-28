@@ -1,200 +1,66 @@
+import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class AddItemFormState {
-  //Add
-  final bool isAdding;
-  final bool isAddSuccess;
-  final bool isAddFail;
-
-  //Item to be added
   final ItemInfo item;
 
-  //Search
+  final bool isAdding;
+  final bool addSuccess;
   final bool isSearching;
-  final bool isSearchFail;
-  final bool isSearchSuccess;
-  final String failMessage;
-
-  //Amount field
-  final bool isItemAmountEntered;
-  final bool isItemAmountNumber;
-  final bool isItemAmountAtLeastOne;
-  final bool isItemAmountLimitReached;
-
-  //Id field
-  final bool isItemIdEntered;
-
+  final bool searchSuccess;
+  final FieldError amountError;
+  final FieldError itemIdError;
   bool get isFormValid =>
-      item != null &&
-      isItemIdEntered &&
-      isItemAmountNumber &&
-      isItemAmountAtLeastOne &&
-      isItemAmountEntered &&
-      !isItemAmountLimitReached;
+      item != null && amountError == null && itemIdError == null;
 
   AddItemFormState({
-    @required this.isAdding,
-    @required this.isAddSuccess,
-    @required this.isAddFail,
-    @required this.item,
-    @required this.isItemIdEntered,
-    @required this.isSearching,
-    @required this.isSearchFail,
-    @required this.isSearchSuccess,
-    @required this.failMessage,
-    @required this.isItemAmountEntered,
-    @required this.isItemAmountNumber,
-    @required this.isItemAmountAtLeastOne,
-    @required this.isItemAmountLimitReached,
+    this.isAdding: false,
+    this.addSuccess,
+    this.isSearching: false,
+    this.searchSuccess,
+    this.amountError,
+    this.itemIdError,
+    this.item,
   });
 
-  factory AddItemFormState.initial() {
+  AddItemFormState copyWith(
+      {bool isAdding,
+      bool addSuccess,
+      bool isSearching,
+      bool searchSuccess,
+      FieldError amountError,
+      FieldError itemIdError,
+      ItemInfo item}) {
     return AddItemFormState(
-      isAdding: false,
-      isAddSuccess: false,
-      isAddFail: false,
-      item: null,
-      isItemIdEntered: false,
-      isSearching: false,
-      isSearchSuccess: false,
-      isSearchFail: false,
-      isItemAmountEntered: true, //init to 1
-      isItemAmountNumber: true,
-      isItemAmountAtLeastOne: true,
-      isItemAmountLimitReached: false,
+      isAdding: isAdding ?? this.isAdding,
+      addSuccess: addSuccess ?? this.addSuccess,
+      isSearching: isSearching ?? this.isSearching,
+      searchSuccess: searchSuccess ?? this.searchSuccess,
+      amountError: amountError ?? this.amountError,
+      itemIdError: itemIdError ?? this.itemIdError,
+      item: item ?? this.item,
+    );
+  }
+
+  AddItemFormState amountValid() {
+    return AddItemFormState(
+      itemIdError: this.itemIdError,
+      item: this.item,
+    );
+  }
+
+  AddItemFormState itemIdValid() {
+    return AddItemFormState(
+      amountError: this.amountError,
+      item: this.item,
     );
   }
 
   AddItemFormState changeItem() {
     return AddItemFormState(
-      isAdding: isAdding ?? this.isAdding,
-      isAddSuccess: isAddSuccess ?? this.isAddSuccess,
-      isAddFail: isAddFail ?? this.isAddFail,
-      item: null,
-      isItemIdEntered: false,
-      isSearching: isSearching ?? this.isSearching,
-      isSearchSuccess: isSearchSuccess ?? this.isSearchSuccess,
-      isSearchFail: isSearchFail ?? this.isSearchFail,
-      failMessage: failMessage ?? this.failMessage,
-      isItemAmountEntered: isItemAmountEntered ?? this.isItemAmountEntered,
-      isItemAmountNumber: isItemAmountNumber ?? this.isItemAmountNumber,
-      isItemAmountAtLeastOne:
-          isItemAmountAtLeastOne ?? this.isItemAmountAtLeastOne,
-      isItemAmountLimitReached:
-          isItemAmountLimitReached ?? this.isItemAmountLimitReached,
-    );
-  }
-
-  AddItemFormState adding() {
-    return copyWith(
-      isAdding: true,
-      isAddSuccess: false,
-      isAddFail: false,
-    );
-  }
-
-  AddItemFormState addSuccess() {
-    return copyWith(
-      isAdding: false,
-      isAddSuccess: true,
-      isAddFail: false,
-    );
-  }
-
-  AddItemFormState addFail() {
-    return copyWith(
-      isAdding: false,
-      isAddSuccess: false,
-      isAddFail: true,
-    );
-  }
-
-  AddItemFormState searchLoading() {
-    return copyWith(
-      isSearching: true,
-      isSearchSuccess: false,
-      isSearchFail: false,
-    );
-  }
-
-  AddItemFormState searchFailure(failMsg) {
-    return copyWith(
-        isSearching: false,
-        isSearchSuccess: false,
-        isSearchFail: true,
-        failMessage: failMsg);
-  }
-
-  AddItemFormState searchSuccess(ItemInfo itemInfo) {
-    return copyWith(
-      isSearching: false,
-      isSearchSuccess: true,
-      isSearchFail: false,
-      item: itemInfo,
-      isItemValid: true,
-    );
-  }
-
-  AddItemFormState update({
-    ItemInfo item,
-    bool isItemValid,
-    bool isItemIdEntered,
-    bool isItemAmountEntered,
-    bool isItemAmountNumber,
-    bool isItemAmountAtLeastOne,
-    bool isItemAmountLimitReached,
-  }) {
-    return copyWith(
-      isAdding: false,
-      isAddSuccess: false,
-      isAddFail: false,
-      item: item,
-      isItemValid: isItemValid,
-      isSearching: false,
-      isSearchSuccess: false,
-      isSearchFail: false,
-      isItemIdEntered: isItemIdEntered,
-      isItemAmountEntered: isItemAmountEntered,
-      isItemAmountNumber: isItemAmountNumber,
-      isItemAmountAtLeastOne: isItemAmountAtLeastOne,
-      isItemAmountLimitReached: isItemAmountLimitReached,
-    );
-  }
-
-  AddItemFormState copyWith({
-    bool isAdding,
-    bool isAddSuccess,
-    bool isAddFail,
-    ItemInfo item,
-    bool isItemValid,
-    bool isSearching,
-    bool isSearchSuccess,
-    bool isSearchFail,
-    String failMessage,
-    bool isItemIdEntered,
-    bool isItemAmountEntered,
-    bool isItemAmountNumber,
-    bool isItemAmountAtLeastOne,
-    bool isItemAmountLimitReached,
-  }) {
-    return AddItemFormState(
-      isAdding: isAdding ?? this.isAdding,
-      isAddSuccess: isAddSuccess ?? this.isAddSuccess,
-      isAddFail: isAddFail ?? this.isAddFail,
-      item: item ?? this.item,
-      isItemIdEntered: isItemIdEntered ?? this.isItemIdEntered,
-      isSearching: isSearching ?? this.isSearching,
-      isSearchSuccess: isSearchSuccess ?? this.isSearchSuccess,
-      isSearchFail: isSearchFail ?? this.isSearchFail,
-      failMessage: failMessage ?? this.failMessage,
-      isItemAmountEntered: isItemAmountEntered ?? this.isItemAmountEntered,
-      isItemAmountNumber: isItemAmountNumber ?? this.isItemAmountNumber,
-      isItemAmountAtLeastOne:
-          isItemAmountAtLeastOne ?? this.isItemAmountAtLeastOne,
-      isItemAmountLimitReached:
-          isItemAmountLimitReached ?? this.isItemAmountLimitReached,
+      amountError: this.amountError,
     );
   }
 
@@ -202,17 +68,12 @@ class AddItemFormState {
   String toString() {
     return '''AddItemFormState {
       isAdding: $isAdding,
-      isAddSuccess: $isAddSuccess,
-      isAddFail: $isAddFail,
+      addSuccess: $addSuccess,
       item: $item,
-      isItemIdEntered: $isItemIdEntered,
       isSearching: $isSearching,
-      isSearchSuccess: $isSearchSuccess,
-      isSearchFail: $isSearchFail,
-      isItemAmountEntered: $isItemAmountEntered,
-      isItemAmountNumber: $isItemAmountNumber,
-      isItemAmountAtLeastOne: $isItemAmountAtLeastOne,
-      isItemAmountLimitReached: $isItemAmountLimitReached,
+      searchSuccess: $searchSuccess,
+      amountError: $amountError,
+      itemIdError: $itemIdError
     }''';
   }
 }

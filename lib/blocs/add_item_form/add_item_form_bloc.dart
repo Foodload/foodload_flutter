@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/field_validation.dart';
+import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
@@ -14,7 +16,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     @required this.itemRepository,
     @required this.userRepository,
   })  : assert(itemRepository != null && userRepository != null),
-        super(AddItemFormState.initial());
+        super(AddItemFormState());
 
   @override
   Stream<Transition<AddItemFormEvent, AddItemFormState>> transformEvents(
@@ -51,72 +53,50 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
   }
 
   Stream<AddItemFormState> _mapItemQrFetchedToState(ItemQrSearch event) async* {
-    yield state.searchLoading();
+    yield state.copyWith(isSearching: true);
     try {
       final itemInfo = await itemRepository.getItem(
           event.qr, await userRepository.getToken());
-      yield state.searchSuccess(itemInfo);
+      yield state.copyWith(
+          isSearching: false, searchSuccess: true, item: itemInfo);
     } catch (error) {
-      yield state.searchFailure(error.message);
+      //TODO: Add error handling...
+      yield state.copyWith(isSearching: false, searchSuccess: false);
     }
   }
 
   Stream<AddItemFormState> _mapItemQrChangedToState(String qr) async* {
-    final isEntered = (qr != null && qr.isNotEmpty);
-    if (!isEntered) {
-      yield state.update(
-        isItemIdEntered: false,
-      );
+    if (!FieldValidation.isNotEmpty(qr)) {
+      yield state.copyWith(itemIdError: FieldError.Empty);
       return;
     }
-    yield state.update(
-      isItemIdEntered: true,
-    );
+
+    yield state.itemIdValid();
   }
 
   Stream<AddItemFormState> _mapItemAmountChangedToState(
       String amountText) async* {
     if (amountText == null || amountText.isEmpty) {
-      yield state.update(
-        isItemAmountEntered: false,
-      );
+      yield state.copyWith(amountError: FieldError.Empty);
       return;
     }
-    var amount = int.tryParse(amountText);
-    if (amount == null) {
-      yield state.update(
-        isItemAmountEntered: true,
-        isItemAmountNumber: false,
-      );
+    if (!FieldValidation.isInteger(amountText)) {
+      yield state.copyWith(amountError: FieldError.Invalid);
       return;
     }
+    final amount = int.parse(amountText);
 
-    if (amount > 999) {
-      yield state.update(
-        isItemAmountEntered: true,
-        isItemAmountNumber: true,
-        isItemAmountAtLeastOne: true,
-        isItemAmountLimitReached: true,
-      );
+    if (FieldValidation.isAmountOverflow(amount)) {
+      yield state.copyWith(amountError: FieldError.AmountOverflow);
       return;
     }
 
     if (amount < 1) {
-      yield state.update(
-        isItemAmountEntered: true,
-        isItemAmountNumber: true,
-        isItemAmountAtLeastOne: false,
-        isItemAmountLimitReached: false,
-      );
+      yield state.copyWith(amountError: FieldError.NegativeAmount);
       return;
     }
 
-    yield state.update(
-      isItemAmountEntered: true,
-      isItemAmountNumber: true,
-      isItemAmountAtLeastOne: true,
-      isItemAmountLimitReached: false,
-    );
+    yield state.amountValid();
   }
 
   Stream<AddItemFormState> _mapItemChangeToState() async* {
@@ -127,20 +107,20 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     final qrCode = state.item.qrCode;
     final amount = int.tryParse(event.amount);
     final storageType = event.storageType;
-    yield state.adding();
+    yield state.copyWith(isAdding: true);
     try {
       await itemRepository.addItem(
           qr: qrCode,
           storageType: storageType,
           amount: amount,
           token: await userRepository.getToken());
-      yield state.addSuccess();
+      yield state.copyWith(addSuccess: true, isAdding: false);
     } catch (error) {
-      yield state.addFail();
+      yield state.copyWith(addSuccess: false, isAdding: false);
     }
   }
 
   Stream<AddItemFormState> _mapAddItemFormResetToState() async* {
-    yield AddItemFormState.initial();
+    yield AddItemFormState();
   }
 }

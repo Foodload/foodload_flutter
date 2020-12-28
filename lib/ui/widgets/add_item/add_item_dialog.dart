@@ -7,19 +7,24 @@ class AddItemDialog extends StatelessWidget {
 
   const AddItemDialog(this.storageType);
 
+  bool _isAddSuccess(AddItemFormState state) =>
+      state.addSuccess != null && state.addSuccess;
+  bool _isAdding(AddItemFormState state) =>
+      state.isAdding != null && state.isAdding;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddItemFormBloc, AddItemFormState>(
         builder: (context, state) {
-      if (state.isAdding) {
+      if (_isAdding(state)) {
         return Center(
           child: CircularProgressIndicator(),
         );
       }
 
       return AlertDialog(
-        title: Text(state.isAddSuccess ? 'Success' : 'Fail'),
-        content: Text(state.isAddSuccess
+        title: Text(_isAddSuccess(state) ? 'Success' : 'Fail'),
+        content: Text(_isAddSuccess(state)
             ? 'Successfully added ${state.item.title} to $storageType'
             : 'Failed to add item. Please try again later'),
         actions: <Widget>[

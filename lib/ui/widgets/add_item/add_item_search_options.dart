@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
+import 'package:foodload_flutter/models/enums/field_error.dart';
 
 class AddItemSearchOptions extends StatefulWidget {
   final TextEditingController _itemIdTextController;
@@ -125,7 +126,8 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary),
                     ),
-                    onPressed: !state.isItemIdEntered
+                    onPressed: (_itemIdTextController.text.length <= 0 ||
+                            state.itemIdError == FieldError.Empty)
                         ? null
                         : () {
                             _onSearch(_itemIdTextController.text);

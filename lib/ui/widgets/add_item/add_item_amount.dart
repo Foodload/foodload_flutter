@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
+import 'package:foodload_flutter/models/enums/field_error.dart';
 
 class AddItemAmount extends StatefulWidget {
   final TextEditingController _itemAmountTextController;
@@ -61,6 +62,23 @@ class _AddItemAmountState extends State<AddItemAmount> {
     _itemAmountTextController.value = _getNewAmountValue(newValue);
   }
 
+  bool _hasAmountError(AddItemFormState state) => state.amountError != null;
+
+  String _amountErrorText(FieldError error) {
+    switch (error) {
+      case FieldError.Empty:
+        return 'Cannot be empty';
+      case FieldError.Invalid:
+        return 'Must be an integer';
+      case FieldError.AmountOverflow:
+        return 'Too big';
+      case FieldError.NegativeAmount:
+        return 'Too small';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,34 +96,25 @@ class _AddItemAmountState extends State<AddItemAmount> {
                   autovalidate: true,
                   autocorrect: false,
                   validator: (_) {
-                    if (!state.isItemAmountEntered) {
-                      return "Enter a number";
-                    } else if (!state.isItemAmountNumber) {
-                      return "Must be a number";
-                    } else if (state.isItemAmountLimitReached) {
-                      return "Max is 999";
-                    } else if (!state.isItemAmountAtLeastOne) {
-                      return "Must be at least 1";
-                    } else {
-                      return null;
+                    if (_hasAmountError(state)) {
+                      return _amountErrorText(state.amountError);
                     }
+                    return null;
                   },
                 ),
               ),
             ),
             IconButton(
               icon: Icon(Icons.add),
-              onPressed:
-                  (state.isItemAmountNumber && !state.isItemAmountLimitReached)
-                      ? incrementAmount
-                      : null,
+              onPressed: (state.amountError != FieldError.AmountOverflow)
+                  ? incrementAmount
+                  : null,
             ),
             IconButton(
               icon: Icon(Icons.remove),
-              onPressed:
-                  (state.isItemAmountNumber && state.isItemAmountAtLeastOne)
-                      ? decrementAmount
-                      : null,
+              onPressed: (state.amountError != FieldError.NegativeAmount)
+                  ? decrementAmount
+                  : null,
             ),
           ],
         ),

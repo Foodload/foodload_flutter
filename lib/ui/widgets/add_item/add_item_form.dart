@@ -87,8 +87,9 @@ class _AddItemFormState extends State<AddItemForm> {
       children: <Widget>[
         BlocConsumer<AddItemFormBloc, AddItemFormState>(
           listener: (context, state) {
-            if (state.isSearchFail) {
-              _showSearchFailSnackBar(state.failMessage);
+            if (state.searchSuccess != null && state.searchSuccess == false) {
+              //TODO: Handle this better...
+              _showSearchFailSnackBar('Failed to find the item.');
             }
           },
           builder: (context, state) {
