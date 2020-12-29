@@ -8,7 +8,6 @@ import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
-import 'package:http/http.dart' as http;
 
 import 'data/providers/socket_service.dart';
 
@@ -35,7 +34,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     _socketService = SocketService();
-    _foodloadApiClient = FoodloadApiClient(httpClient: http.Client());
+    _foodloadApiClient = FoodloadApiClient();
     _userRepository = UserRepository(foodloadApiClient: _foodloadApiClient);
     _itemRepository = ItemRepository(
       foodloadApiClient: _foodloadApiClient,

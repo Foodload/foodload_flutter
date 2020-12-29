@@ -1,22 +1,201 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:foodload_flutter/helpers/keys.dart';
-import 'package:foodload_flutter/models/exceptions/bad_request_exception.dart';
-import 'package:foodload_flutter/models/exceptions/internal_server_error_exception.dart';
-import 'package:foodload_flutter/models/exceptions/not_found_exception.dart';
+import 'package:foodload_flutter/models/exceptions/ApiException.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/item_updated_info.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
 class FoodloadApiClient {
-  final http.Client httpClient;
+  final _helper = _ApiBaseHelper(http.Client());
 
-  FoodloadApiClient({
-    @required this.httpClient,
-  }) : assert(httpClient != null);
+  Future<User> sendInit(String token) async {
+    const urlSegment = 'login';
+    final resp = await _helper.get(urlSegment, token);
+    final user = User(
+      token: resp['token'],
+      email: resp['client']['email'],
+      familyId: resp['client']['family']['id'],
+      familyName: resp['client']['family']['name'],
+    );
+    return user;
+  }
+
+  Future<void> addItemQR(
+      {String qr, int amount, String storageType, String token}) async {
+    const urlSegment = 'add-item';
+    Map<String, dynamic> body = {
+      'qrCode': qr,
+      'amount': amount,
+      'storageType': storageType,
+    };
+    final resp = await _helper.post(urlSegment, token, body);
+    print(resp);
+  }
+
+  Future<String> removeItemQR(
+      String token, String qr, String storageType) async {
+    const urlSegment = 'removeItemQR';
+    Map<String, dynamic> body = {
+      'qrCode': qr,
+      'amount': "1",
+      'storageType': storageType,
+    };
+    final resp = await _helper.post(urlSegment, token, body);
+    print(resp);
+    return resp.body;
+  }
+
+  Future<List<Item>> getItemCounts(String token) async {
+    const urlSegment = 'get-all-item-counts';
+    final resp = await _helper.get(urlSegment, token);
+    List<Item> fridgeItems =
+        (resp as List).map((jsonItem) => Item.fromJson(jsonItem)).toList();
+    return fridgeItems;
+  }
+
+  Future<void> incrementItem(String token, int id) async {
+    const urlSegment = 'increment-item';
+    Map<String, dynamic> body = {
+      'id': id,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    print(resp);
+  }
+
+  Future<void> decrementItem(String token, int id) async {
+    const urlSegment = 'decrement-item';
+    Map<String, dynamic> body = {
+      'id': id,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    print(resp);
+  }
+
+  Future<List<ItemInfo>> findItemByName(
+      String searchText, int startIndex, String token) async {
+    const urlSegment = 'find-item-by-name';
+    Map<String, dynamic> body = {
+      'name': searchText,
+      'start': startIndex,
+    };
+
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    List<ItemInfo> results =
+        (resp as List).map((jsonItem) => ItemInfo.fromJson(jsonItem)).toList();
+    return results;
+  }
+
+  Future<ItemInfo> findItemByQr(String qr, String token) async {
+    const urlSegment = 'search-item';
+    Map<String, dynamic> body = {
+      'qrCode': qr,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    final itemInfo = ItemInfo.fromJson(resp);
+    return itemInfo;
+  }
+
+  Future<ItemUpdatedInfo> moveItemToStorage({
+    String token,
+    int id,
+    String storageType,
+    int oldAmount,
+    int moveAmount,
+  }) async {
+    const urlSegment = 'move-item-to';
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'storageType': storageType,
+      'moveAmount': moveAmount,
+      'oldAmount': oldAmount,
+    };
+    final resp = await _helper.post(urlSegment, token, body);
+    return ItemUpdatedInfo.fromJson(resp);
+  }
+
+  Future<ItemUpdatedInfo> moveItemFromStorage(
+      {String token,
+      int id,
+      String storageType,
+      int oldAmount,
+      int moveAmount}) async {
+    const urlSegment = 'move-item-from';
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'storageType': storageType,
+      'moveAmount': moveAmount,
+      'oldAmount': oldAmount,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    return ItemUpdatedInfo.fromJson(resp);
+  }
+
+  Future<void> deleteItem({String token, int id, int amount}) async {
+    const urlSegment = 'delete-item';
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'amount': amount,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    print(resp);
+  }
+
+  Future<ItemUpdatedInfo> updateItemAmount(
+      {String token, int id, int newAmount, int oldAmount}) async {
+    const urlSegment = 'change-item-count';
+    Map<String, dynamic> body = {
+      'itemCountId': id,
+      'amount': oldAmount,
+      'newAmount': newAmount,
+    };
+    final resp = await _helper.post(
+      urlSegment,
+      token,
+      body,
+    );
+    return ItemUpdatedInfo.fromJson(resp);
+  }
+
+  Future<String> requestFamilyToken(String userToken) async {
+    //const urlSegment = ''
+  }
+}
+
+class _ApiBaseHelper {
+  final http.Client _client;
+  final String _baseUrl = backendURL;
+
+  _ApiBaseHelper(http.Client client)
+      : assert(client != null),
+        _client = client;
 
   Map<String, String> _headers(String token) {
     Map<String, String> headers = {
@@ -27,267 +206,49 @@ class FoodloadApiClient {
     return headers;
   }
 
-  Map<String, dynamic> _itemBody(
-      String qrCode, String storageType, int amount) {
-    Map<String, dynamic> body = {
-      'qrCode': qrCode,
-      'storageType': storageType,
-      'amount': amount,
-    };
-    return body;
-  }
-
-  Future<User> sendInit(String token) async {
-    const urlSegment = 'login';
-    final headers = _headers(token);
-    final resp = await http.get(backendURL + urlSegment, headers: headers);
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response message
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
+  Future<dynamic> get(String urlSegment, String token) async {
+    var responseJson;
+    try {
+      final response =
+          await _client.get(_baseUrl + urlSegment, headers: _headers(token));
+      responseJson = _returnResponse(response);
+    } on SocketException {
+      throw NoInternetException("No Internet connection. Try again later.");
     }
-    final decode = jsonDecode(resp.body);
-    final user = User(
-      token: decode['token'],
-      email: decode['client']['email'],
-      familyId: decode['client']['family']['id'],
-      familyName: decode['client']['family']['name'],
-    );
-    return user;
+    return responseJson;
   }
 
-  Future<void> addItemQR(
-      {String qr, int amount, String storageType, String token}) async {
-    const urlSegment = 'add-item';
-    final headers = _headers(token);
-    Map<String, dynamic> body = {
-      'qrCode': qr,
-      'amount': amount,
-      'storageType': storageType,
-    };
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response message
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
+  Future<dynamic> post(
+      String urlSegment, String token, Map<String, dynamic> body) async {
+    var responseJson;
+    try {
+      final response = await _client.post(_baseUrl + urlSegment,
+          headers: _headers(token), body: json.encode(body));
+      responseJson = _returnResponse(response);
+    } on SocketException {
+      throw NoInternetException("No Internet connection. Try again later.");
     }
+    return responseJson;
   }
 
-  Future<String> removeItemQR(
-      String token, String qr, String storageType) async {
-    const urlSegment = 'removeItemQR';
-    final headers = _headers(token);
-    String json =
-        '{"qrCode": "$qr", "storageType": "$storageType", "amount": "1"}';
-    final resp =
-        await http.post(backendURL + urlSegment, headers: headers, body: json);
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      print(resp.body);
-      throw Error();
+  //TODO: Add more description
+  dynamic _returnResponse(http.Response response) {
+    switch (response.statusCode) {
+      case 200:
+        var responseJson = json.decode(response.body.toString());
+        return responseJson;
+      case 400:
+        throw BadRequestException();
+      case 401:
+      case 403:
+        throw UnauthorizedException();
+      case 404:
+        throw NotFoundException();
+      case 409:
+        throw ConflictException();
+      case 500:
+      default:
+        throw FetchDataException();
     }
-    print("RESP:" + resp.body);
-    return resp.body;
-  }
-
-  Future<List<Item>> getItemCounts(String token) async {
-    const urlSegment = 'get-all-item-counts';
-    final headers = _headers(token);
-    final resp = await http.get(backendURL + urlSegment, headers: headers);
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response message
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
-    }
-    List<Item> fridgeItems = (jsonDecode(resp.body) as List)
-        .map((jsonItem) => Item.fromJson(jsonItem))
-        .toList();
-    return fridgeItems;
-  }
-
-  Future<void> incrementItem(String token, int id) async {
-    const urlSegment = 'increment-item';
-    final headers = _headers(token);
-    Map<String, dynamic> body = {
-      'id': id,
-    };
-    final resp = await http.post(
-      backendURL + urlSegment,
-      headers: headers,
-      body: json.encode(body),
-    );
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
-    }
-  }
-
-  Future<void> decrementItem(String token, int id) async {
-    const urlSegment = 'decrement-item';
-    final headers = _headers(token);
-    Map<String, dynamic> body = {
-      'id': id,
-    };
-    final resp = await http.post(
-      backendURL + urlSegment,
-      headers: headers,
-      body: json.encode(body),
-    );
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
-    }
-  }
-
-  Future<List<ItemInfo>> findItemByName(
-      String searchText, int startIndex, String userToken) async {
-    const urlSegment = 'find-item-by-name';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {
-      'name': searchText,
-      'start': startIndex,
-    };
-
-    final resp = await http.post(
-      backendURL + urlSegment,
-      headers: headers,
-      body: json.encode(body),
-    );
-    int statusCode = resp.statusCode;
-    if (statusCode != 200) {
-      //TODO: Handle bad response
-      print(resp.body);
-      throw BadResponseException('Something went wrong...');
-    }
-    //print(resp.body);
-    List<ItemInfo> results = (jsonDecode(resp.body) as List)
-        .map((jsonItem) => ItemInfo.fromJson(jsonItem))
-        .toList();
-    return results;
-  }
-
-  Future<ItemInfo> findItemByQr(String qr, String userToken) async {
-    const urlSegment = 'search-item';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {'qrCode': qr};
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-    int statusCode = resp.statusCode;
-    final jsonItem = jsonDecode(resp.body);
-    if (statusCode != 200) {
-      final errorMsg = jsonItem['message'];
-      if (statusCode == 404) {
-        throw NotFoundException(errorMsg);
-      } else if (statusCode == 400) {
-        throw BadResponseException(errorMsg);
-      } else if (statusCode == 500) {
-        throw InternalServerErrorException(errorMsg);
-      } else {
-        throw Exception('Ops, something went wrong. Please try again.');
-      }
-    }
-    final itemInfo = ItemInfo.fromJson(jsonItem);
-    return itemInfo;
-  }
-
-  Future<ItemUpdatedInfo> moveItemToStorage(
-      {String userToken,
-      int id,
-      String storageType,
-      int oldAmount,
-      int moveAmount}) async {
-    const urlSegment = 'move-item-to';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {
-      'itemCountId': id,
-      'storageType': storageType,
-      'moveAmount': moveAmount,
-      'oldAmount': oldAmount,
-    };
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-
-    if (resp.statusCode != 200) {
-      throw Exception('Handle other cases (400, dirty read)');
-      //TODO: Handle other cases (400, dirty read)
-    } else {
-      final jsonItem = jsonDecode(resp.body);
-      return ItemUpdatedInfo.fromJson(jsonItem);
-    }
-  }
-
-  Future<ItemUpdatedInfo> moveItemFromStorage(
-      {String userToken,
-      int id,
-      String storageType,
-      int oldAmount,
-      int moveAmount}) async {
-    const urlSegment = 'move-item-from';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {
-      'itemCountId': id,
-      'storageType': storageType,
-      'moveAmount': moveAmount,
-      'oldAmount': oldAmount,
-    };
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-
-    if (resp.statusCode != 200) {
-      throw Exception('Handle other cases (400, dirty read)');
-      //TODO: Handle other cases (400, dirty read)
-    } else {
-      final jsonItem = jsonDecode(resp.body);
-      return ItemUpdatedInfo.fromJson(jsonItem);
-    }
-  }
-
-  Future<void> deleteItem({String userToken, int id, int amount}) async {
-    const urlSegment = 'delete-item';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {
-      'itemCountId': id,
-      'amount': amount,
-    };
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-
-    if (resp.statusCode != 200) {
-      throw Exception('Handle other cases (400, dirty read)');
-      //TODO: Handle other cases (400, dirty read)
-    }
-  }
-
-  Future<ItemUpdatedInfo> updateItemAmount(
-      {String userToken, int id, int newAmount, int oldAmount}) async {
-    const urlSegment = 'change-item-count';
-    final headers = _headers(userToken);
-    Map<String, dynamic> body = {
-      'itemCountId': id,
-      'amount': oldAmount,
-      'newAmount': newAmount,
-    };
-    final resp = await http.post(backendURL + urlSegment,
-        headers: headers, body: json.encode(body));
-
-    if (resp.statusCode != 200) {
-      throw Exception('Handle other cases (400, dirty read)');
-      //TODO: Handle other cases (400, dirty read)
-    } else {
-      final jsonItem = jsonDecode(resp.body);
-      return ItemUpdatedInfo.fromJson(jsonItem);
-    }
-  }
-
-  Future<String> requestFamilyToken(String userToken) async {
-    //const urlSegment = ''
   }
 }

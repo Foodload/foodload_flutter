@@ -80,7 +80,7 @@ class ItemRepository {
       int id,
       int oldAmount}) async {
     final itemUpdatedInfo = await foodloadApiClient.moveItemToStorage(
-        userToken: token,
+        token: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
@@ -96,7 +96,7 @@ class ItemRepository {
       int id,
       int oldAmount}) async {
     final itemUpdatedInfo = await foodloadApiClient.moveItemFromStorage(
-        userToken: token,
+        token: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
@@ -110,14 +110,13 @@ class ItemRepository {
     int amount,
     int id,
   }) async {
-    await foodloadApiClient.deleteItem(
-        userToken: token, amount: amount, id: id);
+    await foodloadApiClient.deleteItem(token: token, amount: amount, id: id);
   }
 
   Future<ItemUpdatedInfo> updateItemAmount(
       {String token, int id, int newAmount, int oldAmount}) async {
     final itemUpdateInfo = await foodloadApiClient.updateItemAmount(
-        id: id, userToken: token, newAmount: newAmount, oldAmount: oldAmount);
+        id: id, token: token, newAmount: newAmount, oldAmount: oldAmount);
     return itemUpdateInfo;
   }
 
