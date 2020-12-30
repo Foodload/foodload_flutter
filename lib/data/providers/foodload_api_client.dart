@@ -67,7 +67,6 @@ class FoodloadApiClient {
       token,
       body,
     );
-    print(resp);
   }
 
   Future<void> decrementItem(String token, int id) async {
@@ -80,7 +79,6 @@ class FoodloadApiClient {
       token,
       body,
     );
-    print(resp);
   }
 
   Future<List<ItemInfo>> findItemByName(
@@ -235,8 +233,11 @@ class _ApiBaseHelper {
   dynamic _returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        var responseJson = json.decode(response.body.toString());
-        return responseJson;
+        if (response.body != null && response.body.isNotEmpty) {
+          var responseJson = json.decode(response.body);
+          return responseJson;
+        }
+        break;
       case 400:
         throw BadRequestException();
       case 401:

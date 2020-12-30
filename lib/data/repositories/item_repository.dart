@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/providers/socket_service.dart';
@@ -8,21 +10,52 @@ import 'package:foodload_flutter/models/item_updated_info.dart';
 import 'package:meta/meta.dart';
 
 class ItemRepository {
-  final FoodloadApiClient foodloadApiClient;
-  final SocketService socketService;
+  final FoodloadApiClient _foodloadApiClient;
+  final SocketService _socketService;
 
-  final _items = Items();
+  Items _items;
 
-  ItemRepository(
-      {@required this.foodloadApiClient, @required this.socketService})
-      : assert(foodloadApiClient != null && socketService != null);
+  ItemRepository({@required foodloadApiClient, @required socketService})
+      : assert(foodloadApiClient != null && socketService != null),
+        _foodloadApiClient = foodloadApiClient,
+        _socketService = socketService;
 
-  Stream<List<Item>> items() {
+  Future<List<Item>> init(String token) async {
+    List<Item> items = await _foodloadApiClient.getItemCounts(token);
+    _items = Items(items);
+    _configItemWithSocket();
+    return [...items];
+  }
+
+  void _configItemWithSocket() {
+    final socket = _socketService.socket;
+    socket.on(SocketService.UPDATE_ITEM, (data) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      final item = Item.fromJson(decoded);
+      _items.updateWithItem(item);
+    });
+    socket.on(SocketService.MOVE_ITEM, (data) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      final srcItem = Item.fromItemCountJson(decoded['srcItemCount']);
+      final destItem = Item.fromItemCountJson(decoded['destItemCount']);
+      _items.updateWithItems([srcItem, destItem]);
+    });
+    socket.on(SocketService.DELETE_ITEM, (data) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      _items.deleteItem(decoded['itemCountId']);
+    });
+  }
+
+  Stream<List<Item>> itemsStream() {
     return _items.stream;
   }
 
+  Items items() {
+    return _items;
+  }
+
   Future<ItemInfo> getItem(String qr, String token) async {
-    final item = await this.foodloadApiClient.findItemByQr(qr, token);
+    final item = await _foodloadApiClient.findItemByQr(qr, token);
     return ItemInfo(
       qrCode: item.qrCode,
       title: item.title,
@@ -31,46 +64,33 @@ class ItemRepository {
   }
 
   Future<List<Item>> getItemCounts(String token) async {
-    List<Item> items = await foodloadApiClient.getItemCounts(token);
+    List<Item> items = await _foodloadApiClient.getItemCounts(token);
     return items;
   }
 
-  void setOnUpdateItem(Function onUpdateItem) {
-    socketService.setOnUpdateItem(onUpdateItem);
-  }
-
-  void setOnMoveItem(Function onMoveItem) {
-    socketService.setOnMoveItem(onMoveItem);
-  }
-
-  void setOnDeleteItem(Function onDeleteItem) {
-    socketService.setOnDeleteItem(onDeleteItem);
-  }
-
   Future<void> incrementItem(String token, int id) async {
-    await foodloadApiClient.incrementItem(token, id);
+    await _foodloadApiClient.incrementItem(token, id);
   }
 
   Future<void> decrementItem(String token, int id) async {
-    await foodloadApiClient.decrementItem(token, id);
+    await _foodloadApiClient.decrementItem(token, id);
   }
 
   Future<List<ItemInfo>> searchForItem(
       String searchText, int startIndex, String userToken) async {
-    final res = await foodloadApiClient.findItemByName(
+    final res = await _foodloadApiClient.findItemByName(
         searchText, startIndex, userToken);
     return res;
   }
 
   Future<void> addItem(
       {String qr, int amount, String token, String storageType}) async {
-    await foodloadApiClient.addItemQR(
+    await _foodloadApiClient.addItemQR(
         qr: qr, amount: amount, storageType: storageType, token: token);
   }
 
   Future<void> removeItem(String token, String qr, String storageType) async {
-    //TODO: API stuff
-    await foodloadApiClient.removeItemQR(token, qr, storageType);
+    await _foodloadApiClient.removeItemQR(token, qr, storageType);
   }
 
   Future<ItemUpdatedInfo> moveItemToStorage(
@@ -79,7 +99,7 @@ class ItemRepository {
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final itemUpdatedInfo = await foodloadApiClient.moveItemToStorage(
+    final itemUpdatedInfo = await _foodloadApiClient.moveItemToStorage(
         token: token,
         storageType: storageType,
         moveAmount: moveAmount,
@@ -95,7 +115,7 @@ class ItemRepository {
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final itemUpdatedInfo = await foodloadApiClient.moveItemFromStorage(
+    final itemUpdatedInfo = await _foodloadApiClient.moveItemFromStorage(
         token: token,
         storageType: storageType,
         moveAmount: moveAmount,
@@ -110,21 +130,13 @@ class ItemRepository {
     int amount,
     int id,
   }) async {
-    await foodloadApiClient.deleteItem(token: token, amount: amount, id: id);
+    await _foodloadApiClient.deleteItem(token: token, amount: amount, id: id);
   }
 
   Future<ItemUpdatedInfo> updateItemAmount(
       {String token, int id, int newAmount, int oldAmount}) async {
-    final itemUpdateInfo = await foodloadApiClient.updateItemAmount(
+    final itemUpdateInfo = await _foodloadApiClient.updateItemAmount(
         id: id, token: token, newAmount: newAmount, oldAmount: oldAmount);
     return itemUpdateInfo;
   }
-
-  //TODO: Necessary?
-  /**
-  Future<void> checkFridge(String token) async {
-
-    await foodloadApiClient.checkFridge(token);
-  }
-      */
 }

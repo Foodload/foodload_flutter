@@ -31,6 +31,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
           await _userRepository.getToken(), event.id);
       yield ItemSuccess();
     } catch (error) {
+      print(error);
       yield ItemFailure();
     }
   }
@@ -41,6 +42,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
           await _userRepository.getToken(), event.id);
       yield ItemSuccess();
     } catch (error) {
+      print(error);
       yield ItemFailure();
     }
   }

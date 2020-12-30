@@ -1,11 +1,13 @@
 import 'dart:convert';
 
-import 'package:foodload_flutter/models/item.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:foodload_flutter/helpers/keys.dart';
 
 class SocketService {
   IO.Socket _socket;
+  static const UPDATE_ITEM = 'update_item';
+  static const MOVE_ITEM = 'move_item';
+  static const DELETE_ITEM = 'delete_item';
 
   void createSocketConnection(String token) {
     print("connecting to socket");
@@ -59,81 +61,8 @@ class SocketService {
     });
   }
 
-  void setOnUpdateItem(Function onUpdateItem) {
-    if (_socket == null) {
-      print('Socket is null (setOnUpdateItem)');
-      return;
-    }
-
-    if (onUpdateItem == null) {
-      _socket.off('update_item');
-      return;
-    }
-
-    _socket.on('update_item', (data) {
-      Map<String, dynamic> decoded = jsonDecode(data);
-      print(decoded);
-      final item = Item.fromJson(decoded);
-      onUpdateItem(item);
-    });
-  }
-
-  void setOnMoveItem(Function onMoveItem) {
-    if (_socket == null) {
-      print('Socket is null (setOnMoveItem)');
-      return;
-    }
-
-    if (onMoveItem == null) {
-      _socket.off('move_item');
-      return;
-    }
-
-    _socket.on('move_item', (data) {
-      Map<String, dynamic> decoded = jsonDecode(data);
-      final srcItem = Item.fromItemCountJson(decoded['srcItemCount']);
-      final destItem = Item.fromItemCountJson(decoded['destItemCount']);
-      onMoveItem([srcItem, destItem]);
-    });
-  }
-
-  void setOnDeleteItem(Function onDeleteItem) {
-    if (_socket == null) {
-      print('Socket is null (setOnDeleteItem)');
-      return;
-    }
-
-    if (onDeleteItem == null) {
-      _socket.off('delete_item');
-      return;
-    }
-
-    _socket.on('delete_item', (data) {
-      Map<String, dynamic> decoded = jsonDecode(data);
-      onDeleteItem([decoded['itemCountId']].cast<int>());
-    });
-  }
-
-  void setOnFamilyInvite(Function onFamilyInvite) {
-    if (_socket == null) {
-      print('Socket is null (setOnFamilyInvite)');
-      return;
-    }
-    _socket.on('family_invite', (data) {
-      Map<String, dynamic> decoded = jsonDecode(data);
-      onFamilyInvite(decoded);
-    });
-  }
-
-  void setOnChangedFamily(Function onChangedFamily) {
-    if (_socket == null) {
-      print('Socket is null (setOnChangedFamily)');
-      return;
-    }
-    _socket.on('changed_family', (data) {
-      Map<String, dynamic> decoded = jsonDecode(data);
-      onChangedFamily(decoded);
-    });
+  IO.Socket get socket {
+    return _socket;
   }
 
   void dispose() {
