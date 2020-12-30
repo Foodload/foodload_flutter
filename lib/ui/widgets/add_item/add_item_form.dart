@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
+import 'package:foodload_flutter/helpers/snackbar_helper.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_amount.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_dialog.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_info.dart';
@@ -40,23 +42,6 @@ class _AddItemFormState extends State<AddItemForm> {
     _addItemFormBloc.add(ItemChange());
   }
 
-  void _showSearchFailSnackBar(String failMessage) {
-    Scaffold.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(
-            failMessage,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onError,
-            ),
-          ),
-        ),
-      );
-  }
-
   Future<void> _showAddDialog() async {
     return showDialog(
       context: context,
@@ -87,13 +72,15 @@ class _AddItemFormState extends State<AddItemForm> {
       children: <Widget>[
         BlocConsumer<AddItemFormBloc, AddItemFormState>(
           listener: (context, state) {
-            if (state.searchSuccess != null && state.searchSuccess == false) {
-              //TODO: Handle this better...
-              _showSearchFailSnackBar('Failed to find the item.');
+            if (state.searchStatus == Status.ERROR) {
+              SnackBarHelper.showFailMessage(
+                context,
+                state.searchErrorMessage,
+              );
             }
           },
           builder: (context, state) {
-            if (state.isSearching) {
+            if (state.searchStatus == Status.LOADING) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Center(

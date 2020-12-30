@@ -24,28 +24,30 @@ class FetchDataException extends ApiException {
 }
 
 class BadRequestException extends ApiException {
-  const BadRequestException([String message])
-      : super(message, 'Invalid Request');
+  BadRequestException([Map<String, dynamic> body])
+      : super(body['message'], 'Invalid Request');
 }
 
 class UnauthorizedException extends ApiException {
-  const UnauthorizedException([String message])
-      : super(message, 'Unauthorized');
+  UnauthorizedException([Map<String, dynamic> body])
+      : super(body['message'], 'Unauthorized');
 }
 
 class InvalidInputException extends ApiException {
-  const InvalidInputException([String message])
-      : super(message, 'Invalid Input');
+  InvalidInputException([Map<String, dynamic> body])
+      : super(body['message'], 'Invalid Input');
 }
 
 class ConflictException extends ApiException {
-  const ConflictException([String message]) : super(message, 'Conflict');
+  ConflictException([Map<String, dynamic> body])
+      : super(body['message'], 'Conflict');
 }
 
 class NotFoundException extends ApiException {
-  const NotFoundException([String message]) : super(message, 'Not Found');
+  NotFoundException([Map<String, dynamic> body])
+      : super(body['message'], 'Not Found');
 }
 
 class NoInternetException extends ApiException {
-  const NoInternetException([String message]) : super(message, 'No Internet');
+  NoInternetException([String message]) : super(message, 'No Internet');
 }

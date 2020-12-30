@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 
 class AddItemDialog extends StatelessWidget {
   final storageType;
@@ -8,9 +9,8 @@ class AddItemDialog extends StatelessWidget {
   const AddItemDialog(this.storageType);
 
   bool _isAddSuccess(AddItemFormState state) =>
-      state.addSuccess != null && state.addSuccess;
-  bool _isAdding(AddItemFormState state) =>
-      state.isAdding != null && state.isAdding;
+      state.addStatus == Status.COMPLETED;
+  bool _isAdding(AddItemFormState state) => state.addStatus == Status.LOADING;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class AddItemDialog extends StatelessWidget {
         title: Text(_isAddSuccess(state) ? 'Success' : 'Fail'),
         content: Text(_isAddSuccess(state)
             ? 'Successfully added ${state.item.title} to $storageType'
-            : 'Failed to add item. Please try again later'),
+            : state.addErrorMessage ?? ''),
         actions: <Widget>[
           FlatButton(
             child: Text('Close'),

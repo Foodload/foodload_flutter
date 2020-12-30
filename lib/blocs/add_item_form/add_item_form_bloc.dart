@@ -4,6 +4,8 @@ import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/helpers/field_validation.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
+import 'package:foodload_flutter/models/exceptions/ApiException.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
@@ -42,7 +44,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     } else if (event is ItemAmountChanged) {
       yield* _mapItemAmountChangedToState(event.amount);
     } else if (event is ItemQrSearch) {
-      yield* _mapItemQrFetchedToState(event);
+      yield* _mapItemQrSearchToState(event);
     } else if (event is ItemChange) {
       yield* _mapItemChangeToState();
     } else if (event is ItemAdd) {
@@ -52,16 +54,23 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     }
   }
 
-  Stream<AddItemFormState> _mapItemQrFetchedToState(ItemQrSearch event) async* {
-    yield state.copyWith(isSearching: true);
+  Stream<AddItemFormState> _mapItemQrSearchToState(ItemQrSearch event) async* {
+    yield state.copyWith(searchStatus: Status.LOADING);
     try {
       final itemInfo = await itemRepository.getItem(
           event.qr, await userRepository.getToken());
+      yield state.copyWith(searchStatus: Status.COMPLETED, item: itemInfo);
+    } on ApiException catch (apiException) {
       yield state.copyWith(
-          isSearching: false, searchSuccess: true, item: itemInfo);
+        searchStatus: Status.ERROR,
+        searchErrorMessage:
+            apiException.getMessage() ?? apiException.getPrefix(),
+      );
     } catch (error) {
-      //TODO: Add error handling...
-      yield state.copyWith(isSearching: false, searchSuccess: false);
+      print(error);
+      yield state.copyWith(
+          searchStatus: Status.ERROR,
+          searchErrorMessage: 'Something went wrong. Please try again later.');
     }
   }
 
@@ -107,16 +116,26 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
     final qrCode = state.item.qrCode;
     final amount = int.tryParse(event.amount);
     final storageType = event.storageType;
-    yield state.copyWith(isAdding: true);
+    yield state.copyWith(addStatus: Status.LOADING);
     try {
       await itemRepository.addItem(
           qr: qrCode,
           storageType: storageType,
           amount: amount,
           token: await userRepository.getToken());
-      yield state.copyWith(addSuccess: true, isAdding: false);
+      yield state.copyWith(addStatus: Status.COMPLETED);
+    } on ApiException catch (error) {
+      yield state.copyWith(
+        addStatus: Status.ERROR,
+        addErrorMessage: error.getMessage(),
+      );
     } catch (error) {
-      yield state.copyWith(addSuccess: false, isAdding: false);
+      print(error);
+      yield state.copyWith(
+        addStatus: Status.ERROR,
+        addErrorMessage:
+            'Something went wrong when adding item. Please try again later.',
+      );
     }
   }
 

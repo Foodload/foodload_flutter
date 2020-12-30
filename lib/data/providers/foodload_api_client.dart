@@ -229,27 +229,45 @@ class _ApiBaseHelper {
     return responseJson;
   }
 
-  //TODO: Add more description
   dynamic _returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        if (response.body != null && response.body.isNotEmpty) {
-          var responseJson = json.decode(response.body);
+        if (_hasBody(response)) {
+          final responseJson = _getDecodedBody(response);
           return responseJson;
         }
         break;
       case 400:
+        if (_hasBody(response)) {
+          throw BadRequestException(_getDecodedBody(response));
+        }
         throw BadRequestException();
       case 401:
       case 403:
+        if (_hasBody(response)) {
+          throw UnauthorizedException(_getDecodedBody(response));
+        }
         throw UnauthorizedException();
       case 404:
+        if (_hasBody(response)) {
+          throw NotFoundException(_getDecodedBody(response));
+        }
         throw NotFoundException();
       case 409:
+        if (_hasBody(response)) {
+          throw ConflictException(_getDecodedBody(response));
+        }
         throw ConflictException();
       case 500:
+        throw FetchDataException('Server failed. Please try again later.');
       default:
-        throw FetchDataException();
+        throw FetchDataException(
+            'Communication failed. Please try again later.');
     }
   }
+
+  bool _hasBody(http.Response response) =>
+      response.body != null && response.body.isNotEmpty;
+
+  dynamic _getDecodedBody(http.Response response) => json.decode(response.body);
 }

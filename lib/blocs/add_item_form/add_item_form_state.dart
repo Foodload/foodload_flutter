@@ -1,4 +1,5 @@
 import 'package:foodload_flutter/models/enums/field_error.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:meta/meta.dart';
 
@@ -6,38 +7,38 @@ import 'package:meta/meta.dart';
 class AddItemFormState {
   final ItemInfo item;
 
-  final bool isAdding;
-  final bool addSuccess;
-  final bool isSearching;
-  final bool searchSuccess;
+  final Status addStatus;
+  final String addErrorMessage;
+  final Status searchStatus;
+  final String searchErrorMessage;
   final FieldError amountError;
   final FieldError itemIdError;
   bool get isFormValid =>
       item != null && amountError == null && itemIdError == null;
 
   AddItemFormState({
-    this.isAdding: false,
-    this.addSuccess,
-    this.isSearching: false,
-    this.searchSuccess,
+    this.addStatus: Status.READY,
+    this.addErrorMessage,
+    this.searchStatus: Status.READY,
+    this.searchErrorMessage,
     this.amountError,
     this.itemIdError,
     this.item,
   });
 
   AddItemFormState copyWith(
-      {bool isAdding,
-      bool addSuccess,
-      bool isSearching,
-      bool searchSuccess,
+      {Status addStatus,
+      String addErrorMessage,
+      Status searchStatus,
+      String searchErrorMessage,
       FieldError amountError,
       FieldError itemIdError,
       ItemInfo item}) {
     return AddItemFormState(
-      isAdding: isAdding ?? this.isAdding,
-      addSuccess: addSuccess ?? this.addSuccess,
-      isSearching: isSearching ?? this.isSearching,
-      searchSuccess: searchSuccess ?? this.searchSuccess,
+      addStatus: addStatus ?? this.addStatus,
+      addErrorMessage: addErrorMessage ?? this.addErrorMessage,
+      searchStatus: searchStatus ?? this.searchStatus,
+      searchErrorMessage: searchErrorMessage ?? this.searchErrorMessage,
       amountError: amountError ?? this.amountError,
       itemIdError: itemIdError ?? this.itemIdError,
       item: item ?? this.item,
@@ -67,11 +68,11 @@ class AddItemFormState {
   @override
   String toString() {
     return '''AddItemFormState {
-      isAdding: $isAdding,
-      addSuccess: $addSuccess,
       item: $item,
-      isSearching: $isSearching,
-      searchSuccess: $searchSuccess,
+      addStatus: $addStatus,
+      addErrorMessage: $addErrorMessage,
+      searchStatus: $searchStatus,
+      searchErrorMessage: $searchErrorMessage,
       amountError: $amountError,
       itemIdError: $itemIdError
     }''';

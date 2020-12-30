@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';
+import 'package:foodload_flutter/helpers/snackbar_helper.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
 
 class AddItemSearchOptions extends StatefulWidget {
@@ -17,7 +18,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
   var _itemIdTextController;
   AddItemFormBloc _addItemFormBloc;
 
-  Future scan() async {
+  Future _scan() async {
     var options = ScanOptions(
       strings: {
         'cancel': 'Cancel',
@@ -31,9 +32,10 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
 
     if (result.type == ResultType.Barcode) {
       _onSearch(result.rawContent);
+    } else {
+      SnackBarHelper.showFailMessage(context,
+          "Sorry, we don't currently support this type of scan. Please try to type in the ID.");
     }
-    //TODO: Prob more error handling
-    //print(result.type);
   }
 
   @override
@@ -77,7 +79,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
             ),
             IconButton(
               icon: Icon(Icons.camera),
-              onPressed: scan,
+              onPressed: _scan,
               color: Theme.of(context).colorScheme.primary,
             ),
           ],
@@ -108,7 +110,7 @@ class _AddItemSearchOptionsState extends State<AddItemSearchOptions> {
                       autovalidate: true,
                       validator: (_) {
                         return state.item == null
-                            ? 'Please enter the ID of the item'
+                            ? 'Please enter or scan the ID of the item'
                             : null;
                       },
                       onFieldSubmitted: (_) {
