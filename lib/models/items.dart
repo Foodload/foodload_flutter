@@ -39,12 +39,6 @@ class Items {
     }
   }
 
-  ///Add newItem to items
-  void addItem(Item newItem) {
-    _items.add(newItem);
-    _updateItemsListeners();
-  }
-
   ///Increment the item with the given id with the given increment
   void incrementItemAmount(int id, int increment) {
     final idx = _items.indexWhere((item) => item.id == id);
