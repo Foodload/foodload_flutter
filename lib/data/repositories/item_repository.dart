@@ -47,7 +47,7 @@ class ItemRepository {
   }
 
   Stream<List<Item>> itemsStream() {
-    return _items.stream;
+    return _items.itemsStream;
   }
 
   Items items() {

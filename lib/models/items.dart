@@ -7,18 +7,27 @@ import 'package:foodload_flutter/models/item.dart';
 ///Provides a stream to listen for updates to the items.
 class Items {
   List<Item> _items = [];
-  final _controller = StreamController<List<Item>>();
+  final _itemsController = StreamController<List<Item>>();
+  final _itemController = StreamController<Item>();
 
-  Stream<List<Item>> get stream => _controller.stream;
+  Stream<List<Item>> get itemsStream => _itemsController.stream;
+
+  Stream<Item> get itemStream => _itemController.stream;
 
   Items(List<Item> items) : _items = items;
 
   List<Item> get items => [..._items];
 
+  Item getItem(int id) {
+    final idx = _items.indexWhere((item) => item.id == id);
+    if (idx == -1) return null;
+    return _items.elementAt(idx).copyWith();
+  }
+
   ///Replaces the items with the given newItems
   void setItems(List<Item> newItems) {
     _items = newItems;
-    _updateListeners();
+    _updateItemsListeners();
   }
 
   ///Delete the item with the given id from items
@@ -26,14 +35,14 @@ class Items {
     final idx = _items.indexWhere((item) => item.id == id);
     if (idx != -1) {
       _items.removeAt(idx);
-      _updateListeners();
+      _updateItemsListeners();
     }
   }
 
   ///Add newItem to items
   void addItem(Item newItem) {
     _items.add(newItem);
-    _updateListeners();
+    _updateItemsListeners();
   }
 
   ///Increment the item with the given id with the given increment
@@ -45,7 +54,7 @@ class Items {
       amount += increment;
       _items.removeAt(idx);
       _items.insert(idx, oldItem.copyWith(amount: amount));
-      _updateListeners();
+      _updateItemsListeners();
     }
   }
 
@@ -59,7 +68,7 @@ class Items {
       if (amount < 0) amount = 0;
       _items.removeAt(idx);
       _items.insert(idx, oldItem.copyWith(amount: amount));
-      _updateListeners();
+      _updateItemsListeners();
     }
   }
 
@@ -72,7 +81,7 @@ class Items {
       _items.removeAt(itemIdx);
       _items.insert(itemIdx, newItem);
     }
-    _updateListeners();
+    _updateItemsListeners();
   }
 
   ///Update the item by replacing it with the new items
@@ -86,15 +95,21 @@ class Items {
         _items.insert(itemIdx, newItem);
       }
     });
-    _updateListeners();
+    _updateItemsListeners();
   }
 
   ///Updates all the listeners by sending the updated items through its stream
-  void _updateListeners() {
-    _controller.sink.add([..._items]);
+  void _updateItemsListeners() {
+    _itemsController.sink.add([..._items]);
+  }
+
+  ///Updates all the listeners by sending the updated single item through its stream
+  void _updateItemListener(Item updatedItem) {
+    _itemController.sink.add(updatedItem);
   }
 
   void dispose() {
-    _controller.close();
+    _itemsController.close();
+    _itemController.close();
   }
 }
