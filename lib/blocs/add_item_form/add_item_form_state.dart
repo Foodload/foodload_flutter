@@ -1,10 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class AddItemFormState {
+class AddItemFormState extends Equatable {
   final ItemInfo item;
 
   final Status addStatus;
@@ -77,4 +78,15 @@ class AddItemFormState {
       itemIdError: $itemIdError
     }''';
   }
+
+  @override
+  List<Object> get props => [
+        item,
+        addStatus,
+        addErrorMessage,
+        searchStatus,
+        searchErrorMessage,
+        amountError,
+        itemIdError,
+      ];
 }
