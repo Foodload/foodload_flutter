@@ -27,8 +27,8 @@ class _AppState extends State<App> {
   var _foodloadApiClient;
   var _userRepository;
   var _itemRepository;
-  var _authBloc;
-  var _socketBloc;
+  AuthBloc _authBloc;
+  SocketBloc _socketBloc;
 
   @override
   void initState() {
@@ -50,8 +50,8 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     super.dispose();
-    _authBloc.dispose();
-    _socketBloc.dispose();
+    _authBloc.close();
+    _socketBloc.close();
   }
 
   @override

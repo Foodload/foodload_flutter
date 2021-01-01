@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/item_settings/item_settings.dart';
 import 'package:foodload_flutter/blocs/item_settings/item_settings_bloc.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/ui/widgets/item_settings/delete_item_dialog.dart';
 
 class DeleteItem extends StatefulWidget {
@@ -29,28 +30,34 @@ class _DeleteItemState extends State<DeleteItem> {
     }
   }
 
+  bool _isDeleting(ItemSettingsState state) =>
+      state.deleteStatus == Status.LOADING;
+
   Future<void> _showDeleteItemDialog() async {
     _itemSettingsBloc.add(ItemSettingsQueryDelete());
     final shouldPop = await showDialog(
-        //barrierDismissible: false,
+        barrierDismissible: false,
         context: context,
         builder: (_) => BlocProvider<ItemSettingsBloc>.value(
               value: _itemSettingsBloc,
-              child: DeleteItemDialog(),
+              child: WillPopScope(
+                onWillPop: () async => false,
+                child: DeleteItemDialog(),
+              ),
             ));
-    if (_itemSettingsBloc.state is ItemSettingsDeleteSuccess) {
+    if (_itemSettingsBloc.state.deleteStatus == Status.COMPLETED) {
       Navigator.of(context).pop();
       return;
     }
 
     /* User has dismissed before loading has finished, set a listener*/
-    if (_itemSettingsBloc.state is ItemSettingsDeleting && shouldPop == null) {
-      _itemSettingsSub = _itemSettingsBloc.listen((state) {
-        if (state is ItemSettingsDeleteSuccess) {
-          Navigator.of(context).pop();
-        }
-      });
-    }
+    // if (_isDeleting(_itemSettingsBloc.state) && shouldPop == null) {
+    //   _itemSettingsSub = _itemSettingsBloc.listen((state) {
+    //     if (state.deleteStatus == Status.COMPLETED) {
+    //       Navigator.of(context).pop();
+    //     }
+    //   });
+    // }
   }
 
   @override
@@ -60,7 +67,7 @@ class _DeleteItemState extends State<DeleteItem> {
       child: BlocBuilder<ItemSettingsBloc, ItemSettingsState>(
         builder: (context, state) => RaisedButton(
           color: Theme.of(context).colorScheme.error,
-          child: state is ItemSettingsDeleting
+          child: _isDeleting(state)
               ? SizedBox(
                   height: 18,
                   width: 18,
@@ -75,8 +82,7 @@ class _DeleteItemState extends State<DeleteItem> {
                     color: Theme.of(context).colorScheme.onError,
                   ),
                 ),
-          onPressed:
-              state is ItemSettingsDeleting ? null : _showDeleteItemDialog,
+          onPressed: _isDeleting(state) ? null : _showDeleteItemDialog,
         ),
       ),
     );

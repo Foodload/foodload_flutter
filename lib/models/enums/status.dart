@@ -3,4 +3,5 @@ enum Status {
   COMPLETED,
   READY,
   ERROR,
+  OUT_OF_DATE,
 }

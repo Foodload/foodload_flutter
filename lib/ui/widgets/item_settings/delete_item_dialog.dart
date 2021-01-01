@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/item_settings/item_settings.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 
 class DeleteItemDialog extends StatefulWidget {
   @override
@@ -37,24 +38,36 @@ class _DeleteItemDialogState extends State<DeleteItemDialog> {
     );
   }
 
+  String _getStatusText(ItemSettingsState state) {
+    switch (state.deleteStatus) {
+      case Status.COMPLETED:
+        return 'Successfully deleted the item';
+      case Status.ERROR:
+        return 'Could not delete the item. Please try again.';
+      default:
+        return '';
+    }
+  }
+
   Widget _result() {
     return BlocBuilder<ItemSettingsBloc, ItemSettingsState>(
         builder: (context, state) {
-      if (state is ItemSettingsDeleting) {
+      if (state.deleteStatus == Status.LOADING) {
         return Center(
           child: CircularProgressIndicator(),
         );
       }
 
       return AlertDialog(
-        title: Text(state is ItemSettingsDeleteSuccess ? 'Success' : 'Fail'),
-        content: Text(state.message),
+        title:
+            Text(state.deleteStatus == Status.COMPLETED ? 'Success' : 'Fail'),
+        content: Text(_getStatusText(state)),
         actions: <Widget>[
           FlatButton(
             child: Text('Close'),
             onPressed: () {
               Navigator.of(context)
-                  .pop(state is ItemSettingsDeleteSuccess ? true : false);
+                  .pop(state.deleteStatus == Status.COMPLETED ? true : false);
             },
           ),
         ],

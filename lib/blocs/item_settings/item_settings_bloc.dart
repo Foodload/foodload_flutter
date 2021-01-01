@@ -4,6 +4,9 @@ import 'package:foodload_flutter/blocs/item_settings/item_settings_state.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/helpers/field_validation.dart';
+import 'package:foodload_flutter/models/enums/action_error.dart';
+import 'package:foodload_flutter/models/enums/field_error.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
@@ -18,7 +21,7 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
   })  : assert(itemRepository != null && userRepository != null),
         _itemRepository = itemRepository,
         _userRepository = userRepository,
-        super(ItemSettingsInit(item));
+        super(ItemSettingsState(item: item));
 
   @override
   Stream<ItemSettingsState> mapEventToState(ItemSettingsEvent event) async* {
@@ -37,14 +40,27 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
 
   Stream<ItemSettingsState> _mapUpdateAmountToState(
       ItemSettingsUpdateAmount event) async* {
-    print("Update Amount");
-    //TODO: Add set loading state
+    yield state.copyWith(amountStatus: Status.LOADING);
     if (!FieldValidation.isInteger(event.newAmount)) {
-      //TODO: Handle non-integer amount
-      print("not an integer");
+      yield state.copyWith(
+          amountError: FieldError.Invalid, amountStatus: Status.ERROR);
       return;
     }
     final newAmount = int.parse(event.newAmount);
+    if (FieldValidation.isAmountOverflow(newAmount)) {
+      yield state.copyWith(
+          amountError: FieldError.AmountOverflow, amountStatus: Status.ERROR);
+      return;
+    } else if (newAmount < 0) {
+      yield state.copyWith(
+          amountError: FieldError.NegativeAmount, amountStatus: Status.ERROR);
+      return;
+    }
+    if (!_isItemUpToDate()) {
+      final updatedItem = _getUpdateItem();
+      yield state.copyWith(item: updatedItem, itemStatus: Status.OUT_OF_DATE);
+      return;
+    }
     try {
       final updatedItemInfo = await _itemRepository.updateItemAmount(
         token: await _userRepository.getToken(),
@@ -52,71 +68,107 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
         oldAmount: state.item.amount,
         newAmount: newAmount,
       );
-
       final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
-      yield ItemSettingsUpdateAmountSuccess(currItem);
+      yield state.copyWith(item: currItem, amountStatus: Status.COMPLETED);
     } catch (error) {
-      //TODO: Handle error
-      print("Update Amount Bloc Error");
+      //TODO: Handle API error
       print(error);
     }
   }
 
   Stream<ItemSettingsState> _mapMoveToOtherStorageEventToState(
       ItemSettingsMoveToOtherStorage event) async* {
+    if (!_isItemUpToDate()) {
+      final updatedItem = _getUpdateItem();
+      yield state.copyWith(item: updatedItem, itemStatus: Status.OUT_OF_DATE);
+      return;
+    }
     if (state.item.amount == 0) {
-      //TODO: Cannot move when already empty.
+      yield state.copyWith(
+        moveStatus: Status.ERROR,
+        moveActionError: ActionError.Empty,
+      );
       return;
     }
 
-    final updatedItemInfo = await _itemRepository.moveItemToStorage(
-        token: await _userRepository.getToken(),
-        id: state.item.id,
-        moveAmount: 1,
-        oldAmount: state.item.amount,
-        storageType: event.storage);
+    try {
+      final updatedItemInfo = await _itemRepository.moveItemToStorage(
+          token: await _userRepository.getToken(),
+          id: state.item.id,
+          moveAmount: 1,
+          oldAmount: state.item.amount,
+          storageType: event.storage);
 
-    //TODO: Old amount must be given and compared with in backend, if same OK; otherwise 400 and return updated ver
-    final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
-    yield ItemSettingsMoveFinish(currItem);
+      final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
+      yield state.copyWith(item: currItem, moveStatus: Status.COMPLETED);
+    } catch (error) {
+      //TODO: Add API error handling
+      print(error);
+    }
   }
 
   Stream<ItemSettingsState> _mapMoveFromOtherStorageEventToState(
       ItemSettingsMoveFromOtherStorage event) async* {
-    if (state.item.amount == 9999) {
-      //TODO: Cannot increase more than this??
+    if (!_isItemUpToDate()) {
+      final updatedItem = _getUpdateItem();
+      yield state.copyWith(item: updatedItem, itemStatus: Status.OUT_OF_DATE);
+      return;
+    }
+    if (state.item.amount == FieldValidation.MAX_AMOUNT) {
+      yield state.copyWith(
+        moveStatus: Status.ERROR,
+        moveActionError: ActionError.Overflow,
+      );
       return;
     }
 
-    final updatedItemInfo = await _itemRepository.moveItemFromStorage(
-        token: await _userRepository.getToken(),
-        id: state.item.id,
-        moveAmount: 1,
-        oldAmount: state.item.amount,
-        storageType: event.storage);
+    try {
+      final updatedItemInfo = await _itemRepository.moveItemFromStorage(
+          token: await _userRepository.getToken(),
+          id: state.item.id,
+          moveAmount: 1,
+          oldAmount: state.item.amount,
+          storageType: event.storage);
 
-    final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
-    yield ItemSettingsMoveFinish(currItem);
-    //TODO: Old amount must be given and compared with in backend, if same OK; otherwise 400 and return updated ver
+      final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
+      yield state.copyWith(item: currItem, moveStatus: Status.COMPLETED);
+    } catch (error) {
+      //TODO: Add api error handling
+      print(error);
+    }
   }
 
   Stream<ItemSettingsState> _mapDeleteToState(ItemSettingsDelete event) async* {
-    yield ItemSettingsDeleting(state.item);
+    if (!_isItemUpToDate()) {
+      final updatedItem = _getUpdateItem();
+      yield state.copyWith(item: updatedItem, itemStatus: Status.OUT_OF_DATE);
+      return;
+    }
+    yield state.copyWith(deleteStatus: Status.LOADING);
     try {
       await _itemRepository.deleteItem(
           token: await _userRepository.getToken(),
           id: state.item.id,
           amount: state.item.amount);
-      yield ItemSettingsDeleteSuccess(
-          state.item, 'The item was successfully deleted');
+      yield state.copyWith(deleteStatus: Status.COMPLETED);
     } catch (error) {
-      //TODO: Handle error
+      //TODO: Handle api error
       print(error);
     }
   }
 
   Stream<ItemSettingsState> _mapSetInitToState(
       ItemSettingsSetInit event) async* {
-    yield ItemSettingsInit(state.item);
+    yield state.copyWith(item: state.item);
+  }
+
+  bool _isItemUpToDate() {
+    final stateItem = state.item;
+    final currUpdatedItem = _itemRepository.items().getItem(stateItem.id);
+    return currUpdatedItem.amount == stateItem.amount;
+  }
+
+  Item _getUpdateItem() {
+    return _itemRepository.items().getItem(state.item.id);
   }
 }

@@ -1,4 +1,6 @@
 class FieldValidation {
+  static const MAX_AMOUNT = 999;
+
   static bool isInteger(String num) {
     if (num == null) return false;
 
@@ -9,7 +11,7 @@ class FieldValidation {
   }
 
   static bool isAmountOverflow(int amount) {
-    return amount > 999;
+    return amount > MAX_AMOUNT;
   }
 
   static bool isNotEmpty(String input) {

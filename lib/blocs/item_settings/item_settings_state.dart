@@ -1,85 +1,71 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodload_flutter/models/enums/action_error.dart';
+import 'package:foodload_flutter/models/enums/field_error.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/item.dart';
 
-abstract class ItemSettingsState extends Equatable {
+class ItemSettingsState extends Equatable {
   final Item item;
-  final String message = null;
-  const ItemSettingsState(this.item);
+  final Status itemStatus;
+  final FieldError amountError;
+  final Status amountStatus;
+  final ActionError moveActionError;
+  final Status moveStatus;
+
+  final Status deleteStatus;
+
+  ItemSettingsState({
+    this.item,
+    this.itemStatus: Status.READY,
+    this.amountError,
+    this.amountStatus: Status.READY,
+    this.moveActionError,
+    this.moveStatus: Status.READY,
+    this.deleteStatus: Status.READY,
+  });
 
   @override
-  List<Object> get props => [];
-}
+  List<Object> get props => [
+        item,
+        itemStatus,
+        amountError,
+        amountStatus,
+        moveActionError,
+        moveStatus,
+        deleteStatus,
+      ];
 
-class ItemSettingsInit extends ItemSettingsState {
-  ItemSettingsInit(Item item) : super(item);
-}
-
-class ItemSettingsDeleteSuccess extends ItemSettingsState {
-  final String message;
-  ItemSettingsDeleteSuccess(Item item, this.message) : super(item);
-
-  @override
-  List<Object> get props => [item, message];
-
-  @override
-  String toString() {
-    return 'ItemSettingsDeleteSuccess { item: $item, message: $message }';
-  }
-}
-
-class ItemSettingsDeleteFail extends ItemSettingsState {
-  final String message;
-  ItemSettingsDeleteFail(Item item, this.message) : super(item);
-
-  @override
-  List<Object> get props => [item, message];
-
-  @override
-  String toString() {
-    return 'ItemSettingsDeleteFail { item: $item, message: $message }';
-  }
-}
-
-class ItemSettingsDeleting extends ItemSettingsState {
-  ItemSettingsDeleting(Item item) : super(item);
-
-  @override
-  String toString() {
-    return 'ItemSettingsDeleting { item: $item }';
-  }
-}
-
-class ItemSettingsLoading extends ItemSettingsState {
-  ItemSettingsLoading(Item item) : super(item);
-
-  @override
-  String toString() {
-    return 'ItemSettingsLoading { item: $item }';
-  }
-}
-
-class ItemSettingsMoveFinish extends ItemSettingsState {
-  ItemSettingsMoveFinish(Item item) : super(item);
-
-  @override
-  String toString() {
-    return 'ItemSettingsMoveFinish { item: $item }';
+  ItemSettingsState copyWith({
+    Item item,
+    Status itemStatus,
+    FieldError amountError,
+    Status amountStatus,
+    ActionError moveActionError,
+    Status moveStatus,
+    Status deleteStatus,
+  }) {
+    return ItemSettingsState(
+      item: item ?? this.item,
+      itemStatus: itemStatus,
+      amountError: amountError,
+      amountStatus: amountStatus,
+      moveActionError: moveActionError,
+      moveStatus: moveStatus,
+      deleteStatus: deleteStatus,
+    );
   }
 
   @override
-  List<Object> get props => [item];
-}
-
-class ItemSettingsUpdateAmountSuccess extends ItemSettingsState {
-  ItemSettingsUpdateAmountSuccess(Item item) : super(item);
-
-  @override
   String toString() {
-    return 'ItemSettingsUpdateAmountSuccess { item: $item }';
+    return '''ItemSettingsState 
+    {
+    item: $item ,
+    itemStatus: $itemStatus,
+    amountError: $amountError, 
+    amountStatus: $amountStatus,
+    moveActionError: $moveActionError,
+    moveStatus: $moveStatus
+    }
+    ''';
   }
-
-  @override
-  List<Object> get props => [item];
 }
-
-//TODO: Add fail state

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/item_settings/item_settings.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 
 class MoveItem extends StatelessWidget {
   final String otherStorage;
@@ -16,7 +17,7 @@ class MoveItem extends StatelessWidget {
           builder: (context, state) => IconButton(
             icon: const Icon(Icons.remove_circle),
             color: Theme.of(context).colorScheme.primary,
-            onPressed: state is ItemSettingsDeleting
+            onPressed: state.deleteStatus == Status.LOADING
                 ? null
                 : () => {
                       BlocProvider.of<ItemSettingsBloc>(context)
@@ -48,7 +49,7 @@ class MoveItem extends StatelessWidget {
           builder: (context, state) => IconButton(
             icon: const Icon(Icons.add_circle),
             color: Theme.of(context).colorScheme.primary,
-            onPressed: state is ItemSettingsDeleting
+            onPressed: state.deleteStatus == Status.LOADING
                 ? null
                 : () => {
                       BlocProvider.of<ItemSettingsBloc>(context)
