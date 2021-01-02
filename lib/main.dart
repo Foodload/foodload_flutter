@@ -8,13 +8,35 @@ import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
+import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
 
 import 'data/providers/socket_service.dart';
+import 'helpers/error_handler/handlers/console_handler.dart';
+import 'helpers/error_handler/mode/dialog_report_mode_exit.dart';
+import 'helpers/error_handler/model/error_handler_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
-  runApp(App());
+
+  ErrorHandlerOptions debugOptions = ErrorHandlerOptions(
+    DialogReportModeExit(),
+    [
+      ConsoleHandler(),
+    ],
+  );
+  ErrorHandlerOptions releaseOptions = ErrorHandlerOptions(
+    DialogReportModeExit(),
+    [
+      //TODO: Add HttpHandler
+    ],
+  );
+
+  ErrorHandler(
+    rootWidget: App(),
+    debugConfig: debugOptions,
+    releaseConfig: releaseOptions,
+  );
 }
 
 class App extends StatefulWidget {
@@ -84,7 +106,7 @@ class _AppState extends State<App> {
           RepositoryProvider<UserRepository>.value(value: _userRepository),
           RepositoryProvider<ItemRepository>.value(value: _itemRepository),
         ],
-        child: FoodLoadApp(),
+        child: FoodLoadApp(ErrorHandler.navigatorKey),
       ),
     );
   }

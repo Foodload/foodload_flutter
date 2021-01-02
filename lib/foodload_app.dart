@@ -18,12 +18,15 @@ import 'package:foodload_flutter/ui/screens/templates_overview_screen.dart';
 import 'package:foodload_flutter/ui/screens/test_screen.dart';
 
 class FoodLoadApp extends StatelessWidget {
-  const FoodLoadApp();
+  final navigatorKey;
+
+  const FoodLoadApp(this.navigatorKey);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Foodload',
+      navigatorKey: navigatorKey,
       theme: AppTheme.darkTheme,
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
