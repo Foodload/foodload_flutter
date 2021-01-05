@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:foodload_flutter/helpers/keys.dart';
-import 'package:foodload_flutter/models/exceptions/ApiException.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception_response.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/item_updated_info.dart';
@@ -230,34 +231,26 @@ class _ApiBaseHelper {
   }
 
   dynamic _returnResponse(http.Response response) {
+    var responseJsonBody;
+    if (_hasBody(response)) {
+      try {
+        responseJsonBody = _getDecodedBody(response);
+      } on FormatException catch (error) {
+        throw BadFormatException('Bad format sent from server.');
+      }
+    }
     switch (response.statusCode) {
       case 200:
-        if (_hasBody(response)) {
-          final responseJson = _getDecodedBody(response);
-          return responseJson;
-        }
-        break;
+        return responseJsonBody;
       case 400:
-        if (_hasBody(response)) {
-          throw BadRequestException(_getDecodedBody(response));
-        }
-        throw BadRequestException();
+        throw BadRequestException(ApiExceptionResponse(responseJsonBody));
       case 401:
       case 403:
-        if (_hasBody(response)) {
-          throw UnauthorizedException(_getDecodedBody(response));
-        }
-        throw UnauthorizedException();
+        throw UnauthorizedException(ApiExceptionResponse(responseJsonBody));
       case 404:
-        if (_hasBody(response)) {
-          throw NotFoundException(_getDecodedBody(response));
-        }
-        throw NotFoundException();
+        throw NotFoundException(ApiExceptionResponse(responseJsonBody));
       case 409:
-        if (_hasBody(response)) {
-          throw ConflictException(_getDecodedBody(response));
-        }
-        throw ConflictException();
+        throw ConflictException(ApiExceptionResponse(responseJsonBody));
       case 500:
         throw FetchDataException('Server failed. Please try again later.');
       default:

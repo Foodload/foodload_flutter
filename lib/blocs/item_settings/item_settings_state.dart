@@ -11,8 +11,10 @@ class ItemSettingsState extends Equatable {
   final Status amountStatus;
   final ActionError moveActionError;
   final Status moveStatus;
-
   final Status deleteStatus;
+
+  final Status apiStatus;
+  final String apiErrorText;
 
   ItemSettingsState({
     this.item,
@@ -22,6 +24,8 @@ class ItemSettingsState extends Equatable {
     this.moveActionError,
     this.moveStatus: Status.READY,
     this.deleteStatus: Status.READY,
+    this.apiStatus: Status.READY,
+    this.apiErrorText,
   });
 
   @override
@@ -33,6 +37,8 @@ class ItemSettingsState extends Equatable {
         moveActionError,
         moveStatus,
         deleteStatus,
+        apiStatus,
+        apiErrorText,
       ];
 
   ItemSettingsState copyWith({
@@ -43,6 +49,8 @@ class ItemSettingsState extends Equatable {
     ActionError moveActionError,
     Status moveStatus,
     Status deleteStatus,
+    Status apiStatus,
+    String apiErrorText,
   }) {
     return ItemSettingsState(
       item: item ?? this.item,
@@ -52,6 +60,8 @@ class ItemSettingsState extends Equatable {
       moveActionError: moveActionError,
       moveStatus: moveStatus,
       deleteStatus: deleteStatus,
+      apiStatus: apiStatus,
+      apiErrorText: apiErrorText,
     );
   }
 
@@ -64,7 +74,10 @@ class ItemSettingsState extends Equatable {
     amountError: $amountError, 
     amountStatus: $amountStatus,
     moveActionError: $moveActionError,
-    moveStatus: $moveStatus
+    moveStatus: $moveStatus,
+    deleteStatus: $deleteStatus
+    apiStatus: $apiStatus,
+    apiErrorText: $apiErrorText,
     }
     ''';
   }

@@ -5,7 +5,7 @@ import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/helpers/field_validation.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:foodload_flutter/models/enums/status.dart';
-import 'package:foodload_flutter/models/exceptions/ApiException.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:foodload_flutter/blocs/add_item_form/add_item_form.dart';

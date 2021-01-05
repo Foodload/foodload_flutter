@@ -7,6 +7,7 @@ import 'package:foodload_flutter/helpers/field_validation.dart';
 import 'package:foodload_flutter/models/enums/action_error.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:foodload_flutter/models/enums/status.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
@@ -70,9 +71,9 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
       );
       final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
       yield state.copyWith(item: currItem, amountStatus: Status.COMPLETED);
-    } catch (error) {
-      //TODO: Handle API error
-      print(error);
+    } on ApiException catch (error) {
+      yield state.copyWith(
+          apiStatus: Status.ERROR, apiErrorText: error.getMessage());
     }
   }
 
@@ -101,9 +102,9 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
 
       final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
       yield state.copyWith(item: currItem, moveStatus: Status.COMPLETED);
-    } catch (error) {
-      //TODO: Add API error handling
-      print(error);
+    } on ApiException catch (error) {
+      yield state.copyWith(
+          apiStatus: Status.ERROR, apiErrorText: error.getMessage());
     }
   }
 
@@ -132,9 +133,9 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
 
       final currItem = state.item.copyWith(amount: updatedItemInfo.amount);
       yield state.copyWith(item: currItem, moveStatus: Status.COMPLETED);
-    } catch (error) {
-      //TODO: Add api error handling
-      print(error);
+    } on ApiException catch (error) {
+      yield state.copyWith(
+          apiStatus: Status.ERROR, apiErrorText: error.getMessage());
     }
   }
 
@@ -151,9 +152,9 @@ class ItemSettingsBloc extends Bloc<ItemSettingsEvent, ItemSettingsState> {
           id: state.item.id,
           amount: state.item.amount);
       yield state.copyWith(deleteStatus: Status.COMPLETED);
-    } catch (error) {
-      //TODO: Handle api error
-      print(error);
+    } on ApiException catch (error) {
+      yield state.copyWith(
+          apiStatus: Status.ERROR, apiErrorText: error.getMessage());
     }
   }
 
