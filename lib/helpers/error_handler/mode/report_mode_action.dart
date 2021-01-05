@@ -10,11 +10,10 @@
 ///
 
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 
 abstract class ReportModeAction {
   ///Code which should be triggered if report mode has been confirmed
-  Future<ErrorStatus> onActionConfirmed(Report report);
+  Future<void> onActionConfirmed(Report report);
 
   /// Code which should be triggered if report mode has been rejected
   Future<void> onActionRejected(Report report);

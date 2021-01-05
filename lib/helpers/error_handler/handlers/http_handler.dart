@@ -12,12 +12,12 @@
 import 'dart:collection';
 
 import 'package:dio/dio.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/http_request_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report_handler.dart';
 import 'package:foodload_flutter/helpers/error_handler/utils/error_handler_utils.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 
 import 'package:logging/logging.dart';
 
@@ -62,21 +62,20 @@ class HttpHandler extends ReportHandler {
         this.headers = headers != null ? headers : <String, dynamic>{};
 
   @override
-  Future<ErrorStatus> handle(Report error) async {
+  Future<void> handle(Report error) async {
     if (error.platformType != PlatformType.Web) {
-      if ((await ErrorHandlerUtils.isInternetConnectionAvailable())) {
+      if (!(await ErrorHandlerUtils.isInternetConnectionAvailable())) {
         _printLog("No internet connection available");
-        return ErrorStatus.NO_INTERNET;
+        throw NoInternetException('No internet connection available.');
       }
     }
 
     if (requestType == HttpRequestType.POST) {
-      return await _sendPost(error);
+      await _sendPost(error);
     }
-    return ErrorStatus.COMPLETED;
   }
 
-  Future<ErrorStatus> _sendPost(Report error) async {
+  Future<void> _sendPost(Report error) async {
     try {
       var json = error.toJson(
           enableDeviceParameters: enableDeviceParameters,
@@ -96,10 +95,10 @@ class HttpHandler extends ReportHandler {
           data: json, options: options);
       _printLog(
           "HttpHandler response status: ${response.statusCode} body: ${response.data}");
-      return ErrorStatus.COMPLETED;
     } catch (error, stackTrace) {
       _printLog("HttpHandler error: $error, stackTrace: $stackTrace");
-      return ErrorStatus.FAIL;
+      throw FailException(
+          'Failed to send the error log. Please try again or restart the application.');
     }
   }
 

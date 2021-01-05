@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/localization_options.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report_mode.dart';
 import 'package:foodload_flutter/helpers/error_handler/utils/error_handler_utils.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/status.dart';
 
 class DialogReportModeExit extends ReportMode {
@@ -31,57 +31,29 @@ class DialogReportModeExit extends ReportMode {
   }
 
   Widget _buildCupertinoDialog(Report report, BuildContext context) {
-    return CupertinoAlertDialog(
-      title: Text(localizationOptions.dialogReportModeTitle),
-      content: Text(localizationOptions.dialogReportModeDescription),
-      actions: <Widget>[
-        CupertinoDialogAction(
-          child: Text(localizationOptions.dialogReportModeAccept),
-          onPressed: () => _onAcceptReportClicked(context, report),
-        ),
-        CupertinoDialogAction(
-          child: Text(localizationOptions.dialogReportModeCancel),
-          onPressed: () => _onRejectReportClicked(context, report),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMaterialDialog(Report report, BuildContext context) {
-    // return WillPopScope(
-    //   onWillPop: () async => false,
-    //   child: AlertDialog(
-    //     title: Text(localizationOptions.dialogReportModeTitle),
-    //     content: Text(localizationOptions.dialogReportModeDescription),
-    //     actions: <Widget>[
-    //       FlatButton(
-    //         child: Text(localizationOptions.dialogReportModeAccept),
-    //         onPressed: () => _onAcceptReportClicked(context, report),
-    //       ),
-    //       FlatButton(
-    //         child: Text(localizationOptions.dialogReportModeCancel),
-    //         onPressed: () => _onCancelReportClicked(context, report),
-    //       ),
-    //
-    //   ),
-    // );
-    return _MaterialDialog(
+    return _ExitDialog(
         localizationOptions,
+        true,
         () => _onAcceptReportClicked(context, report),
         () => _onRejectReportClicked(context, report));
   }
 
-  Future<ErrorStatus> _onAcceptReportClicked(
-      BuildContext context, Report report) async {
-    final errorStatus = await super.onActionConfirmed(report);
-    if (errorStatus == ErrorStatus.COMPLETED) {
-      Navigator.pop(context);
-    } else {
-      return errorStatus;
-    }
+  Widget _buildMaterialDialog(Report report, BuildContext context) {
+    return _ExitDialog(
+        localizationOptions,
+        false,
+        () => _onAcceptReportClicked(context, report),
+        () => _onRejectReportClicked(context, report));
   }
 
-  void _onRejectReportClicked(BuildContext context, Report report) async {
+  Future<void> _onAcceptReportClicked(
+      BuildContext context, Report report) async {
+    await super.onActionConfirmed(report);
+    exit(1);
+  }
+
+  Future<void> _onRejectReportClicked(
+      BuildContext context, Report report) async {
     await super.onActionRejected(report);
     exit(1);
   }
@@ -96,87 +68,115 @@ class DialogReportModeExit extends ReportMode {
       [PlatformType.Web, PlatformType.Android, PlatformType.iOS];
 }
 
-class _MaterialDialog extends StatefulWidget {
+class _ExitDialog extends StatefulWidget {
   final LocalizationOptions _localizationOptions;
+  final bool _isCupertino;
 
-  const _MaterialDialog(localizationOptions, onAccept, onReject)
+  const _ExitDialog(localizationOptions, isCupertino, onAccept, onReject)
       : _localizationOptions = localizationOptions,
+        _isCupertino = isCupertino,
         _onAccept = onAccept,
         _onReject = onReject;
 
-  final Future<ErrorStatus> Function() _onAccept;
-  final Function() _onReject;
+  final Future<void> Function() _onAccept;
+  final Future<void> Function() _onReject;
 
   @override
-  _MaterialDialogState createState() => _MaterialDialogState();
+  _ExitDialogState createState() => _ExitDialogState();
 }
 
-class _MaterialDialogState extends State<_MaterialDialog> {
+class _ExitDialogState extends State<_ExitDialog> {
   Status _status = Status.INIT;
   String errorText = '';
 
   _accept() async {
-    final errorStatus = await widget._onAccept();
-    _handleError(errorStatus);
+    try {
+      await widget._onAccept();
+    } catch (error) {
+      _handleError(error);
+    }
   }
 
   _reject() async {
-    final errorStatus = await widget._onReject();
-    _handleError(errorStatus);
+    try {
+      await widget._onReject();
+    } catch (error) {
+      _handleError(error);
+    }
   }
 
-  _handleError(ErrorStatus errorStatus) {
-    var errorMsg = 'Sorry, something went wrong';
-    switch (errorStatus) {
-      case ErrorStatus.NO_INTERNET:
-        errorMsg = 'No internet. Please try again.';
-        break;
-      case ErrorStatus.TIMEOUT:
-        errorMsg = 'Took too long. Please try again.';
-        break;
-      case ErrorStatus.UNKNOWN:
-        errorMsg =
-            'An unknown error occurred while trying to send the report. Please try again or restart the app.';
-        break;
-      default:
-        break;
-    }
+  _handleError(ErrorHandlerException error) {
+    var displayErrorMsg = 'Sorry, something went wrong';
+    String errorMsg = error.toString();
+    if (errorMsg != null && errorMsg.isNotEmpty) displayErrorMsg = errorMsg;
     setState(() {
       _status = Status.ERROR;
-      errorText = errorMsg;
+      errorText = displayErrorMsg;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: AlertDialog(
-        title: Text(widget._localizationOptions.dialogReportModeTitle),
-        content: Text(
-          _status == Status.INIT
-              ? widget._localizationOptions.dialogReportModeDescription
-              : errorText,
+    if (widget._isCupertino) {
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: CupertinoAlertDialog(
+          title: Text(widget._localizationOptions.dialogReportModeTitle),
+          content: Text(
+            _status == Status.INIT
+                ? widget._localizationOptions.dialogReportModeDescription
+                : errorText,
+          ),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text(
+                _status == Status.INIT
+                    ? widget._localizationOptions.dialogReportModeAccept
+                    : widget._localizationOptions.retry,
+              ),
+              onPressed: () => _accept(),
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                _status == Status.INIT
+                    ? widget._localizationOptions.dialogReportModeCancel
+                    : widget._localizationOptions.close,
+              ),
+              onPressed: () => _reject(),
+            ),
+          ],
         ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              _status == Status.INIT
-                  ? widget._localizationOptions.dialogReportModeAccept
-                  : widget._localizationOptions.retry,
-            ),
-            onPressed: () => _accept(),
+      );
+    } else {
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          title: Text(widget._localizationOptions.dialogReportModeTitle),
+          content: Text(
+            _status == Status.INIT
+                ? widget._localizationOptions.dialogReportModeDescription
+                : errorText,
           ),
-          FlatButton(
-            child: Text(
-              _status == Status.INIT
-                  ? widget._localizationOptions.dialogReportModeCancel
-                  : widget._localizationOptions.close,
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                _status == Status.INIT
+                    ? widget._localizationOptions.dialogReportModeAccept
+                    : widget._localizationOptions.retry,
+              ),
+              onPressed: () => _accept(),
             ),
-            onPressed: () => _reject(),
-          ),
-        ],
-      ),
-    );
+            FlatButton(
+              child: Text(
+                _status == Status.INIT
+                    ? widget._localizationOptions.dialogReportModeCancel
+                    : widget._localizationOptions.close,
+              ),
+              onPressed: () => _reject(),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

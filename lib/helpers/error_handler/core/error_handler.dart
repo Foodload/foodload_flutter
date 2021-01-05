@@ -19,13 +19,13 @@ import 'package:flutter/material.dart';
 import 'package:foodload_flutter/helpers/error_handler/mode/report_mode_action.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/application_profile.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/error_handler_options.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/localization_options.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report_handler.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report_mode.dart';
 import 'package:foodload_flutter/helpers/error_handler/utils/error_handler_widget.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info/package_info.dart';
 
@@ -434,53 +434,52 @@ class ErrorHandler with ReportModeAction {
   }
 
   @override
-  Future<ErrorStatus> onActionConfirmed(Report report) async {
+  Future<void> onActionConfirmed(Report report) async {
     ReportHandler reportHandler =
         _getReportHandlerFromExplicitExceptionHandlerMap(report.error);
 
     if (reportHandler != null) {
       _logger.info("Using explicit report handler");
-      return _handleReport(report, reportHandler);
+      await _handleReport(report, reportHandler);
+      return;
     }
-
-    var errorStatus = ErrorStatus.COMPLETED;
 
     for (ReportHandler handler in _currentConfig.handlers) {
-      var errorStatusRes = await _handleReport(report, handler);
-      if (errorStatusRes != ErrorStatus.COMPLETED) {
-        errorStatus = errorStatusRes;
-      }
+      await _handleReport(report, handler);
     }
-    return errorStatus;
   }
 
-  Future<ErrorStatus> _handleReport(
-      Report report, ReportHandler reportHandler) async {
+  Future<void> _handleReport(Report report, ReportHandler reportHandler) async {
     if (!isReportHandlerSupportedInPlatform(report, reportHandler)) {
       _logger.warning(
           "$reportHandler in not supported for ${describeEnum(report.platformType)} platform");
-      return ErrorStatus.NOT_SUPPORTED;
+      throw NotSupportedException(
+          '$reportHandler in not supported for ${describeEnum(report.platformType)} platform');
     }
 
     try {
-      final ErrorStatus errorStatus = await reportHandler
+      await reportHandler
           .handle(report)
           .timeout(Duration(milliseconds: _currentConfig.handlerTimeout));
-      if (errorStatus == ErrorStatus.COMPLETED) {
-        _cachedReports.remove(report);
-      } else {
-        _logger.warning("${reportHandler.toString()} failed to report error");
-      }
-      _logger.info("Report result: $errorStatus");
-      return errorStatus;
+      _cachedReports.remove(report);
+      _logger.info("Report result: Done");
     } on TimeoutException catch (_) {
       _logger.warning(
           "${reportHandler.toString()} failed to report error because of timeout");
-      return ErrorStatus.TIMEOUT;
+      _logger.info("Report result: Fail (Timeout)");
+      throw TimeoutException(
+          'Failed to report error because it took too long. Please try again.');
+    } on ErrorHandlerException catch (error) {
+      _logger.warning("${reportHandler.toString()} failed to report error");
+      _logger.warning(
+          "Error occurred in ${reportHandler.toString()}: ${error.toString()}");
+      _logger.info("Report result: Fail");
+      rethrow;
     } catch (error) {
       _logger.warning(
           "Error occurred in ${reportHandler.toString()}: ${error.toString()}");
-      return ErrorStatus.UNKNOWN;
+      throw UnknownException(
+          'An unknown error occurred. Please try again or restart the app');
     }
   }
 

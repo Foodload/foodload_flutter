@@ -11,11 +11,10 @@
 
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 
 abstract class ReportHandler {
   /// Method called when report has been accepted by user
-  Future<ErrorStatus> handle(Report error);
+  Future<void> handle(Report error);
 
   /// Get list of supported platforms
   List<PlatformType> getSupportedPlatforms();

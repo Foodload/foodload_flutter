@@ -12,7 +12,6 @@
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report_handler.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 import 'package:logging/logging.dart';
 
 class ConsoleHandler extends ReportHandler {
@@ -36,7 +35,7 @@ class ConsoleHandler extends ReportHandler {
             "enableCustomParameters can't be null");
 
   @override
-  Future<ErrorStatus> handle(Report report) {
+  Future<void> handle(Report report) {
     _logger.info(
         "============================== ERROR LOG ==============================");
     _logger.info("Crash occurred on ${report.dateTime}");
@@ -61,7 +60,7 @@ class ConsoleHandler extends ReportHandler {
     _logger.info(
         "======================================================================");
 
-    return Future.value(ErrorStatus.COMPLETED);
+    return Future.value();
   }
 
   void _printDeviceParametersFormatted(Map<String, dynamic> deviceParameters) {

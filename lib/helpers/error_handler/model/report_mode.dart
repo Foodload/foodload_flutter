@@ -13,7 +13,6 @@ import 'package:foodload_flutter/helpers/error_handler/mode/report_mode_action.d
 import 'package:flutter/widgets.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/platform_type.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/report.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/error_status.dart';
 import 'localization_options.dart';
 
 abstract class ReportMode {
@@ -35,7 +34,7 @@ abstract class ReportMode {
   void requestAction(Report report, BuildContext context);
 
   /// On user has accepted report
-  Future<ErrorStatus> onActionConfirmed(Report report) async {
+  Future<void> onActionConfirmed(Report report) async {
     return await _reportModeAction.onActionConfirmed(report);
   }
 
