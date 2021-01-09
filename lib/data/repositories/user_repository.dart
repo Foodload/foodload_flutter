@@ -5,11 +5,12 @@ import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+//TODO: More error handling, more login methods etc
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FoodloadApiClient _foodloadApiClient;
-  User foodloadUser;
+  User _foodloadUser;
 
   UserRepository(
       {FirebaseAuth firebaseAuth,
@@ -19,7 +20,9 @@ class UserRepository {
         _googleSignIn = googleSignIn ?? GoogleSignIn(),
         _foodloadApiClient = foodloadApiClient ?? FoodloadApiClient();
 
-  bool get isInit => foodloadUser != null;
+  bool get isInit => _foodloadUser != null;
+
+  User get foodloadUser => _foodloadUser.copyWith();
 
   Future<FirebaseUser> signInWithGoogle() async {
     try {
@@ -41,6 +44,7 @@ class UserRepository {
       assert(await user.getIdToken() != null);
 
       final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      assert(currentUser != null);
       assert(user.uid == currentUser.uid);
       return currentUser;
     } catch (error) {
@@ -51,7 +55,7 @@ class UserRepository {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
     await _googleSignIn.signOut();
-    //TODO: Set foodloadUser to null?
+    _foodloadUser = null;
   }
 
   Future<bool> isSignedIn() async {
@@ -64,7 +68,6 @@ class UserRepository {
   }
 
   Future<String> getToken() async {
-    //TODO: Refresh token?
     final user = await getUser();
     final tokenRes = await user.getIdToken();
     return tokenRes.token;
@@ -73,9 +76,8 @@ class UserRepository {
   Future<void> initUser() async {
     try {
       final user = await _foodloadApiClient.sendInit(await getToken());
-      foodloadUser = user;
+      _foodloadUser = user;
     } catch (error) {
-      //TODO: Maybe create more exceptions, more business logic related?
       throw error;
     }
   }

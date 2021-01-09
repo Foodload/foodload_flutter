@@ -31,7 +31,7 @@ class AddItemDialog extends StatelessWidget {
           FlatButton(
             child: Text('Close'),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(_isAddSuccess(state));
             },
           )
         ],

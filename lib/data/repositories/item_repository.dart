@@ -105,7 +105,6 @@ class ItemRepository {
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
-    //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
     return itemUpdatedInfo;
   }
 
@@ -121,7 +120,6 @@ class ItemRepository {
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
-    //TODO: Response... ok = new amount is returned, not ok 20.. could not update = new amount, etc.. More info needed!
     return itemUpdatedInfo;
   }
 

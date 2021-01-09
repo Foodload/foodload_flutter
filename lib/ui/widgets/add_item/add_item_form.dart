@@ -42,7 +42,7 @@ class _AddItemFormState extends State<AddItemForm> {
     _addItemFormBloc.add(ItemChange());
   }
 
-  Future<void> _showAddDialog() async {
+  Future<bool> _showAddDialog() async {
     return showDialog(
       context: context,
       builder: (_) => BlocProvider<AddItemFormBloc>.value(
@@ -61,9 +61,11 @@ class _AddItemFormState extends State<AddItemForm> {
     _addItemFormBloc.add(ItemAdd(
         amount: _itemAmountTextController.text,
         storageType: widget.storageType));
-    await _showAddDialog(); //TODO: If failed, return false and don't reset?
-    _addItemFormBloc.add(AddItemFormReset());
-    _resetForm();
+    final result = await _showAddDialog();
+    if (result != null && result) {
+      _addItemFormBloc.add(AddItemFormReset());
+      _resetForm();
+    }
   }
 
   @override

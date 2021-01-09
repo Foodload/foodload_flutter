@@ -16,5 +16,3 @@ class ItemDecrement extends ItemEvent {
 
   ItemDecrement(this.id);
 }
-
-//TODO: Move, change amount, etc...

@@ -27,6 +27,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } on NoSuchMethodError catch (_) {
       yield LoginState.initial(); //aborted, restart
     } catch (error) {
+      //TODO: Log
       yield LoginState.failure();
     }
   }

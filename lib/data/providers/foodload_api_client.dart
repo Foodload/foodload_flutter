@@ -14,7 +14,7 @@ class FoodloadApiClient {
   final _helper = _ApiBaseHelper(http.Client());
 
   Future<User> sendInit(String token) async {
-    const urlSegment = 'login';
+    const urlSegment = 'init';
     final resp = await _helper.get(urlSegment, token);
     final user = User(
       token: resp['token'],

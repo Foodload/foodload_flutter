@@ -4,6 +4,7 @@ import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/helpers/keys.dart';
 
+//TODO: Remove
 class TestScreen extends StatefulWidget {
   static const routeName = '/test-screen';
 
@@ -30,23 +31,11 @@ class _TestScreenState extends State<TestScreen> {
         amount: 1,
         token: await userRepo.getToken(),
         storageType: 'Fridge');
-    //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
-    print('test');
   }
 
   void removeItem() async {
     itemRepo.removeItem(await userRepo.getToken(), '7310865062024', fridge);
-    //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
-    print('test');
   }
-
-  /*
-  void checkFridge() async {
-    itemRepo.checkFridge(await userRepo.getToken());
-    //TODO: Test directly with userRepo and ItemRepo and maybe print out result etc
-    print('test');
-  }
-  */
 
   @override
   Widget build(BuildContext context) {

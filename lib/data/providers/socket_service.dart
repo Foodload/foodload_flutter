@@ -9,7 +9,8 @@ class SocketService {
   static const MOVE_ITEM = 'move_item';
   static const DELETE_ITEM = 'delete_item';
 
-  void createSocketConnection(String token) {
+  void createSocketConnection(
+      String token, Function onSocketSuccess, Function onSocketFailure) {
     print("connecting to socket");
     _socket = IO.io(socketURL, <String, dynamic>{
       'transports': ['websocket'],
@@ -19,6 +20,7 @@ class SocketService {
 
     _socket.on('connect', (_) {
       print('connect');
+      onSocketSuccess();
     });
 
     _socket.on('error', (data) {
@@ -28,6 +30,7 @@ class SocketService {
 
     _socket.on('connect_error', (_) {
       print('connect error...');
+      onSocketFailure();
     });
 
     _socket.on('connecting', (_) {
@@ -61,9 +64,7 @@ class SocketService {
     });
   }
 
-  IO.Socket get socket {
-    return _socket;
-  }
+  IO.Socket get socket => _socket;
 
   void dispose() {
     if (_socket != null) {

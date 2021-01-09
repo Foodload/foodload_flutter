@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:meta/meta.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 
@@ -29,28 +30,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapAuthStartedToState() async* {
-    final isSignedIn = await _userRepository.isSignedIn();
-    if (isSignedIn) {
-      final user = await _userRepository.getUser();
-      await _initUser();
-      yield AuthSuccess(user.displayName);
-    } else {
+    try {
+      final isSignedIn = await _userRepository.isSignedIn();
+      if (isSignedIn) {
+        final user = await _userRepository.getUser();
+        await _userRepository.initUser();
+        yield AuthSuccess(user.displayName);
+      } else {
+        yield AuthFailure();
+      }
+    } on ApiException catch (error) {
+      //TODO: Log
+      yield AuthFailure();
+    } catch (error) {
+      //TODO: Log
       yield AuthFailure();
     }
   }
 
   Stream<AuthState> _mapAuthLoggedInToState() async* {
-    final user = await _userRepository.getUser();
-    await _initUser();
-    yield AuthSuccess(user.displayName);
-  }
-
-  Future<void> _initUser() async {
     try {
+      final user = await _userRepository.getUser();
       await _userRepository.initUser();
+      yield AuthSuccess(user.displayName);
+    } on ApiException catch (error) {
+      //TODO: Log
+      yield AuthFailure();
     } catch (error) {
-      //TODO: HANDLE ERROR
-      print(error);
+      yield AuthFailure();
+      //TODO: Log
     }
   }
 

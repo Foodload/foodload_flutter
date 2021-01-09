@@ -44,22 +44,26 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
   }
 
   Stream<SocketState> _mapSocketStartedToState() async* {
-    if (!_userRepository.isInit) {
-      //TODO: If user is not init, fail and make it possible to retry in ui and create such retry-event
-      yield SocketFailure();
-      return;
-    }
-
-    final user = _userRepository.foodloadUser; //TODO: Prob create a getter
-    _socketService.createSocketConnection(user.token);
-    //TODO: Implement on connect in socket service with a callback here to set SocketSuccess!
-    //This will work for now but is actually false...
+    final user = _userRepository.foodloadUser;
+    _socketService.createSocketConnection(
+        user.token, _onSocketSuccess, _onSocketFailure);
+    //TODO: Test and change state somewhere else / other way
     yield SocketSuccess();
   }
 
   Stream<SocketState> _mapSocketClosingToState() async* {
     _socketService.dispose();
     yield SocketFailure();
+  }
+
+  void _onSocketSuccess() {
+    print("Socket Bloc: ");
+    print("Success");
+  }
+
+  void _onSocketFailure() {
+    print("Socket Bloc: ");
+    print("Fail");
   }
 
   @override

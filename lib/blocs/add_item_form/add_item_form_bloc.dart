@@ -67,7 +67,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
             apiException.getMessage() ?? apiException.getPrefix(),
       );
     } catch (error) {
-      print(error);
+      //TODO: Log
       yield state.copyWith(
           searchStatus: Status.ERROR,
           searchErrorMessage: 'Something went wrong. Please try again later.');
@@ -130,7 +130,7 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
         addErrorMessage: error.getMessage(),
       );
     } catch (error) {
-      print(error);
+      //TODO: Log
       yield state.copyWith(
         addStatus: Status.ERROR,
         addErrorMessage:

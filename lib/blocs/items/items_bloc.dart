@@ -9,6 +9,7 @@ import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:meta/meta.dart';
 
+//TODO: Remove bloc, unnecessary since items are now stored in itemRepo and not here
 class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   final ItemRepository _itemRepository;
   final UserRepository _userRepository;
@@ -32,7 +33,6 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
         add(ItemsLoad());
       }
       if (state is AuthFailure) {
-        //TODO: Remove items...?
         print('remove items (ItemsBloc)');
       }
     });
