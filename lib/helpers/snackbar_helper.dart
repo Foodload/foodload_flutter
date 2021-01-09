@@ -6,6 +6,7 @@ class SnackBarHelper {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).colorScheme.error,
           content: Text(
