@@ -9,6 +9,7 @@ import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
 import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/global_keys.dart';
 
 import 'data/providers/socket_service.dart';
 import 'helpers/error_handler/handlers/console_handler.dart';
@@ -34,6 +35,7 @@ void main() {
 
   ErrorHandler(
     rootWidget: App(),
+    navigatorKey: GlobalKeys.globalKey,
     debugConfig: debugOptions,
     releaseConfig: releaseOptions,
   );
@@ -106,7 +108,7 @@ class _AppState extends State<App> {
           RepositoryProvider<UserRepository>.value(value: _userRepository),
           RepositoryProvider<ItemRepository>.value(value: _itemRepository),
         ],
-        child: FoodLoadApp(ErrorHandler.navigatorKey),
+        child: FoodLoadApp(GlobalKeys.globalKey),
       ),
     );
   }
