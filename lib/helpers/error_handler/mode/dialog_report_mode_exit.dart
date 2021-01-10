@@ -91,6 +91,10 @@ class _ExitDialogState extends State<_ExitDialog> {
 
   _accept() async {
     try {
+      setState(() {
+        _status = Status.LOADING;
+      });
+      await Future.delayed(Duration(seconds: 10));
       await widget._onAccept();
     } catch (error) {
       _handleError(error);
@@ -121,16 +125,23 @@ class _ExitDialogState extends State<_ExitDialog> {
       return WillPopScope(
         onWillPop: () async => false,
         child: CupertinoAlertDialog(
-          title: Text(widget._localizationOptions.dialogReportModeTitle),
-          content: Text(
-            _status == Status.INIT
-                ? widget._localizationOptions.dialogReportModeDescription
-                : errorText,
-          ),
+          title: _status == Status.LOADING
+              ? Text('')
+              : Text(widget._localizationOptions.dialogReportModeTitle),
+          content: _status == Status.LOADING
+              ? Center(
+                  heightFactor: 2,
+                  child: CircularProgressIndicator(),
+                )
+              : Text(
+                  _status == Status.INIT
+                      ? widget._localizationOptions.dialogReportModeDescription
+                      : errorText,
+                ),
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text(
-                _status == Status.INIT
+                _status == Status.INIT || _status == Status.LOADING
                     ? widget._localizationOptions.dialogReportModeAccept
                     : widget._localizationOptions.retry,
               ),
@@ -138,7 +149,7 @@ class _ExitDialogState extends State<_ExitDialog> {
             ),
             CupertinoDialogAction(
               child: Text(
-                _status == Status.INIT
+                _status == Status.INIT || _status == Status.LOADING
                     ? widget._localizationOptions.dialogReportModeCancel
                     : widget._localizationOptions.close,
               ),
@@ -151,28 +162,35 @@ class _ExitDialogState extends State<_ExitDialog> {
       return WillPopScope(
         onWillPop: () async => false,
         child: AlertDialog(
-          title: Text(widget._localizationOptions.dialogReportModeTitle),
-          content: Text(
-            _status == Status.INIT
-                ? widget._localizationOptions.dialogReportModeDescription
-                : errorText,
-          ),
+          title: _status == Status.LOADING
+              ? Text('')
+              : Text(widget._localizationOptions.dialogReportModeTitle),
+          content: _status == Status.LOADING
+              ? Center(
+                  heightFactor: 2,
+                  child: CircularProgressIndicator(),
+                )
+              : Text(
+                  _status == Status.INIT
+                      ? widget._localizationOptions.dialogReportModeDescription
+                      : errorText,
+                ),
           actions: <Widget>[
             FlatButton(
               child: Text(
-                _status == Status.INIT
+                _status == Status.INIT || _status == Status.LOADING
                     ? widget._localizationOptions.dialogReportModeAccept
                     : widget._localizationOptions.retry,
               ),
-              onPressed: () => _accept(),
+              onPressed: _status == Status.LOADING ? null : () => _accept(),
             ),
             FlatButton(
               child: Text(
-                _status == Status.INIT
+                _status == Status.INIT || _status == Status.LOADING
                     ? widget._localizationOptions.dialogReportModeCancel
                     : widget._localizationOptions.close,
               ),
-              onPressed: () => _reject(),
+              onPressed: _status == Status.LOADING ? null : () => _reject(),
             ),
           ],
         ),
