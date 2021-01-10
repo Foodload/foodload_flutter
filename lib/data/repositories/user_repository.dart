@@ -75,8 +75,9 @@ class UserRepository {
 
   Future<void> initUser() async {
     try {
-      final user = await _foodloadApiClient.sendInit(await getToken());
-      _foodloadUser = user;
+      final respJson = await _foodloadApiClient.sendInit(await getToken());
+      print(respJson);
+      _foodloadUser = User.fromJson(respJson);
     } catch (error) {
       throw error;
     }

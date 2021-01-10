@@ -4,25 +4,14 @@ import 'dart:io';
 import 'package:foodload_flutter/helpers/keys.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception_response.dart';
-import 'package:foodload_flutter/models/item.dart';
-import 'package:foodload_flutter/models/item_info.dart';
-import 'package:foodload_flutter/models/item_updated_info.dart';
-import 'package:foodload_flutter/models/user.dart';
 import 'package:http/http.dart' as http;
 
 class FoodloadApiClient {
   final _helper = _ApiBaseHelper(http.Client());
 
-  Future<User> sendInit(String token) async {
+  Future<dynamic> sendInit(String token) async {
     const urlSegment = 'init';
-    final resp = await _helper.get(urlSegment, token);
-    final user = User(
-      token: resp['token'],
-      email: resp['client']['email'],
-      familyId: resp['client']['family']['id'],
-      familyName: resp['client']['family']['name'],
-    );
-    return user;
+    return await _helper.get(urlSegment, token);
   }
 
   Future<void> addItemQR(
@@ -37,6 +26,7 @@ class FoodloadApiClient {
     print(resp);
   }
 
+  //TODO: Remove?
   Future<String> removeItemQR(
       String token, String qr, String storageType) async {
     const urlSegment = 'removeItemQR';
@@ -50,12 +40,9 @@ class FoodloadApiClient {
     return resp.body;
   }
 
-  Future<List<Item>> getItemCounts(String token) async {
+  Future<dynamic> getItemCounts(String token) async {
     const urlSegment = 'get-all-item-counts';
-    final resp = await _helper.get(urlSegment, token);
-    List<Item> fridgeItems =
-        (resp as List).map((jsonItem) => Item.fromJson(jsonItem)).toList();
-    return fridgeItems;
+    return await _helper.get(urlSegment, token);
   }
 
   Future<void> incrementItem(String token, int id) async {
@@ -63,7 +50,7 @@ class FoodloadApiClient {
     Map<String, dynamic> body = {
       'id': id,
     };
-    final resp = await _helper.post(
+    await _helper.post(
       urlSegment,
       token,
       body,
@@ -75,14 +62,14 @@ class FoodloadApiClient {
     Map<String, dynamic> body = {
       'id': id,
     };
-    final resp = await _helper.post(
+    await _helper.post(
       urlSegment,
       token,
       body,
     );
   }
 
-  Future<List<ItemInfo>> findItemByName(
+  Future<dynamic> findItemByName(
       String searchText, int startIndex, String token) async {
     const urlSegment = 'find-item-by-name';
     Map<String, dynamic> body = {
@@ -90,31 +77,26 @@ class FoodloadApiClient {
       'start': startIndex,
     };
 
-    final resp = await _helper.post(
+    return await _helper.post(
       urlSegment,
       token,
       body,
     );
-    List<ItemInfo> results =
-        (resp as List).map((jsonItem) => ItemInfo.fromJson(jsonItem)).toList();
-    return results;
   }
 
-  Future<ItemInfo> findItemByQr(String qr, String token) async {
+  Future<dynamic> findItemByQr(String qr, String token) async {
     const urlSegment = 'search-item';
     Map<String, dynamic> body = {
       'qrCode': qr,
     };
-    final resp = await _helper.post(
+    return await _helper.post(
       urlSegment,
       token,
       body,
     );
-    final itemInfo = ItemInfo.fromJson(resp);
-    return itemInfo;
   }
 
-  Future<ItemUpdatedInfo> moveItemToStorage({
+  Future<dynamic> moveItemToStorage({
     String token,
     int id,
     String storageType,
@@ -128,11 +110,10 @@ class FoodloadApiClient {
       'moveAmount': moveAmount,
       'oldAmount': oldAmount,
     };
-    final resp = await _helper.post(urlSegment, token, body);
-    return ItemUpdatedInfo.fromJson(resp);
+    return await _helper.post(urlSegment, token, body);
   }
 
-  Future<ItemUpdatedInfo> moveItemFromStorage(
+  Future<dynamic> moveItemFromStorage(
       {String token,
       int id,
       String storageType,
@@ -145,12 +126,11 @@ class FoodloadApiClient {
       'moveAmount': moveAmount,
       'oldAmount': oldAmount,
     };
-    final resp = await _helper.post(
+    return await _helper.post(
       urlSegment,
       token,
       body,
     );
-    return ItemUpdatedInfo.fromJson(resp);
   }
 
   Future<void> deleteItem({String token, int id, int amount}) async {
@@ -167,7 +147,7 @@ class FoodloadApiClient {
     print(resp);
   }
 
-  Future<ItemUpdatedInfo> updateItemAmount(
+  Future<dynamic> updateItemAmount(
       {String token, int id, int newAmount, int oldAmount}) async {
     const urlSegment = 'change-item-count';
     Map<String, dynamic> body = {
@@ -175,16 +155,11 @@ class FoodloadApiClient {
       'amount': oldAmount,
       'newAmount': newAmount,
     };
-    final resp = await _helper.post(
+    return await _helper.post(
       urlSegment,
       token,
       body,
     );
-    return ItemUpdatedInfo.fromJson(resp);
-  }
-
-  Future<String> requestFamilyToken(String userToken) async {
-    //const urlSegment = ''
   }
 }
 
@@ -235,7 +210,8 @@ class _ApiBaseHelper {
     if (_hasBody(response)) {
       try {
         responseJsonBody = _getDecodedBody(response);
-      } on FormatException catch (error) {
+      } on FormatException catch (_) {
+        //TODO: Log
         throw BadFormatException('Bad format sent from server.');
       }
     }

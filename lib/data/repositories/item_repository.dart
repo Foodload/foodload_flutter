@@ -21,7 +21,9 @@ class ItemRepository {
         _socketService = socketService;
 
   Future<List<Item>> init(String token) async {
-    List<Item> items = await _foodloadApiClient.getItemCounts(token);
+    final respJson = await _foodloadApiClient.getItemCounts(token);
+    List<Item> items =
+        (respJson as List).map((jsonItem) => Item.fromJson(jsonItem)).toList();
     _items = Items(items);
     _configItemWithSocket();
     return [...items];
@@ -55,12 +57,9 @@ class ItemRepository {
   }
 
   Future<ItemInfo> getItem(String qr, String token) async {
-    final item = await _foodloadApiClient.findItemByQr(qr, token);
-    return ItemInfo(
-      qrCode: item.qrCode,
-      title: item.title,
-      brand: item.brand,
-    );
+    final respJson = await _foodloadApiClient.findItemByQr(qr, token);
+    final itemInfo = ItemInfo.fromJson(respJson);
+    return itemInfo;
   }
 
   Future<List<Item>> getItemCounts(String token) async {
@@ -78,9 +77,12 @@ class ItemRepository {
 
   Future<List<ItemInfo>> searchForItem(
       String searchText, int startIndex, String userToken) async {
-    final res = await _foodloadApiClient.findItemByName(
+    final respJson = await _foodloadApiClient.findItemByName(
         searchText, startIndex, userToken);
-    return res;
+    List<ItemInfo> results = (respJson as List)
+        .map((jsonItem) => ItemInfo.fromJson(jsonItem))
+        .toList();
+    return results;
   }
 
   Future<void> addItem(
@@ -99,13 +101,13 @@ class ItemRepository {
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final itemUpdatedInfo = await _foodloadApiClient.moveItemToStorage(
+    final respJson = await _foodloadApiClient.moveItemToStorage(
         token: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
-    return itemUpdatedInfo;
+    return ItemUpdatedInfo.fromJson(respJson);
   }
 
   Future<ItemUpdatedInfo> moveItemFromStorage(
@@ -114,13 +116,13 @@ class ItemRepository {
       int moveAmount,
       int id,
       int oldAmount}) async {
-    final itemUpdatedInfo = await _foodloadApiClient.moveItemFromStorage(
+    final respJson = await _foodloadApiClient.moveItemFromStorage(
         token: token,
         storageType: storageType,
         moveAmount: moveAmount,
         oldAmount: oldAmount,
         id: id);
-    return itemUpdatedInfo;
+    return ItemUpdatedInfo.fromJson(respJson);
   }
 
   Future<void> deleteItem({
@@ -133,8 +135,12 @@ class ItemRepository {
 
   Future<ItemUpdatedInfo> updateItemAmount(
       {String token, int id, int newAmount, int oldAmount}) async {
-    final itemUpdateInfo = await _foodloadApiClient.updateItemAmount(
-        id: id, token: token, newAmount: newAmount, oldAmount: oldAmount);
-    return itemUpdateInfo;
+    final respJson = await _foodloadApiClient.updateItemAmount(
+      id: id,
+      token: token,
+      newAmount: newAmount,
+      oldAmount: oldAmount,
+    );
+    return ItemUpdatedInfo.fromJson(respJson);
   }
 }

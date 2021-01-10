@@ -19,4 +19,10 @@ class User {
       familyName: familyName ?? this.familyName,
     );
   }
+
+  User.fromJson(Map<String, dynamic> json)
+      : token = json['token'],
+        email = json['client']['email'],
+        familyId = json['client']['family']['id'],
+        familyName = json['client']['family']['name'];
 }
