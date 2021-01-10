@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
-import 'package:foodload_flutter/data/providers/socket_service.dart';
+import 'package:foodload_flutter/data/providers/socket_client.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/items.dart';
@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 
 class ItemRepository {
   final FoodloadApiClient _foodloadApiClient;
-  final SocketService _socketService;
+  final SocketClient _socketService;
 
   Items _items;
 
@@ -29,18 +29,18 @@ class ItemRepository {
 
   void _configItemWithSocket() {
     final socket = _socketService.socket;
-    socket.on(SocketService.UPDATE_ITEM, (data) {
+    socket.on(SocketClient.UPDATE_ITEM, (data) {
       Map<String, dynamic> decoded = jsonDecode(data);
       final item = Item.fromJson(decoded);
       _items.updateWithItem(item);
     });
-    socket.on(SocketService.MOVE_ITEM, (data) {
+    socket.on(SocketClient.MOVE_ITEM, (data) {
       Map<String, dynamic> decoded = jsonDecode(data);
       final srcItem = Item.fromItemCountJson(decoded['srcItemCount']);
       final destItem = Item.fromItemCountJson(decoded['destItemCount']);
       _items.updateWithItems([srcItem, destItem]);
     });
-    socket.on(SocketService.DELETE_ITEM, (data) {
+    socket.on(SocketClient.DELETE_ITEM, (data) {
       Map<String, dynamic> decoded = jsonDecode(data);
       _items.deleteItem(decoded['itemCountId']);
     });

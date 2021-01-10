@@ -11,7 +11,7 @@ import 'package:foodload_flutter/foodload_app.dart';
 import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
 import 'package:foodload_flutter/helpers/global_keys.dart';
 
-import 'data/providers/socket_service.dart';
+import 'data/providers/socket_client.dart';
 import 'helpers/error_handler/handlers/console_handler.dart';
 import 'helpers/error_handler/mode/dialog_report_mode_exit.dart';
 import 'helpers/error_handler/model/error_handler_options.dart';
@@ -57,7 +57,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    _socketService = SocketService();
+    _socketService = SocketClient();
     _foodloadApiClient = FoodloadApiClient();
     _userRepository = UserRepository(foodloadApiClient: _foodloadApiClient);
     _itemRepository = ItemRepository(

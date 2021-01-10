@@ -4,18 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/blocs/socket/bloc.dart';
-import 'package:foodload_flutter/data/providers/socket_service.dart';
+import 'package:foodload_flutter/data/providers/socket_client.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 
 class SocketBloc extends Bloc<SocketEvent, SocketState> {
   final UserRepository _userRepository;
-  final SocketService _socketService;
+  final SocketClient _socketService;
   final AuthBloc _authBloc;
   StreamSubscription _authSubscription;
 
   SocketBloc({
     @required UserRepository userRepository,
-    @required SocketService socketService,
+    @required SocketClient socketService,
     @required AuthBloc authBloc,
   })  : assert(userRepository != null &&
             socketService != null &&

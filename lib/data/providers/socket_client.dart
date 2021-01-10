@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:foodload_flutter/helpers/keys.dart';
 
-class SocketService {
+class SocketClient {
   IO.Socket _socket;
   static const UPDATE_ITEM = 'update_item';
   static const MOVE_ITEM = 'move_item';
@@ -19,48 +17,50 @@ class SocketService {
     });
 
     _socket.on('connect', (_) {
-      print('connect');
+      print('SocketClient: connect');
       onSocketSuccess();
     });
 
     _socket.on('error', (data) {
-      print('error');
+      print('SocketClient: error');
       print(data);
     });
 
     _socket.on('connect_error', (_) {
-      print('connect error...');
+      print('SocketClient: connect error...');
       onSocketFailure();
     });
 
     _socket.on('connecting', (_) {
-      print('connecting');
+      print('SocketClient: connecting');
     });
 
     _socket.on('connect_timeout', (_) {
-      print('connect_timeout...');
+      print('SocketClient: connect_timeout...');
     });
 
     _socket.on('reconnect_error', (_) {
-      print('reconnect error...');
+      print('SocketClient: reconnect error...');
     });
 
-    _socket.on('reconnect', (data) => print('reconnect'));
+    _socket.on('reconnect', (_) {
+      print('SocketClient: reconnect');
+    });
 
     _socket.on('reconnect_failed', (_) {
-      print('reconnect failed...');
+      print('SocketClient: reconnect failed...');
     });
 
     _socket.on('reconnect_attempt', (_) {
-      print('reconnect_attempt...');
+      print('SocketClient: reconnect_attempt...');
     });
 
     _socket.on('reconnecting', (_) {
-      print('reconnecting...');
+      print('SocketClient: reconnecting...');
     });
 
     _socket.on('disconnect', (_) {
-      print('disconnect');
+      print('SocketClient: disconnect');
     });
   }
 
@@ -68,7 +68,7 @@ class SocketService {
 
   void dispose() {
     if (_socket != null) {
-      print('disposing socket');
+      print('SocketClient: disposing socket');
       _socket.dispose();
     }
   }
