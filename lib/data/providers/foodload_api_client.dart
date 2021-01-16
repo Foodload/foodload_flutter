@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart'
+    as ErrorHandlerExceptions;
 import 'package:foodload_flutter/helpers/keys.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception_response.dart';
@@ -24,20 +27,6 @@ class FoodloadApiClient {
     };
     final resp = await _helper.post(urlSegment, token, body);
     print(resp);
-  }
-
-  //TODO: Remove?
-  Future<String> removeItemQR(
-      String token, String qr, String storageType) async {
-    const urlSegment = 'removeItemQR';
-    Map<String, dynamic> body = {
-      'qrCode': qr,
-      'amount': "1",
-      'storageType': storageType,
-    };
-    final resp = await _helper.post(urlSegment, token, body);
-    print(resp);
-    return resp.body;
   }
 
   Future<dynamic> getItemCounts(String token) async {
@@ -210,8 +199,10 @@ class _ApiBaseHelper {
     if (_hasBody(response)) {
       try {
         responseJsonBody = _getDecodedBody(response);
-      } on FormatException catch (_) {
-        //TODO: Log
+      } on FormatException catch (error, stackTrace) {
+        ErrorHandler.reportCheckedError(
+            ErrorHandlerExceptions.ComponentLogException(error.message),
+            stackTrace);
         throw BadFormatException('Bad format sent from server.');
       }
     }

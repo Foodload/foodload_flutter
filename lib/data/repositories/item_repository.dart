@@ -91,10 +91,6 @@ class ItemRepository {
         qr: qr, amount: amount, storageType: storageType, token: token);
   }
 
-  Future<void> removeItem(String token, String qr, String storageType) async {
-    await _foodloadApiClient.removeItemQR(token, qr, storageType);
-  }
-
   Future<ItemUpdatedInfo> moveItemToStorage(
       {String token,
       String storageType,

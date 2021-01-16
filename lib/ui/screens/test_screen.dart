@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
-import 'package:foodload_flutter/helpers/keys.dart';
 
 //TODO: Remove
 class TestScreen extends StatefulWidget {
@@ -34,7 +33,7 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void removeItem() async {
-    itemRepo.removeItem(await userRepo.getToken(), '7310865062024', fridge);
+    //itemRepo.removeItem(await userRepo.getToken(), '7310865062024', fridge);
   }
 
   @override
