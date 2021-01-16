@@ -28,7 +28,7 @@ class ItemQrSearch extends AddItemFormEvent {
   });
 
   @override
-  String toString() => 'ItemQrFetched { qr: $qr }';
+  String toString() => 'ItemQrSearch { qr: $qr }';
 }
 
 class ItemAmountChanged extends AddItemFormEvent {

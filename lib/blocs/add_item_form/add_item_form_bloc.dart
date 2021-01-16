@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
 import 'package:foodload_flutter/helpers/field_validation.dart';
 import 'package:foodload_flutter/models/enums/field_error.dart';
 import 'package:foodload_flutter/models/enums/status.dart';
@@ -66,8 +68,9 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
         searchErrorMessage:
             apiException.getMessage() ?? apiException.getPrefix(),
       );
-    } catch (error) {
-      //TODO: Log
+    } catch (error, stackTrace) {
+      ErrorHandler.reportCheckedError(
+          SilentLogException(error.message), stackTrace);
       yield state.copyWith(
           searchStatus: Status.ERROR,
           searchErrorMessage: 'Something went wrong. Please try again later.');
@@ -129,8 +132,9 @@ class AddItemFormBloc extends Bloc<AddItemFormEvent, AddItemFormState> {
         addStatus: Status.ERROR,
         addErrorMessage: error.getMessage(),
       );
-    } catch (error) {
-      //TODO: Log
+    } catch (error, stackTrace) {
+      ErrorHandler.reportCheckedError(
+          SilentLogException(error.message), stackTrace);
       yield state.copyWith(
         addStatus: Status.ERROR,
         addErrorMessage:

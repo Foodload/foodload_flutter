@@ -16,9 +16,13 @@ import 'package:foodload_flutter/helpers/error_handler/model/report_mode.dart';
 
 class SilentReportMode extends ReportMode {
   @override
-  void requestAction(Report report, BuildContext context) {
+  void requestAction(Report report, BuildContext context) async {
     // no action needed, request is automatically accepted
-    super.onActionConfirmed(report);
+    try {
+      await super.onActionConfirmed(report);
+    } catch (_) {
+      //If fail, fail silently (?)
+    }
   }
 
   @override
