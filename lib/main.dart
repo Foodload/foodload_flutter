@@ -9,6 +9,8 @@ import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
 import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/error_handler/mode/dialog_report_mode.dart';
+import 'package:foodload_flutter/helpers/error_handler/mode/silent_report_mode.dart';
 import 'package:foodload_flutter/helpers/global_keys.dart';
 
 import 'data/providers/socket_client.dart';
@@ -20,17 +22,23 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
 
+  var explicitReportModesMap = {
+    "SilentLogException": SilentReportMode(),
+    "ComponentLogException": DialogReportMode(),
+  };
   ErrorHandlerOptions debugOptions = ErrorHandlerOptions(
     DialogReportModeExit(),
     [
       ConsoleHandler(),
     ],
+    explicitExceptionReportModesMap: explicitReportModesMap,
   );
   ErrorHandlerOptions releaseOptions = ErrorHandlerOptions(
     DialogReportModeExit(),
     [
       //TODO: Add HttpHandler
     ],
+    explicitExceptionReportModesMap: explicitReportModesMap,
   );
 
   ErrorHandler(

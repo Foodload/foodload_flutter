@@ -111,7 +111,7 @@ class _ExitDialogState extends State<_ExitDialog> {
 
   _handleError(ErrorHandlerException error) {
     var displayErrorMsg = 'Sorry, something went wrong';
-    String errorMsg = error.toString();
+    String errorMsg = error.getMessage();
     if (errorMsg != null && errorMsg.isNotEmpty) displayErrorMsg = errorMsg;
     setState(() {
       _status = Status.ERROR;

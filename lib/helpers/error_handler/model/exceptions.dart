@@ -6,6 +6,10 @@ class ErrorHandlerException implements Exception {
 
   @override
   String toString() {
+    return '$errorTitle: $errorMessage';
+  }
+
+  String getMessage() {
     return '$errorMessage';
   }
 
@@ -38,4 +42,16 @@ class TimeoutException extends ErrorHandlerException {
 class NotSupportedException extends ErrorHandlerException {
   const NotSupportedException([message])
       : super('Not Supported', message ?? 'The error handler is not supported');
+}
+
+class SilentLogException extends ErrorHandlerException {
+  const SilentLogException([message])
+      : super(
+            'SilentLogException', message ?? 'Silent log exception triggered');
+}
+
+class ComponentLogException extends ErrorHandlerException {
+  const ComponentLogException([message])
+      : super('ComponentLogException',
+            message ?? 'Something went wrong in a component');
 }
