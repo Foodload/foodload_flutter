@@ -6,6 +6,7 @@ import 'package:foodload_flutter/blocs/simple_bloc_observer.dart';
 import 'package:foodload_flutter/blocs/socket/bloc.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
+import 'package:foodload_flutter/data/repositories/template_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/foodload_app.dart';
 import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
@@ -59,6 +60,7 @@ class _AppState extends State<App> {
   var _foodloadApiClient;
   var _userRepository;
   var _itemRepository;
+  var _templateRepository;
   AuthBloc _authBloc;
   SocketBloc _socketBloc;
 
@@ -72,6 +74,8 @@ class _AppState extends State<App> {
       foodloadApiClient: _foodloadApiClient,
       socketService: _socketService,
     );
+    _templateRepository =
+        TemplateRepository(foodloadApiClient: _foodloadApiClient);
     _authBloc = AuthBloc(userRepository: _userRepository)..add(AuthStarted());
     _socketBloc = SocketBloc(
         userRepository: _userRepository,
@@ -115,6 +119,8 @@ class _AppState extends State<App> {
         providers: [
           RepositoryProvider<UserRepository>.value(value: _userRepository),
           RepositoryProvider<ItemRepository>.value(value: _itemRepository),
+          RepositoryProvider<TemplateRepository>.value(
+              value: _templateRepository),
         ],
         child: FoodLoadApp(GlobalKeys.globalKey),
       ),

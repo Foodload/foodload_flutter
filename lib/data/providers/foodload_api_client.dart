@@ -5,6 +5,7 @@ import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
 import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart'
     as ErrorHandlerExceptions;
 import 'package:foodload_flutter/helpers/keys.dart';
+import 'package:foodload_flutter/models/enums/http_method.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception_response.dart';
 import 'package:http/http.dart' as http;
@@ -150,6 +151,46 @@ class FoodloadApiClient {
       body,
     );
   }
+
+  Future<dynamic> getTemplates(String token) async {
+    const urlSegment = 'get-templates';
+    return await _helper.get(urlSegment, token);
+  }
+
+  Future<dynamic> createTemplate(
+      String token, Map<String, dynamic> body) async {
+    const urlSegment = 'create-template';
+    return await _helper.post(urlSegment, token, body);
+  }
+
+  Future<dynamic> addTemplateItemToTemplate(
+      String token, int templateId, Map<String, dynamic> body) async {
+    final urlSegment = 'add-template-item/$templateId';
+    return await _helper.post(urlSegment, token, body);
+  }
+
+  Future<dynamic> updateTemplateItem(
+      String token, Map<String, dynamic> body) async {
+    const urlSegment = 'update-template-item';
+    return await _helper.put(urlSegment, token, body);
+  }
+
+  Future<dynamic> removeTemplateItem(
+      String token, int templateId, int templateItemId) async {
+    final urlSegment =
+        'remove-template-item?templateId=$templateId&templateItemId=$templateItemId';
+    return await _helper.delete(urlSegment, token);
+  }
+
+  Future<dynamic> deleteTemplate(String token, int templateId) async {
+    final urlSegment = 'delete-template/$templateId';
+    return await _helper.delete(urlSegment, token);
+  }
+
+  Future<dynamic> getBuyList(String token, int templateId) async {
+    final urlSegment = "buy-list/$templateId";
+    return await _helper.get(urlSegment, token);
+  }
 }
 
 class _ApiBaseHelper {
@@ -169,7 +210,18 @@ class _ApiBaseHelper {
     return headers;
   }
 
+  Future<dynamic> delete(String urlSegment, String token) async {
+    return await _sendRequest(urlSegment, token, HttpMethod.DELETE);
+  }
+
+  Future<dynamic> put(
+      String urlSegment, String token, Map<String, dynamic> body) async {
+    return await _sendRequest(urlSegment, token, HttpMethod.PUT, body: body);
+  }
+
   Future<dynamic> get(String urlSegment, String token) async {
+    return await _sendRequest(urlSegment, token, HttpMethod.GET);
+    /*
     var responseJson;
     try {
       final response =
@@ -179,10 +231,13 @@ class _ApiBaseHelper {
       throw NoInternetException("No Internet connection. Try again later.");
     }
     return responseJson;
+     */
   }
 
   Future<dynamic> post(
       String urlSegment, String token, Map<String, dynamic> body) async {
+    return await _sendRequest(urlSegment, token, HttpMethod.POST, body: body);
+    /*
     var responseJson;
     try {
       final response = await _client.post(_baseUrl + urlSegment,
@@ -192,6 +247,38 @@ class _ApiBaseHelper {
       throw NoInternetException("No Internet connection. Try again later.");
     }
     return responseJson;
+       */
+  }
+
+  Future<dynamic> _sendRequest(
+      String urlSegment, String token, HttpMethod method,
+      {Map<String, dynamic> body}) async {
+    var response;
+    try {
+      switch (method) {
+        case HttpMethod.POST:
+          response = await _client.post(_baseUrl + urlSegment,
+              headers: _headers(token), body: json.encode(body));
+          break;
+        case HttpMethod.GET:
+          response = await _client.get(_baseUrl + urlSegment,
+              headers: _headers(token));
+          break;
+        case HttpMethod.DELETE:
+          response = await _client.delete(_baseUrl + urlSegment,
+              headers: _headers(token));
+          break;
+        case HttpMethod.PUT:
+          response = await _client.put(_baseUrl + urlSegment,
+              headers: _headers(token), body: json.encode(body));
+          break;
+        default:
+          throw Exception("Not supported HTTP Method");
+      }
+    } on SocketException {
+      throw NoInternetException("No Internet connection. Try again later.");
+    }
+    return _returnResponse(response);
   }
 
   dynamic _returnResponse(http.Response response) {
