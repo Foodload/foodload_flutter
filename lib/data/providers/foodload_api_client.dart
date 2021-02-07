@@ -182,9 +182,9 @@ class FoodloadApiClient {
     return await _helper.delete(urlSegment, token);
   }
 
-  Future<dynamic> deleteTemplate(String token, int templateId) async {
+  Future<void> deleteTemplate(String token, int templateId) async {
     final urlSegment = 'delete-template/$templateId';
-    return await _helper.delete(urlSegment, token);
+    await _helper.delete(urlSegment, token);
   }
 
   Future<dynamic> getBuyList(String token, int templateId) async {

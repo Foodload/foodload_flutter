@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
 import 'package:foodload_flutter/data/providers/socket_client.dart';
+import 'package:foodload_flutter/models/template.dart';
 import 'package:foodload_flutter/models/item.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/models/items.dart';
@@ -12,12 +13,23 @@ import 'package:meta/meta.dart';
 class TemplateRepository {
   final FoodloadApiClient _foodloadApiClient;
 
+  List<Template> _templates;
+
   TemplateRepository({@required foodloadApiClient})
       : assert(foodloadApiClient != null),
         _foodloadApiClient = foodloadApiClient;
 
-  Future<dynamic> getTemplates(String token) async {
-    return await _foodloadApiClient.getTemplates(token);
+  Future<List<Template>> getTemplates(
+      {String token, bool refresh: false}) async {
+    if (!refresh && _templates != null) {
+      return [..._templates];
+    }
+    final respJson = await _foodloadApiClient.getTemplates(token);
+    List<Template> templates = (respJson as List)
+        .map((jsonTemplate) => Template.fromJson(jsonTemplate))
+        .toList();
+    _templates = templates;
+    return [..._templates];
   }
 
   Future<dynamic> createTemplate(
@@ -44,8 +56,8 @@ class TemplateRepository {
         token, templateId, templateItemId);
   }
 
-  Future<dynamic> deleteTemplate(String token, int templateId) async {
-    return await _foodloadApiClient.deleteTemplate(token, templateId);
+  Future<void> deleteTemplate(String token, int templateId) async {
+    await _foodloadApiClient.deleteTemplate(token, templateId);
   }
 
   Future<dynamic> getBuyList(String token, int templateId) async {

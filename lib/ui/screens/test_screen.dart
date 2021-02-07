@@ -28,7 +28,7 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void getTemplates() async {
-    final res = await tempRepo.getTemplates(await userRepo.getToken());
+    final res = await tempRepo.getTemplates();
     print(res);
   }
 
@@ -90,8 +90,7 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   void deleteTemplate() async {
-    final res = await tempRepo.deleteTemplate(await userRepo.getToken(), 12);
-    print(res);
+    await tempRepo.deleteTemplate(await userRepo.getToken(), 12);
   }
 
   void getBuyList() async {

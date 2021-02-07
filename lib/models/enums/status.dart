@@ -1,6 +1,7 @@
 enum Status {
   LOADING,
   COMPLETED,
+  REFRESHING,
   READY,
   ERROR,
   OUT_OF_DATE,
