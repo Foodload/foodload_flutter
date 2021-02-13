@@ -63,8 +63,18 @@ class TemplatesBloc extends Bloc<TemplatesEvent, TemplatesState> {
   Stream<TemplatesState> _mapFetchTemplatesToState() async* {
     try {
       List<Template> templates = await _templateRepository.getTemplates();
+      if (templates == null) {
+        templates = await _templateRepository.getTemplates(
+            token: await _userRepository.getToken(), refresh: true);
+      }
       yield TemplatesState(
           templatesStatus: Status.COMPLETED, templates: templates);
+    } on ApiException catch (apiException) {
+      yield state.copyWith(
+        templatesStatus: Status.ERROR,
+        templatesErrorMessage:
+            apiException.getMessage() ?? apiException.getPrefix(),
+      );
     } catch (error, stackTrace) {
       _handleError(error, stackTrace);
     }

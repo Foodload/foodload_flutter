@@ -23,6 +23,8 @@ class TemplateRepository {
       {String token, bool refresh: false}) async {
     if (!refresh && _templates != null) {
       return [..._templates];
+    } else if (!refresh && _templates == null) {
+      return null;
     }
     final respJson = await _foodloadApiClient.getTemplates(token);
     List<Template> templates = (respJson as List)
