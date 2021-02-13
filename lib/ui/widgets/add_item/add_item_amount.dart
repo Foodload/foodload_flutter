@@ -93,7 +93,7 @@ class _AddItemAmountState extends State<AddItemAmount> {
                 child: TextFormField(
                   controller: _itemAmountTextController,
                   keyboardType: TextInputType.number,
-                  autovalidate: true,
+                  autovalidateMode: AutovalidateMode.always,
                   autocorrect: false,
                   validator: (_) {
                     if (_hasAmountError(state)) {
