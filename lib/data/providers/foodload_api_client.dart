@@ -164,15 +164,24 @@ class FoodloadApiClient {
   }
 
   Future<dynamic> addTemplateItemToTemplate(
-      String token, int templateId, Map<String, dynamic> body) async {
+      String token, int templateId, int itemId, int amount) async {
     final urlSegment = 'add-template-item/$templateId';
+    final Map<String, dynamic> body = {
+      "itemId": itemId,
+      "count": amount,
+    };
     return await _helper.post(urlSegment, token, body);
   }
 
-  Future<dynamic> updateTemplateItem(
-      String token, Map<String, dynamic> body) async {
+  Future<void> updateTemplateItem(
+      {String token, int templateId, int templateItemId, int newAmount}) async {
     const urlSegment = 'update-template-item';
-    return await _helper.put(urlSegment, token, body);
+    final Map<String, dynamic> body = {
+      "templateId": templateId, //check
+      "templateItemId": templateItemId, //check
+      "count": newAmount,
+    };
+    await _helper.put(urlSegment, token, body);
   }
 
   Future<dynamic> removeTemplateItem(

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:meta/meta.dart';
 
+@immutable
 class TemplateItem extends Equatable {
   final int id;
   final int count;
@@ -14,6 +15,13 @@ class TemplateItem extends Equatable {
       : id = json['id'],
         count = json['count'],
         itemInfo = ItemInfo.fromJson(json['item']);
+
+  TemplateItem copyWith({int id, int count, ItemInfo itemInfo}) {
+    return TemplateItem(
+        id: id ?? this.id,
+        count: count ?? this.count,
+        itemInfo: itemInfo ?? this.itemInfo);
+  }
 
   @override
   List<Object> get props => [id, count, itemInfo];

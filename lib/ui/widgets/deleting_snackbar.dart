@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DeleteTemplateSnackBar extends SnackBar {
-  DeleteTemplateSnackBar({
+class DeletingSnackBar extends SnackBar {
+  DeletingSnackBar({
     Key key,
     @required BuildContext context,
     @required VoidCallback onUndo,

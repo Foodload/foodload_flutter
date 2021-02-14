@@ -79,6 +79,7 @@ class ItemRepository {
       String searchText, int startIndex, String userToken) async {
     final respJson = await _foodloadApiClient.findItemByName(
         searchText, startIndex, userToken);
+    print(respJson);
     List<ItemInfo> results = (respJson as List)
         .map((jsonItem) => ItemInfo.fromJson(jsonItem))
         .toList();

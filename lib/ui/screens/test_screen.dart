@@ -67,26 +67,26 @@ class _TestScreenState extends State<TestScreen> {
       "itemId": 12,
       "count": 10,
     };
-    final res = await tempRepo.addTemplateItemToTemplate(
-        await userRepo.getToken(), 13, body);
-    print(res);
+    //final res = await tempRepo.addTemplateItemToTemplate(
+    //    await userRepo.getToken(), 13, body);
+    //print(res);
   }
 
   void updateTemplateItem() async {
-    Map<String, dynamic> body = {
-      "templateId": 12, //check
-      "templateItemId": 16, //check
-      "count": 1000,
-    };
-    final res =
-        await tempRepo.updateTemplateItem(await userRepo.getToken(), body);
-    print(res);
+    // Map<String, dynamic> body = {
+    //   "templateId": 12, //check
+    //   "templateItemId": 16, //check
+    //   "count": 1000,
+    // };
+    // final res =
+    //     await tempRepo.updateTemplateItem(await userRepo.getToken(), body);
+    // print(res);
   }
 
   void removeTemplateItem() async {
-    final res =
-        await tempRepo.removeTemplateItem(await userRepo.getToken(), 12, 16);
-    print(res);
+    // final res =
+    //     await tempRepo.removeTemplateItem(await userRepo.getToken(), 12, 16);
+    // print(res);
   }
 
   void deleteTemplate() async {

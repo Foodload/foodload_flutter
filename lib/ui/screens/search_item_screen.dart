@@ -5,6 +5,9 @@ import 'package:foodload_flutter/models/item_info.dart';
 
 class SearchItemScreen extends StatefulWidget {
   static const routeName = '/search-item-screen';
+  final Function onSelect;
+
+  const SearchItemScreen({this.onSelect});
 
   @override
   _SearchItemScreenState createState() => _SearchItemScreenState();
@@ -76,7 +79,15 @@ class _SearchItemScreenState extends State<SearchItemScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return index >= state.results.length
                     ? BottomLoader()
-                    : FoundItem(state.results[index]);
+                    : Column(
+                        children: [
+                          FoundItem(
+                            itemInfo: state.results[index],
+                            onSelect: widget.onSelect,
+                          ),
+                          Divider(height: 1),
+                        ],
+                      );
               },
               itemCount: state.hasReachedMax
                   ? state.results.length
@@ -108,15 +119,19 @@ class BottomLoader extends StatelessWidget {
 
 class FoundItem extends StatelessWidget {
   final ItemInfo itemInfo;
+  final Function onSelect;
 
-  const FoundItem(this.itemInfo);
+  const FoundItem({@required this.itemInfo, this.onSelect});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(itemInfo.title),
-      subtitle: Text(itemInfo.brand),
-      dense: true,
+    return InkWell(
+      onTap: () => onSelect(itemInfo),
+      child: ListTile(
+        title: Text(itemInfo.title),
+        subtitle: Text(itemInfo.brand),
+        dense: true,
+      ),
     );
   }
 }
