@@ -1,5 +1,6 @@
 enum Status {
   LOADING,
+  ADDING,
   COMPLETED,
   REFRESHING,
   READY,

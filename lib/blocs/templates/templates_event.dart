@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodload_flutter/models/template.dart';
 
 abstract class TemplatesEvent extends Equatable {
   @override
@@ -41,6 +42,18 @@ class DeleteTemplateFromList extends TemplatesEvent {
 
   @override
   List<Object> get props => [templateId];
+}
+
+class AddNewTemplateToList extends TemplatesEvent {
+  final Template newTemplate;
+
+  AddNewTemplateToList(this.newTemplate);
+
+  @override
+  String toString() => 'AddNewTemplateToList { newTemplate: $newTemplate }';
+
+  @override
+  List<Object> get props => [newTemplate];
 }
 
 class UndoDeleteTemplate extends TemplatesEvent {

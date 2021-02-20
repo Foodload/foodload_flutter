@@ -32,6 +32,8 @@ class _TestScreenState extends State<TestScreen> {
     print(res);
   }
 
+  /*
+
   void addTemplate() async {
     Map<String, dynamic> body = {
       "name": "Template",
@@ -40,7 +42,7 @@ class _TestScreenState extends State<TestScreen> {
     print(res);
   }
 
-  /*
+
   void updateTemplate() async {
     Map<String, dynamic> body = {
       "templateId": 8, //check
@@ -113,7 +115,7 @@ class _TestScreenState extends State<TestScreen> {
             ),
             RaisedButton(
               child: Text('ADD TEMPLATE'),
-              onPressed: addTemplate,
+              onPressed: () {},
             ),
             RaisedButton(
               child: Text('ADD TEMPLATE ITEM'),

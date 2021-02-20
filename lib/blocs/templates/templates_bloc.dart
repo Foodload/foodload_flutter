@@ -38,6 +38,19 @@ class TemplatesBloc extends Bloc<TemplatesEvent, TemplatesState> {
       yield* _mapDeleteTemplateFromListToState(event);
     } else if (event is UndoDeleteTemplate) {
       yield* _mapUndoDeleteTemplate(event);
+    } else if (event is AddNewTemplateToList) {
+      yield* _mapAddNewTemplateToListToState(event);
+    }
+  }
+
+  Stream<TemplatesState> _mapAddNewTemplateToListToState(
+      AddNewTemplateToList event) async* {
+    try {
+      List<Template> templates = state.templates.toList();
+      templates.add(event.newTemplate);
+      yield state.copyWith(templates: templates);
+    } catch (error, stackTrace) {
+      _handleError(error, stackTrace);
     }
   }
 

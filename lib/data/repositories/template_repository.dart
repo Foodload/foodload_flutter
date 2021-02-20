@@ -45,9 +45,14 @@ class TemplateRepository {
     return null;
   }
 
-  Future<dynamic> createTemplate(
-      String token, Map<String, dynamic> body) async {
-    return await _foodloadApiClient.createTemplate(token, body);
+  Future<Template> createTemplate({String token, String name}) async {
+    Map<String, dynamic> body = {
+      'name': name,
+    };
+    final respJson = await _foodloadApiClient.createTemplate(token, body);
+    final Template template = Template.fromJson(respJson);
+    _templates.add(template);
+    return template;
   }
 
   Future<TemplateItem> addTemplateItemToTemplate(
