@@ -5,6 +5,8 @@ import 'package:foodload_flutter/blocs/add_template_item/add_template_item_bloc.
 import 'package:foodload_flutter/blocs/search_item/search_item_bloc.dart';
 import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/snackbar_helper.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/item_info.dart';
 import 'package:foodload_flutter/ui/screens/search_item_screen.dart';
 import 'package:foodload_flutter/ui/widgets/add_item/add_item_info.dart';
@@ -45,6 +47,10 @@ class _AddTemplateItemScreenState extends State<AddTemplateItemScreen> {
       listener: (context, state) {
         if (state is AddTemplateItemSuccess) {
           Navigator.of(context).pop(state.templateItem);
+        }
+
+        if (state.addStatus == Status.ERROR) {
+          SnackBarHelper.showFailMessage(context, state.errorMessage);
         }
       },
       builder: (context, state) {

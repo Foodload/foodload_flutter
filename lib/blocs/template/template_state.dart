@@ -1,34 +1,36 @@
 import 'package:equatable/equatable.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/status.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/template.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class TemplateState extends Equatable {
   final Template template;
+  final Status status;
+  final String errorMessage;
 
   TemplateState({
     this.template,
+    this.status: Status.COMPLETED,
+    this.errorMessage,
   });
 
-  TemplateState copyWith({
-    template,
-    int amount,
-    bool validAmount,
-    Status addStatus,
-  }) {
+  TemplateState copyWith(
+      {Template template, Status status, String errorMessage}) {
     return TemplateState(
       template: template ?? this.template,
+      status: status,
+      errorMessage: errorMessage,
     );
   }
 
   @override
   String toString() {
-    return 'TemplateState {template: $template}';
+    return 'TemplateState {template: $template, status: $status, errorMessage: $errorMessage}';
   }
 
   @override
-  List<Object> get props => [template];
+  List<Object> get props => [template, status, errorMessage];
 }
 
 class TemplateStateLoading extends TemplateState {

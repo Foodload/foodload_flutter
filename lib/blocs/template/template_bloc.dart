@@ -4,6 +4,9 @@ import 'package:foodload_flutter/blocs/template/template_event.dart';
 import 'package:foodload_flutter/blocs/template/template_state.dart';
 import 'package:foodload_flutter/data/repositories/template_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
+import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/template.dart';
 import 'package:foodload_flutter/models/template_item.dart';
@@ -44,15 +47,27 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   }
 
   Stream<TemplateState> _mapFetchTemplateToState(FetchTemplate event) async* {
-    final template = await _templateRepository.getTemplate(event.templateId);
-    yield TemplateState(template: template);
+    try {
+      final template = await _templateRepository.getTemplate(event.templateId);
+      yield TemplateState(template: template);
+    } on ApiException catch (apiException) {
+      yield* _handleApiException(apiException);
+    } catch (error, stackTrace) {
+      yield* _handleError(error, stackTrace);
+    }
   }
 
   Stream<TemplateState> _mapTemplateItemAddedToState(
       TemplateItemAdded event) async* {
-    final updatedTemplate =
-        await _templateRepository.getTemplate(state.template.id);
-    yield TemplateState(template: updatedTemplate);
+    try {
+      final updatedTemplate =
+          await _templateRepository.getTemplate(state.template.id);
+      yield TemplateState(template: updatedTemplate);
+    } on ApiException catch (apiException) {
+      yield* _handleApiException(apiException);
+    } catch (error, stackTrace) {
+      yield* _handleError(error, stackTrace);
+    }
   }
 
   Stream<TemplateState> _mapDeleteTemplateItemFromStateToState(
@@ -66,9 +81,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
           state.template.copyWith(templateItems: updatedTemplateItems);
       yield state.copyWith(template: updatedTemplate);
     } catch (error, stackTrace) {
-      print(error);
-      //TODO: Error handling
-      //_handleError(error, stackTrace);
+      yield* _handleError(error, stackTrace);
     }
   }
 
@@ -80,12 +93,9 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
           state.template.id,
           event.templateItemId);
     } on ApiException catch (apiException) {
-      //TODO: Error handling
-      print(apiException);
+      yield* _handleApiException(apiException);
     } catch (error, stackTrace) {
-      print(error);
-      //TODO: Error handling
-      //_handleError(error, stackTrace);
+      yield* _handleError(error, stackTrace);
     }
   }
 
@@ -95,25 +105,43 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       final Template prevTemplate =
           await _templateRepository.getTemplate(state.template.id);
       yield state.copyWith(template: prevTemplate);
+    } on ApiException catch (apiException) {
+      yield* _handleApiException(apiException);
     } catch (error, stackTrace) {
-      print(error);
-      //TODO: Error handling
-      //_handleError(error, stackTrace);
+      yield* _handleError(error, stackTrace);
     }
   }
 
   Stream<TemplateState> _mapUpdateTemplateItemToState(
       UpdateTemplateItem event) async* {
-    print(event.newAmount);
-    await _templateRepository.updateTemplateItem(
-        token: await _userRepository.getToken(),
-        templateId: state.template.id,
-        templateItemId: event.templateItemId,
-        newAmount: event.newAmount);
-    final updatedTemplate =
-        await _templateRepository.getTemplate(state.template.id);
-    print(updatedTemplate);
-    print(updatedTemplate == state.template);
-    yield state.copyWith(template: updatedTemplate);
+    try {
+      await _templateRepository.updateTemplateItem(
+          token: await _userRepository.getToken(),
+          templateId: state.template.id,
+          templateItemId: event.templateItemId,
+          newAmount: event.newAmount);
+      final updatedTemplate =
+          await _templateRepository.getTemplate(state.template.id);
+      yield state.copyWith(template: updatedTemplate);
+    } on ApiException catch (apiException) {
+      yield* _handleApiException(apiException);
+    } catch (error, stackTrace) {
+      yield* _handleError(error, stackTrace);
+    }
+  }
+
+  Stream<TemplateState> _handleApiException(ApiException apiException) async* {
+    yield state.copyWith(
+      status: Status.ERROR,
+      errorMessage: apiException.getMessage() ?? apiException.getPrefix(),
+    );
+  }
+
+  Stream<TemplateState> _handleError(error, stackTrace) async* {
+    ErrorHandler.reportCheckedError(
+        SilentLogException(error.message), stackTrace);
+    yield state.copyWith(
+        status: Status.ERROR,
+        errorMessage: 'Something went wrong. Please try again later.');
   }
 }

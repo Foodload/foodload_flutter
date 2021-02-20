@@ -4,7 +4,7 @@ import 'package:foodload_flutter/blocs/templates/templates.dart';
 import 'package:foodload_flutter/data/repositories/template_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/ui/widgets/app_drawer.dart';
-import 'package:foodload_flutter/ui/widgets/templates/template_refresh.dart';
+import 'package:foodload_flutter/ui/widgets/templates/template_list.dart';
 
 class TemplatesOverviewScreen extends StatefulWidget {
   static const routeName = '/template-overview-screen';
@@ -31,6 +31,7 @@ class _TemplatesOverviewScreenState extends State<TemplatesOverviewScreen> {
       appBar: AppBar(
         title: Text('Templates'),
         actions: [
+          //TODO: Implement
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () => {},
@@ -43,7 +44,7 @@ class _TemplatesOverviewScreenState extends State<TemplatesOverviewScreen> {
           templatesRepository: _templateRepository,
           userRepository: _userRepository,
         )..add(FetchTemplates()),
-        child: TemplateRefresh(),
+        child: TemplateList(),
       ),
     );
   }

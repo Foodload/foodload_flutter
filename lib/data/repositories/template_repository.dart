@@ -1,4 +1,6 @@
 import 'package:foodload_flutter/data/providers/foodload_api_client.dart';
+import 'package:foodload_flutter/models/buy_item.dart';
+import 'package:foodload_flutter/models/exceptions/not_found_exception.dart';
 import 'package:foodload_flutter/models/template.dart';
 import 'package:foodload_flutter/models/template_item.dart';
 import 'package:meta/meta.dart';
@@ -35,7 +37,7 @@ class TemplateRepository {
       if (template != null) {
         return template.copyWith();
       }
-      //TODO: Error handling
+      return null;
     } else if (!refresh && _templates == null) {
       return null;
     }
@@ -76,8 +78,12 @@ class TemplateRepository {
     _removeTemplate(templateId);
   }
 
-  Future<dynamic> getBuyList(String token, int templateId) async {
-    return await _foodloadApiClient.getBuyList(token, templateId);
+  Future<List<BuyItem>> getBuyList(String token, int templateId) async {
+    final respJson = await _foodloadApiClient.getBuyList(token, templateId);
+    List<BuyItem> buyList = (respJson['buyList'] as List)
+        .map((buyItem) => BuyItem.fromJson(buyItem))
+        .toList();
+    return buyList;
   }
 
   Future<void> deleteTemplateItem(
@@ -97,7 +103,7 @@ class TemplateRepository {
     final templateIdx =
         _templates.lastIndexWhere((template) => template.id == templateId);
     if (templateIdx == -1) {
-      //TODO: Error handling
+      throw NotFoundException(message: 'The template could not be found.');
     } else {
       final oldTemplate = _templates.elementAt(templateIdx);
       final updatedTemplate =
@@ -111,7 +117,7 @@ class TemplateRepository {
     final templateIdx =
         _templates.lastIndexWhere((template) => template.id == templateId);
     if (templateIdx == -1) {
-      //TODO: Error handling
+      throw NotFoundException(message: 'The template could not be found.');
     } else {
       final oldTemplate = _templates.elementAt(templateIdx);
       final updatedTemplate = oldTemplate.addTemplateItem(templateItem);
@@ -124,7 +130,7 @@ class TemplateRepository {
     final templateIdx =
         _templates.lastIndexWhere((template) => template.id == templateId);
     if (templateIdx == -1) {
-      //TODO: Error handling
+      throw NotFoundException(message: 'The template could not be found.');
     } else {
       final oldTemplate = _templates[templateIdx];
       final updatedTemplate = oldTemplate.removeTemplateItem(templateItemId);

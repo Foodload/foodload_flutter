@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/template/template.dart';
@@ -10,9 +12,24 @@ import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/template.dart';
 import 'package:foodload_flutter/ui/screens/template_details_screen.dart';
 import 'package:foodload_flutter/ui/widgets/deleting_snackbar.dart';
+import 'package:foodload_flutter/ui/widgets/refresher.dart';
+import 'package:foodload_flutter/ui/widgets/scrollable_flexer.dart';
 import 'package:foodload_flutter/ui/widgets/templates/template_list_item.dart';
 
-class TemplateList extends StatelessWidget {
+class TemplateList extends StatefulWidget {
+  @override
+  _TemplateListState createState() => _TemplateListState();
+}
+
+class _TemplateListState extends State<TemplateList> {
+  Completer<void> _refreshCompleter;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
+  }
+
   void _showDeleteTemplateSnackBar(BuildContext context, Template template) {
     Scaffold.of(context)
         .showSnackBar(
@@ -39,14 +56,18 @@ class TemplateList extends StatelessWidget {
     return BlocConsumer<TemplatesBloc, TemplatesState>(
         listener: (context, state) {
       if (state.templatesStatus == Status.ERROR) {
+        _refreshCompleter?.complete();
+        _refreshCompleter = Completer<void>();
         SnackBarHelper.showFailMessage(
           context,
           state.templatesErrorMessage ??
               'Something went wrong. Please try again',
         );
       }
-    }, buildWhen: (_, currentState) {
-      return currentState.templatesStatus != Status.REFRESHING;
+      if (state.templatesStatus == Status.COMPLETED) {
+        _refreshCompleter?.complete();
+        _refreshCompleter = Completer<void>();
+      }
     }, builder: (context, state) {
       if (state.templatesStatus == Status.LOADING) {
         return Center(
@@ -54,50 +75,53 @@ class TemplateList extends StatelessWidget {
         );
       }
 
-      if (state.templates == null || state.templates.length <= 0) {
-        return ListView.builder(
-            itemCount: 0,
-            itemBuilder: (ctx, index) {
-              return Center(
-                child: Text('Empty'),
-              );
-            });
-      }
-
-      return ListView.builder(
-        itemCount: state.templates.length,
-        itemBuilder: (ctx, index) {
-          final template = state.templates[index];
-          return TemplateListItem(
-            template: template,
-            onDismiss: (direction) {
-              BlocProvider.of<TemplatesBloc>(context)
-                  .add(DeleteTemplateFromList(template.id));
-              _showDeleteTemplateSnackBar(context, template);
-            },
-            onTap: () async {
-              final removedTemplate = await NavigatorHelper.push(
-                context: context,
-                child: BlocProvider<TemplateBloc>(
-                  create: (context) => TemplateBloc(
-                    templateId: template.id,
-                    templateRepository:
-                        RepositoryProvider.of<TemplateRepository>(context),
-                    userRepository:
-                        RepositoryProvider.of<UserRepository>(context),
+      return Refresher(
+          onRefresh: () {
+            BlocProvider.of<TemplatesBloc>(context).add(RefreshTemplates());
+            return _refreshCompleter.future;
+          },
+          child: state.templates == null || state.templates.length <= 0
+              ? ScrollableFlexer(
+                  child: Center(
+                    child: Text('Nothing here'),
                   ),
-                  child: TemplateDetailsScreen(),
-                ),
-              );
-              if (removedTemplate != null) {
-                BlocProvider.of<TemplatesBloc>(context)
-                    .add(DeleteTemplateFromList(template.id));
-                _showDeleteTemplateSnackBar(context, removedTemplate);
-              }
-            },
-          );
-        },
-      );
+                )
+              : ListView.builder(
+                  itemCount: state.templates.length,
+                  itemBuilder: (ctx, index) {
+                    final template = state.templates[index];
+                    return TemplateListItem(
+                      template: template,
+                      onDismiss: (direction) {
+                        BlocProvider.of<TemplatesBloc>(context)
+                            .add(DeleteTemplateFromList(template.id));
+                        _showDeleteTemplateSnackBar(context, template);
+                      },
+                      onTap: () async {
+                        final removedTemplate = await NavigatorHelper.push(
+                          context: context,
+                          child: BlocProvider<TemplateBloc>(
+                            create: (context) => TemplateBloc(
+                              templateId: template.id,
+                              templateRepository:
+                                  RepositoryProvider.of<TemplateRepository>(
+                                      context),
+                              userRepository:
+                                  RepositoryProvider.of<UserRepository>(
+                                      context),
+                            ),
+                            child: TemplateDetailsScreen(),
+                          ),
+                        );
+                        if (removedTemplate != null) {
+                          BlocProvider.of<TemplatesBloc>(context)
+                              .add(DeleteTemplateFromList(template.id));
+                          _showDeleteTemplateSnackBar(context, removedTemplate);
+                        }
+                      },
+                    );
+                  },
+                ));
     });
   }
 }

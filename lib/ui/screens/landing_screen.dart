@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/auth/auth_bloc.dart';
 import 'package:foodload_flutter/helpers/keys.dart';
-import 'package:foodload_flutter/ui/screens/search_item_screen.dart';
 import 'package:foodload_flutter/ui/screens/test_screen.dart';
 import 'package:foodload_flutter/ui/widgets/app_drawer.dart';
 import 'package:foodload_flutter/ui/widgets/storage_icon_link.dart';
@@ -82,12 +81,6 @@ class LandingScreen extends StatelessWidget {
                 ),
                 value: 'test',
               ),
-              DropdownMenuItem(
-                child: Container(
-                  child: const Text('Search Item'),
-                ),
-                value: 'search item',
-              ),
             ],
             onChanged: (val) {
               switch (val) {
@@ -99,10 +92,6 @@ class LandingScreen extends StatelessWidget {
                   break;
                 case 'test':
                   Navigator.of(context).pushNamed(TestScreen.routeName);
-                  break;
-                case 'search item':
-                  //TODO: Remove this from here
-                  Navigator.of(context).pushNamed(SearchItemScreen.routeName);
                   break;
                 default:
                   print(val);

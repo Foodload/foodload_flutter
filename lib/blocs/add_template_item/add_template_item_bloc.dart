@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_template_item/add_template_item.dart';
 import 'package:foodload_flutter/data/repositories/template_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
-import 'package:foodload_flutter/helpers/error_handler/model/status.dart';
+import 'package:foodload_flutter/helpers/error_handler/core/error_handler.dart';
+import 'package:foodload_flutter/helpers/error_handler/model/exceptions.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
+import 'package:foodload_flutter/models/exceptions/api_exception.dart';
 import 'package:foodload_flutter/models/template_item.dart';
 import 'package:meta/meta.dart';
 
@@ -46,7 +49,9 @@ class AddTemplateItemBloc
   Stream<AddTemplateItemState> _mapAddTemplateItemToState(
       AddTemplateItem event) async* {
     if (!state.isFormValid) {
-      //TODO: Error...?
+      yield state.copyWith(
+          addStatus: Status.ERROR,
+          errorMessage: 'Could not add because the form is invalid');
       return;
     }
     yield state.copyWith(addStatus: Status.LOADING);
@@ -60,9 +65,17 @@ class AddTemplateItemBloc
       );
       print(templateItem);
       yield AddTemplateItemSuccess(templateItem);
-    } catch (error) {
-      //TODO: Error handling
-      print(error);
+    } on ApiException catch (apiException) {
+      yield state.copyWith(
+        addStatus: Status.ERROR,
+        errorMessage: apiException.getMessage() ?? apiException.getPrefix(),
+      );
+    } catch (error, stackTrace) {
+      ErrorHandler.reportCheckedError(
+          SilentLogException(error.message), stackTrace);
+      yield state.copyWith(
+          addStatus: Status.ERROR,
+          errorMessage: 'Something went wrong. Please try again later.');
     }
   }
 

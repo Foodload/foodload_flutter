@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodload_flutter/blocs/add_template_item/add_template_item.dart';
+import 'package:foodload_flutter/blocs/buy_list/buy_list.dart';
 import 'package:foodload_flutter/blocs/template/template.dart';
+import 'package:foodload_flutter/data/repositories/item_repository.dart';
 import 'package:foodload_flutter/data/repositories/template_repository.dart';
 import 'package:foodload_flutter/data/repositories/user_repository.dart';
 import 'package:foodload_flutter/helpers/navigator_helper.dart';
+import 'package:foodload_flutter/helpers/snackbar_helper.dart';
+import 'package:foodload_flutter/models/enums/status.dart';
 import 'package:foodload_flutter/models/template.dart';
 import 'package:foodload_flutter/models/template_item.dart';
 import 'package:foodload_flutter/ui/screens/add_template_item_screen.dart';
+import 'package:foodload_flutter/ui/screens/buy_list_screen.dart';
 import 'package:foodload_flutter/ui/widgets/deleting_snackbar.dart';
 import 'package:foodload_flutter/ui/widgets/templates/template_item_widget.dart';
 
@@ -40,7 +45,12 @@ class TemplateDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TemplateBloc, TemplateState>(
+    return BlocConsumer<TemplateBloc, TemplateState>(
+      listener: (context, state) {
+        if (state.status == Status.ERROR) {
+          SnackBarHelper.showFailMessage(context, state.errorMessage);
+        }
+      },
       builder: (context, state) {
         if (state is TemplateStateLoading) {
           return Scaffold(
@@ -50,17 +60,39 @@ class TemplateDetailsScreen extends StatelessWidget {
             ),
           );
         }
+        if (state.template == null) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(
+              child: Text('Could not show template'),
+            ),
+          );
+        }
         return Scaffold(
           appBar: AppBar(
             title: Text(state.template.name),
-            actions: [],
           ),
           bottomNavigationBar: BottomAppBar(
             child: Row(
               children: [
                 IconButton(
                   icon: Icon(Icons.receipt),
-                  onPressed: () => _confirmDelete(context, state.template),
+                  onPressed: () => NavigatorHelper.push(
+                    context: context,
+                    child: BlocProvider<BuyListBloc>(
+                      create: (context) => BuyListBloc(
+                        userRepository:
+                            RepositoryProvider.of<UserRepository>(context),
+                        itemRepository:
+                            RepositoryProvider.of<ItemRepository>(context),
+                        templateRepository:
+                            RepositoryProvider.of<TemplateRepository>(context),
+                      )..add(
+                          GenerateBuyList(state.template, false),
+                        ),
+                      child: BuyListScreen(state.template),
+                    ),
+                  ),
                 ),
                 Spacer(),
                 IconButton(
