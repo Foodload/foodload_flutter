@@ -23,6 +23,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
 
+  //TODO: Uncomment
+  /*
   var explicitReportModesMap = {
     "SilentLogException": SilentReportMode(),
     "ComponentLogException": DialogReportMode(),
@@ -41,12 +43,13 @@ void main() {
     ],
     explicitExceptionReportModesMap: explicitReportModesMap,
   );
+   */
 
   ErrorHandler(
     rootWidget: App(),
     navigatorKey: GlobalKeys.globalKey,
-    debugConfig: debugOptions,
-    releaseConfig: releaseOptions,
+    //debugConfig: debugOptions,
+    //releaseConfig: releaseOptions,
   );
 }
 

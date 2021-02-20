@@ -9,4 +9,4 @@ const pantry = 'Pantry';
 
 const socketURL =
     'https://foodload-notification.herokuapp.com/'; //'http://10.0.2.2:3000';
-const backendURL = 'https://foodload.herokuapp.com/'; //'http://10.0.2.2:8080/';
+const backendURL = 'http://10.0.2.2:8080/'; //'https://foodload.herokuapp.com/';

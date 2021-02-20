@@ -32,79 +32,11 @@ class _TestScreenState extends State<TestScreen> {
     print(res);
   }
 
-  /*
-
-  void addTemplate() async {
-    Map<String, dynamic> body = {
-      "name": "Template",
-    };
-    final res = await tempRepo.createTemplate(await userRepo.getToken(), body);
-    print(res);
-  }
-
-
-  void updateTemplate() async {
-    Map<String, dynamic> body = {
-      "templateId": 8, //check
-      "newTemplateItems": [
-        {
-          "itemId": 13,
-          "count": 13,
-        }
-      ],
-      "updatedTemplateItems": [
-        {
-          "templateItemId": 10, //check
-          "count": 1337,
-        }
-      ],
-    };
-    final res = await tempRepo.updateTemplate(body, await userRepo.getToken());
-    print(res);
-  }
-  */
-
-  void addTemplateItem() async {
-    Map<String, dynamic> body = {
-      "itemId": 12,
-      "count": 10,
-    };
-    //final res = await tempRepo.addTemplateItemToTemplate(
-    //    await userRepo.getToken(), 13, body);
-    //print(res);
-  }
-
-  void updateTemplateItem() async {
-    // Map<String, dynamic> body = {
-    //   "templateId": 12, //check
-    //   "templateItemId": 16, //check
-    //   "count": 1000,
-    // };
-    // final res =
-    //     await tempRepo.updateTemplateItem(await userRepo.getToken(), body);
-    // print(res);
-  }
-
-  void removeTemplateItem() async {
-    // final res =
-    //     await tempRepo.removeTemplateItem(await userRepo.getToken(), 12, 16);
-    // print(res);
-  }
-
-  void deleteTemplate() async {
-    await tempRepo.deleteTemplate(await userRepo.getToken(), 12);
-  }
-
-  void getBuyList() async {
-    final res = await tempRepo.getBuyList(await userRepo.getToken(), 13);
-    print(res);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TEST API'),
+        title: Text('ADD ITEMS'),
       ),
       body: Center(
         child: Column(
@@ -116,26 +48,6 @@ class _TestScreenState extends State<TestScreen> {
             RaisedButton(
               child: Text('ADD TEMPLATE'),
               onPressed: () {},
-            ),
-            RaisedButton(
-              child: Text('ADD TEMPLATE ITEM'),
-              onPressed: addTemplateItem,
-            ),
-            RaisedButton(
-              child: Text('UPDATE TEMPLATE ITEM'),
-              onPressed: updateTemplateItem,
-            ),
-            RaisedButton(
-              child: Text('REMOVE TEMPLATE ITEM'),
-              onPressed: removeTemplateItem,
-            ),
-            RaisedButton(
-              child: Text('DELETE TEMPLATE'),
-              onPressed: deleteTemplate,
-            ),
-            RaisedButton(
-              child: Text('GET BUY LIST'),
-              onPressed: getBuyList,
             ),
           ],
         ),
