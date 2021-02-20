@@ -140,4 +140,15 @@ class ItemRepository {
     );
     return ItemUpdatedInfo.fromJson(respJson);
   }
+
+  //TODO: REMOVE REMOVE REMOVE
+  Future<void> addItemToDb(
+      {String token, String qr, String name, String brand}) async {
+    Map<String, dynamic> body = {
+      'qr': qr,
+      'name': name,
+      'brand': brand,
+    };
+    await _foodloadApiClient.addItemToDb(token, body);
+  }
 }

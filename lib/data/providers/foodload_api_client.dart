@@ -200,6 +200,12 @@ class FoodloadApiClient {
     final urlSegment = "buy-list/$templateId";
     return await _helper.get(urlSegment, token);
   }
+
+  //TODO: REMOVE REMOVE REMOVE
+  Future<void> addItemToDb(String token, Map<String, dynamic> body) async {
+    final urlSegment = "add-item-to-db";
+    await _helper.post(urlSegment, token, body);
+  }
 }
 
 class _ApiBaseHelper {
