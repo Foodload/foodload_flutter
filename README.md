@@ -13,6 +13,7 @@ Firebase setup needs to be configured and the keys.dart file needs to be updated
 ## Screenshots
 <p float="middle">
   <img src="screenshots/landing.png" width="250" alt="landing screen"/>
+  <img src="screenshots/fridge_overview.png" width="250" alt="fridge overview"/>
   <img src="screenshots/add_item.png" width="250" alt="add item"/>
   <img src="screenshots/item_settings.png" width="250" alt="item settings"/>
   <img src="screenshots/templates.png" width="250" alt="templates overview screen"/>
