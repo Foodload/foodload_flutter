@@ -1,16 +1,11 @@
-# foodload_flutter
+# Foodload Flutter
+This is the mobile application of the project and is built with Flutter. For authentication the Firebase SDK is used and for real time updates SocketIO is used.
 
-A new Flutter project.
+## User functionalities implemented
+* Search for items with QR scan, ID, or text and add/remove/move/increment/decrement items for storages
+* Retrieve items for storages and keep them updated in real time
+* Create and modify templates as well as generate buying lists
+* Sign in with Google
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Setup
+Firebase setup needs to be configured and the keys.dart file needs to be updated with own variables.
